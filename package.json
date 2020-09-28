@@ -1,0 +1,19 @@
+{
+  "name": "cloudcannon-hugo",
+  "version": "1.0.0",
+  "description": "Generates the files necessary for a hugo site to integrate with CloudCannon CMS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NJKode/cloudcannon-hugo.git"
+  },
+  "author": "Nathan Kennedy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NJKode/cloudcannon-hugo/issues"
+  },
+  "homepage": "https://github.com/NJKode/cloudcannon-hugo#readme"
+}
