@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-tabs */
 /* eslint-disable dot-notation */
 /* eslint-disable quote-props */
 const { Validator } = require('jsonschema');
@@ -9,6 +10,8 @@ const glob = require('glob');
 
 const toml = require('toml');
 const yaml = require('js-yaml');
+
+const packageJson = require('./package.json');
 
 const readFile = promisify(fs.readFile);
 const globPromise = promisify(glob);
@@ -26,8 +29,8 @@ const extensions = {
 };
 
 const cloudCannonMeta = {
-	name: 'cloudcannon-hugo',
-	version: '1.0.0'
+	name: packageJson.name,
+	version: packageJson.version
 };
 
 function parseYaml(data) {
@@ -126,6 +129,7 @@ async function getCollectionsPaths(paths) {
 	return collections;
 }
 
+/*
 async function parseFrontMatter(data) {
 	const normalised = data.replace(/(?:\r\n|\r|\n)/g, '\n');
 	const identifyingChar = normalised.charAt(0);
@@ -159,6 +163,7 @@ async function parseFrontMatter(data) {
 	}
 	return Promise.reject(Error('couldnt parse'));
 }
+*/
 
 async function generateDefault(path) {
 	// let content;
@@ -169,12 +174,16 @@ async function generateDefault(path) {
 	// }
 
 	// const frontMatter = content? await parseFrontMatter(content) : {};
+	const scope = {};
+	scope.path = Path.dirname(path).replace('archetypes', '');
+
+	const type = Path.basename(path, Path.extname(path));
+	if (type !== 'default') {
+		scope.type = type;
+	}
 
 	const defaultData = {
-		'scope': {
-			'path': Path.dirname(path).replace('archetypes', ''),
-			'type': Path.basename(path, Path.extname(path))
-		}
+		'scope': scope
 	};
 
 	return Promise.resolve(defaultData);
@@ -236,15 +245,15 @@ function runValidation(config) {
 	}
 }
 
-function fromPiped() {
-	process.stdin.resume();
-	process.stdin.setEncoding('utf8');
-	process.stdin.on('data', function (data) {
-		this.parseConfig(data);
-	});
-}
+// function fromPiped() {
+// 	process.stdin.resume();
+// 	process.stdin.setEncoding('utf8');
+// 	process.stdin.on('data', function (data) {
+// 		this.parseConfig(data);
+// 	});
+// }
 
-async function main() {
+(async function main() {
 	const path = 'config/_default/config.toml';
 	const hugoConfig = await getHugoConfig(path);
 
@@ -253,6 +262,4 @@ async function main() {
 	fs.writeFileSync('build-config.json', data);
 
 	runValidation(config);
-}
-
-main();
+}());
