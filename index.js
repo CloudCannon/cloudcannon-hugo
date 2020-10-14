@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-disable dot-notation */
+/* eslint-disable quote-props */
 const { Validator } = require('jsonschema');
 const { promisify } = require('util');
 const fs = require('fs');
@@ -21,16 +23,16 @@ const extensions = {
 	'.yaml': 'yaml',
 	'.toml': 'toml',
 	'.json': 'json'
-}
-
-const cloudCannonMeta = {
-	name: "cloudcannon-hugo",
-	version: "1.0.0"
 };
 
-function parseYaml (data) {
+const cloudCannonMeta = {
+	name: 'cloudcannon-hugo',
+	version: '1.0.0'
+};
+
+function parseYaml(data) {
 	try {
-		const yamlData = yaml.safeLoad(data, {json: true});
+		const yamlData = yaml.safeLoad(data, { json: true });
 		return Promise.resolve(yamlData);
 	} catch (parseError) {
 		console.error(parseError);
@@ -38,19 +40,17 @@ function parseYaml (data) {
 	return Promise.reject();
 }
 
-function parseToml (data) {
+function parseToml(data) {
 	try {
 		const tomlData = toml.parse(data);
 		return Promise.resolve(tomlData);
 	} catch (e) {
-		console.error("Parsing error on line " + e.line + ", column " + e.column +
-		  ": " + e.message);
+		console.error(`Parsing error on line ${e.line}, column ${e.column}: ${e.message}`);
 	}
 	return Promise.reject();
 }
 
-async function getHugoConfig (configPath) {
-
+async function getHugoConfig(configPath) {
 	const extension = Path.extname(configPath).toLowerCase();
 	const fileType = extensions[extension];
 
@@ -63,36 +63,35 @@ async function getHugoConfig (configPath) {
 	}
 
 	switch (fileType) {
-		case 'toml':
-			return parseToml(configContents);
-		case 'yaml':
-			return parseYaml(configContents);
-		case 'json':
-			return configContents;
-		default:
-			console.warn('could not parse config file');
-			return;
+	case 'toml':
+		return parseToml(configContents);
+	case 'yaml':
+		return parseYaml(configContents);
+	case 'json':
+		return configContents;
+	default:
+		console.warn('could not parse config file');
 	}
 }
 
-function getPaths (config) {
+function getPaths(config) {
 	return {
-		"archetypes": config["archetypeDir"] || "archetypes",
-		"assets": config["assetDir"] || "assets",
-		"content": config["contentDir"] || "content",
-		"data": config["dataDir"] || "data",
-		"layouts": config["layoutDir"] || "layouts",
-		"publish": config["publishDir"] || "public",
-		"static": config["staticDir"] || "static",
-		"themes": config["themesDir"] || "themes"
+		'archetypes': config['archetypeDir'] || 'archetypes',
+		'assets': config['assetDir'] || 'assets',
+		'content': config['contentDir'] || 'content',
+		'data': config['dataDir'] || 'data',
+		'layouts': config['layoutDir'] || 'layouts',
+		'publish': config['publishDir'] || 'public',
+		'static': config['staticDir'] || 'static',
+		'themes': config['themesDir'] || 'themes'
 	};
 }
 
-async function getDefaultsPaths (paths) {
+async function getDefaultsPaths(paths) {
 	const indexPaths = `**/${paths.content}/**/_index.md`;
 	const archetypes = `**/${paths.archetypes}/**.md`;
 
-	const defaultsGlob = '{'+indexPaths + ',' + archetypes+'}';
+	const defaultsGlob = `{${indexPaths},${archetypes}}`;
 	try {
 		const defaultsPaths = await globPromise(defaultsGlob, {
 			nounique: true,
@@ -102,15 +101,14 @@ async function getDefaultsPaths (paths) {
 	} catch (globErr) {
 		console.err(globErr);
 	}
-	return;
 }
 
-async function getCollectionsPaths (paths) {
+async function getCollectionsPaths(paths) {
 	const archetypes = `**/${paths.archetypes}/**.**`;
 	const options = {
 		nounique: true,
 		ignore: '**/default.**'
-	}
+	};
 
 	let defaultsGlob = [];
 	try {
@@ -119,135 +117,134 @@ async function getCollectionsPaths (paths) {
 		console.err(globErr);
 	}
 
-	const collectionsArray = defaultsGlob.map(item => {
-		return Path.basename(item, Path.extname(item))
-	});
+	const collectionsArray = defaultsGlob.map((item) => Path.basename(item, Path.extname(item)));
 
-	let collections = {};
-	collectionsArray.forEach(collection => {
+	const collections = {};
+	collectionsArray.forEach((collection) => {
 		collections[collection] = {};
-	})
+	});
 	return collections;
 }
 
-async function parseFrontMatter (data) {
-	const normalised = data.replace(/(?:\r\n|\r|\n)/g, "\n");
+async function parseFrontMatter(data) {
+	const normalised = data.replace(/(?:\r\n|\r|\n)/g, '\n');
 	const identifyingChar = normalised.charAt(0);
-	let start, end;
+	let start;
+	let end;
 	switch (identifyingChar) {
-		case '-':
-			start = normalised.search(/^---\s*\n/);
-			end  = normalised.indexOf("\n---", start + 1);
-			if (start === 0 && end > start) {
-				const trimmed = normalised.substring(start+3, end);
-				const parsed = await parseYaml(trimmed);
-				return Promise.resolve(parsed);
-			}
-			break;
-		case '+':
-			start = normalised.search(/^\+\+\+\s*\n/);
-			end  = normalised.indexOf("\n\+\+\+", start + 1);
-			if (start === 0 && end > start) {
-				const trimmed = normalised.substring(start+3, end);
-				const parsed = await parseToml(trimmed);
-				return Promise.resolve(parsed);
-			}
-			break;
-		case '{':
-			console.warn('JSON Frontmatter not yet supported');
-			break;
-		default:
-			console.err('unsupported frontmatter');
-			break;
+	case '-':
+		start = normalised.search(/^---\s*\n/);
+		end = normalised.indexOf('\n---', start + 1);
+		if (start === 0 && end > start) {
+			const trimmed = normalised.substring(start + 3, end);
+			const parsed = await parseYaml(trimmed);
+			return Promise.resolve(parsed);
+		}
+		break;
+	case '+':
+		start = normalised.search(/^\+\+\+\s*\n/);
+		end = normalised.indexOf('\n+++', start + 1);
+		if (start === 0 && end > start) {
+			const trimmed = normalised.substring(start + 3, end);
+			const parsed = await parseToml(trimmed);
+			return Promise.resolve(parsed);
+		}
+		break;
+	case '{':
+		console.warn('JSON Frontmatter not yet supported');
+		break;
+	default:
+		console.err('unsupported frontmatter');
+		break;
 	}
-	return Promise.reject('couldnt parse');
+	return Promise.reject(Error('couldnt parse'));
 }
 
-async function generateDefault (path) {
+async function generateDefault(path) {
 	// let content;
 	// try {
-	// 	content = await readFile(path, 'utf-8');
+	// content = await readFile(path, 'utf-8');
 	// } catch (readErr) {
-	// 	console.error(readErr);
+	// console.error(readErr);
 	// }
 
 	// const frontMatter = content? await parseFrontMatter(content) : {};
 
-	let defaultData = {
-		"scope": {
-			"path": Path.dirname(path).replace('archetypes', ''),
-			"type": Path.basename(path, Path.extname(path))
+	const defaultData = {
+		'scope': {
+			'path': Path.dirname(path).replace('archetypes', ''),
+			'type': Path.basename(path, Path.extname(path))
 		}
-	}
+	};
 
 	return Promise.resolve(defaultData);
 }
 
-async function generateConfig (config) {
+async function generateConfig(config) {
 	const paths = getPaths(config);
 	const defaultsPaths = await getDefaultsPaths(paths);
 
-	let defaults = [];
+	const defaults = [];
 	await Promise.all(defaultsPaths.map(async (path) => {
 		const defaultData = await generateDefault(path);
 		defaults.push(defaultData);
 	}));
 
-	let collections = await getCollectionsPaths(paths);
+	const collections = await getCollectionsPaths(paths);
 
 	const cloudCannonSpecific = config.params ? config.params.cloudcannon : null;
 
 	return {
-		"time": "2020-09-16T22:50:17+00:00", // get build time here
-		"cloudcannon": cloudCannonMeta,
-		"source": "", // don't think hugo has custom src / mabe get this from cloudcannon
-		"timezone": null, // hugo has no timezones - get this from cloudcannon
-		"include": cloudCannonSpecific ? cloudCannonSpecific["include"] : {},
-		"exclude": cloudCannonSpecific ? cloudCannonSpecific["exclude"] : {},
-		"base-url": config["baseURL"] || "",
-		"collections": collections, // perhaps taxonomies?
-		"comments": cloudCannonSpecific ? cloudCannonSpecific["comments"] : {},
-		"input-options": cloudCannonSpecific ? cloudCannonSpecific["input-options"] : {},
-		"defaults": defaults, // difficult in hugo as defaults are dynamic -
-		"editor": cloudCannonSpecific ? cloudCannonSpecific["editor"] : {},
-		"source-editor": cloudCannonSpecific ? cloudCannonSpecific["source-editor"] : {},
-		"explore": cloudCannonSpecific ? cloudCannonSpecific["explore"] : {},
-		"paths": paths,
-		"array-structures": cloudCannonSpecific ? cloudCannonSpecific["_array_structures"] : {},
-		"select-data": {},
-	}
+		'time': '2020-09-16T22:50:17+00:00', // get build time here
+		'cloudcannon': cloudCannonMeta,
+		'source': '', // don't think hugo has custom src / mabe get this from cloudcannon
+		'timezone': null, // hugo has no timezones - get this from cloudcannon
+		'include': cloudCannonSpecific ? cloudCannonSpecific['include'] : {},
+		'exclude': cloudCannonSpecific ? cloudCannonSpecific['exclude'] : {},
+		'base-url': config['baseURL'] || '',
+		'collections': collections, // perhaps taxonomies?
+		'comments': cloudCannonSpecific ? cloudCannonSpecific['comments'] : {},
+		'input-options': cloudCannonSpecific ? cloudCannonSpecific['input-options'] : {},
+		'defaults': defaults, // difficult in hugo as defaults are dynamic -
+		'editor': cloudCannonSpecific ? cloudCannonSpecific['editor'] : {},
+		'source-editor': cloudCannonSpecific ? cloudCannonSpecific['source-editor'] : {},
+		'explore': cloudCannonSpecific ? cloudCannonSpecific['explore'] : {},
+		'paths': paths,
+		'array-structures': cloudCannonSpecific ? cloudCannonSpecific['_array_structures'] : {},
+		'select-data': {}
+	};
 }
 
-function runValidation (config) {
-	let v = new Validator();
+function runValidation(config) {
+	const v = new Validator();
 
 	const results = v.validate(config, schema);
 
 	if (results.errors.length) {
-		console.warn("Config validation errored");
+		console.warn('Config validation errored');
 		console.warn(results.errors);
 	} else {
-		console.log("Config succusfully validated")
+		console.log('Config succusfully validated');
 	}
 
 	const resultsDetails = v.validate(detailsTest, detailsSchema);
 	if (resultsDetails.errors.length) {
-		console.warn("Details validation errored");
+		console.warn('Details validation errored');
 		console.warn(resultsDetails.errors);
 	} else {
-		console.log("Details succusfully validated")
+		console.log('Details succusfully validated');
 	}
 }
 
-function fromPiped () {
+function fromPiped() {
 	process.stdin.resume();
 	process.stdin.setEncoding('utf8');
-	process.stdin.on('data', function(data) {
-		parseConfig(data);
+	process.stdin.on('data', function (data) {
+		this.parseConfig(data);
 	});
 }
 
-async function main () {
+async function main() {
 	const path = 'config/_default/config.toml';
 	const hugoConfig = await getHugoConfig(path);
 
@@ -258,4 +255,4 @@ async function main () {
 	runValidation(config);
 }
 
-main ();
+main();
