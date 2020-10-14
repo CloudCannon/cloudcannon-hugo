@@ -1,0 +1,117 @@
+{
+	"$id": "https://raw.githubusercontent.com/CloudCannon/build-configuration-schema/v0.0.3/schema.json",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"title": "CloudCannon build details",
+	"description": "Normalised configuration format for sites across different static site generators",
+	"properties": {
+		"time": {
+			"type": "string",
+			"description": "The time this file was created",
+			"format": "date-time"
+		},
+
+		"cloudcannon": {
+			"name": {
+				"type": "string",
+				"description": "The name of the plugin or extension that created this file"
+			},
+			"version": {
+				"type": "string",
+				"description": "The version of the plugin or extension that created this file",
+				"pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+			}
+		},
+
+		"generator": {
+			"name": {
+				"type": "string",
+				"description": "The name of the SSG that builds the site relating to this file"
+			},
+			"version": {
+				"type": "string",
+				"description": "The version of the SSG that builds the site relating to this file",
+				"pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+			},
+			"environment": {
+				"type": "string,null",
+				"description": "The environment in which the site was built"
+			},
+			"metadata": {
+				"type": "object",
+				"description": "Metadata about some of the tools used to build this site",
+				"additionalProperties": {
+					"markdown": {
+						"type": "string",
+						"description": "The markdown used to render the markdown"
+					}
+				}
+			}
+		},
+		"collections": {
+			"type": "object",
+			"description": "Supporting information about the structured content groups on your site",
+			"additionalProperties": {
+				"type": "array",
+				"properties": {
+					"path": {
+						"type": "string",
+						"format": "uri-reference",
+						"description": ""
+					},
+					"relative_path": {
+						"type": "string",
+						"format": "uri-reference",
+						"description": ""
+					},
+					"url": {
+						"type": "string",
+						"format": "uri-reference",
+						"description": ""
+					},
+					"collection": {
+						"type": "string",
+						"description": ""
+					}
+				}
+			}
+
+		},
+		"pages": {
+			"type": "array",
+			"description": "Standalone pages - pages that weren't built from a template",
+			"items": {
+				"additionalProperties": {
+					"dir": {
+						"type": "string",
+						"description": ""
+					},
+					"name": {
+						"type": "string",
+						"description": ""
+					},
+					"path": {
+						"type": "string",
+						"description": ""
+					},
+					"url": {
+						"type": "string",
+						"description": ""
+					},
+					"layout": {
+						"type": "string",
+						"description": ""
+					}
+				}
+			}
+		},
+		"static": {},
+		"files": {
+			"description": "A list of all the files in the site, with uri as key and hash as value",
+			"type": "object",
+			"propertyName": {
+				"maxLength": 2
+			}
+		}
+	}
+}

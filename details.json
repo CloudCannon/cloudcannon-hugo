@@ -1,0 +1,454 @@
+{
+	"time": "2020-09-16T22:50:17+00:00",
+	"cloudcannon": {
+		"name": "cloudcannon-jekyll",
+		"version": "1.4.0"
+	},
+	"generator": {
+		"name": "jekyll",
+		"version": "4.0.0",
+		"environment": null,
+		"metadata": {
+			"markdown": "kramdown",
+			"kramdown": {
+				"auto_ids": true,
+				"toc_levels": "1..6",
+				"entity_output": "as_char",
+				"smart_quotes": "lsquo,rsquo,ldquo,rdquo",
+				"input": "GFM",
+				"hard_wrap": false,
+				"guess_lang": true,
+				"footnote_nr": 1,
+				"show_warnings": false
+			},
+			"commonmark": null
+		}
+	},
+	"collections": {
+		"posts": [{
+			"path": "_posts/2016-08-10-business-mergers.md",
+			"relative_path": "_posts/2016-08-10-business-mergers.md",
+			"url": "/business/2016/08/10/business-mergers/",
+			"collection": "posts",
+			"id": "/business/2016/08/10/business-mergers",
+			"draft": false,
+			"categories": ["Business"],
+			"layout": "post",
+			"background_image_path": "/uploads/building.jpg",
+			"image": "https://unsplash.it/600/450?image=737&a=.png",
+			"_options": {
+				"content": {
+					"width": 960,
+					"height": 2000
+				}
+			},
+			"_comments": {
+				"image": "Shown in social shares and the advice list."
+			},
+			"title": "Business Mergers",
+			"date": "2016-08-10 00:00:00 +0000",
+			"author_staff_member": "jane-doe",
+			"large_header": false,
+			"slug": "business-mergers",
+			"ext": ".md",
+			"tags": []
+		}, {
+			"path": "_posts/2016-11-11-real-estate-flipping.md",
+			"relative_path": "_posts/2016-11-11-real-estate-flipping.md",
+			"url": "/property/2016/11/11/real-estate-flipping/",
+			"collection": "posts",
+			"id": "/property/2016/11/11/real-estate-flipping",
+			"draft": false,
+			"categories": ["Property"],
+			"layout": "post",
+			"background_image_path": "/uploads/building.jpg",
+			"image": "https://unsplash.it/600/450?image=448&a=.png",
+			"_options": {
+				"content": {
+					"width": 960,
+					"height": 2000
+				}
+			},
+			"_comments": {
+				"image": "Shown in social shares and the advice list."
+			},
+			"title": "Real Estate Flipping",
+			"date": "2016-11-11 00:00:00 +0000",
+			"author_staff_member": "john-doe",
+			"large_header": false,
+			"slug": "real-estate-flipping",
+			"ext": ".md",
+			"tags": []
+		}, {
+			"path": "_posts/2020-09-15-nice.md",
+			"relative_path": "_posts/2020-09-15-nice.md",
+			"url": "/2020/09/15/nice/",
+			"collection": "posts",
+			"id": "/2020/09/15/nice",
+			"draft": false,
+			"categories": [],
+			"layout": "post",
+			"background_image_path": "/uploads/building.jpg",
+			"image": "https://placehold.it/600/450?a=.png",
+			"_options": {
+				"content": {
+					"width": 960,
+					"height": 2000
+				}
+			},
+			"_comments": {
+				"image": "Shown in social shares and the advice list."
+			},
+			"title": "Nice",
+			"date": "2020-09-15 04:31:36 +0000",
+			"author_staff_member": null,
+			"large_header": false,
+			"link": null,
+			"slug": "nice",
+			"ext": ".md",
+			"tags": []
+		}, {
+			"path": "_posts/2020-09-16-very-nice-post.md",
+			"relative_path": "_posts/2020-09-16-very-nice-post.md",
+			"url": "/2020/09/16/very-nice-post/",
+			"collection": "posts",
+			"id": "/2020/09/16/very-nice-post",
+			"draft": false,
+			"categories": [],
+			"layout": "post",
+			"background_image_path": "/uploads/building.jpg",
+			"image": "https://placehold.it/600/450?a=.png",
+			"_options": {
+				"content": {
+					"width": 960,
+					"height": 2000
+				}
+			},
+			"_comments": {
+				"image": "Shown in social shares and the advice list."
+			},
+			"title": "Very nice post",
+			"date": "2020-09-16 03:18:00 +0000",
+			"author_staff_member": null,
+			"large_header": false,
+			"_array_structures": {
+				"gallery": {
+					"style": "select",
+					"values": [{
+						"label": "Image",
+						"icon": "image",
+						"value": {
+							"image": "/placeholder.png",
+							"caption": null
+						}
+					}, {
+						"label": "External link",
+						"icon": "link",
+						"value": {
+							"url": null,
+							"title": null
+						}
+					}]
+				}
+			},
+			"gallery": [{
+				"url": null,
+				"title": null
+			}, {
+				"image": "/uploads/explosion.jpeg",
+				"caption": null
+			}, {
+				"image": "/uploads/explosion.jpeg",
+				"caption": null
+			}, {
+				"image": "/uploads/unnamed.jpg",
+				"caption": "ca"
+			}],
+			"slug": "very-nice-post",
+			"ext": ".md",
+			"tags": []
+		}],
+		"staff_members": [{
+			"path": "_staff_members/jane-doe.md",
+			"relative_path": "_staff_members/jane-doe.md",
+			"url": "/staff_members/jane-doe/",
+			"collection": "staff_members",
+			"id": "/staff_members/jane-doe",
+			"draft": false,
+			"categories": [],
+			"layout": "page",
+			"background_image_path": "/uploads/building.jpg",
+			"image": "//placekitten.com/440/440?a=.png",
+			"_options": {
+				"image": {
+					"width": 440,
+					"height": 440
+				}
+			},
+			"name": "Jane Doe",
+			"credentials": "LLB",
+			"phone_extension": "02",
+			"title": "Jane Doe",
+			"slug": "jane-doe",
+			"ext": ".md",
+			"tags": []
+		}, {
+			"path": "_staff_members/john-doe.md",
+			"relative_path": "_staff_members/john-doe.md",
+			"url": "/staff_members/john-doe/",
+			"collection": "staff_members",
+			"id": "/staff_members/john-doe",
+			"draft": false,
+			"categories": [],
+			"layout": "page",
+			"background_image_path": "/uploads/building.jpg",
+			"image": "//placebear.com/440/440?a=.png",
+			"_options": {
+				"image": {
+					"width": 440,
+					"height": 440
+				}
+			},
+			"name": "John Doe",
+			"credentials": "LLB",
+			"phone_extension": "11",
+			"title": "John Doe",
+			"slug": "john-doe",
+			"ext": ".md",
+			"tags": []
+		}]
+	},
+	"pages": [{
+		"dir": "/",
+		"name": "404.html",
+		"path": "404.html",
+		"url": "/404.html",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"title": "Not Found",
+		"call_to_action": "Contact",
+		"large_header": false,
+		"show_in_navigation": false,
+		"permalink": "/404.html",
+		"sitemap": false
+	}, {
+		"dir": "/about/",
+		"name": "about.html",
+		"path": "about.html",
+		"url": "/about/",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"title": "About",
+		"call_to_action": "Contact",
+		"large_header": false,
+		"show_in_navigation": true,
+		"navigation_order": 1
+	}, {
+		"dir": "/contact-success/",
+		"name": "contact-success.html",
+		"path": "contact-success.html",
+		"url": "/contact-success/",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"title": "Contact Success",
+		"call_to_action": "Advice",
+		"large_header": false,
+		"show_in_navigation": false,
+		"sitemap": false
+	}, {
+		"dir": "/contact/",
+		"name": "contact.html",
+		"path": "contact.html",
+		"url": "/contact/",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"title": "Contact",
+		"call_to_action": "Map",
+		"large_header": false,
+		"show_in_navigation": true,
+		"navigation_order": 3,
+		"map": {
+			"latitude": -45.8787605,
+			"longitude": 170.5027976,
+			"zoom": 13
+		}
+	}, {
+		"dir": "/advice/",
+		"name": "index.html",
+		"path": "advice/index.html",
+		"url": "/advice/",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"title": "Advice",
+		"call_to_action": "Contact",
+		"large_header": false,
+		"show_in_navigation": true,
+		"navigation_order": 4
+	}, {
+		"dir": "/",
+		"name": "index.html",
+		"path": "index.html",
+		"url": "/",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"title": null,
+		"call_to_action": "Contact",
+		"large_header": true,
+		"testimonials": [{
+			"message": "We use Justice Law in all our endeavours. They offer an unparalleled service when it comes to running a business.",
+			"image": "https://placekitten.com/g/60/60?a=.png",
+			"name": "Joice Carmold"
+		}, {
+			"message": "Justice Law are the best of the best. Being local, they care about people and have strong ties to the community.",
+			"image": "https://www.fillmurray.com/60/60?a=.png",
+			"name": "Peter Rottenburg"
+		}, {
+			"message": "Justice Law were everything we could have hoped for when buying our first home. Highly recommended to all.",
+			"image": "https://placebear.com/60/60?a=.png",
+			"name": "D. and G. Gibbleston"
+		}],
+		"_options": {
+			"image": {
+				"width": 60,
+				"height": 60
+			}
+		}
+	}, {
+		"dir": "/css/",
+		"name": "main.scss",
+		"path": "css/main.scss",
+		"url": "/css/main.css",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"sitemap": false
+	}, {
+		"dir": "/",
+		"name": "robots.txt",
+		"path": "robots.txt",
+		"url": "/robots.txt",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"sitemap": false
+	}, {
+		"dir": "/services/",
+		"name": "services.html",
+		"path": "services.html",
+		"url": "/services/",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"title": "Services",
+		"call_to_action": "Contact",
+		"large_header": false,
+		"show_in_navigation": true,
+		"navigation_order": 2
+	}, {
+		"dir": "/terms/",
+		"name": "terms.md",
+		"path": "terms.md",
+		"url": "/terms/",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"title": "Terms",
+		"cta": "Contact",
+		"large_header": false,
+		"show_in_navigation": false
+	}, {
+		"dir": "/category/business/",
+		"name": "index",
+		"path": "category/business/index.html",
+		"url": "/category/business/",
+		"layout": "archive",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg"
+	}, {
+		"dir": "/category/property/",
+		"name": "index",
+		"path": "category/property/index.html",
+		"url": "/category/property/",
+		"layout": "archive",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg"
+	}, {
+		"dir": "/",
+		"name": "/feed.xml",
+		"path": "feed.xml",
+		"url": "/feed.xml",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"sitemap": false,
+		"xsl": false,
+		"collection": "posts",
+		"category": null
+	}, {
+		"dir": "/",
+		"name": "sitemap.xml",
+		"path": "sitemap.xml",
+		"url": "/sitemap.xml",
+		"layout": "page",
+		"background_image_path": "/uploads/building.jpg",
+		"image": "/uploads/building.jpg",
+		"static_files": [],
+		"xsl": false
+	}],
+	"static": [],
+	"baseurl": "",
+	"files": {
+		"/_includes/post-summary.html": "93d75df1aea84e529dfcdab36d930067",
+		"/_includes/social-icon.html": "dfb99e24a189c254b439f08ae51c7f85",
+		"/_includes/post-summary-details.html": "70497e846a8b89deebb2b96f173b9d8e",
+		"/_includes/staff-member.html": "c60dc79441ebb6e2e8c6640c65eaccc1",
+		"/_includes/relative-src.html": "bb84a399fa41dcd4a156a1679089739b",
+		"/index.html": "846466482aa78fffd038f11edf4fbcea",
+		"/LICENSE": "60b08d3175cdb49ff5eb9113652455ee",
+		"/apple-touch-icon.png": "4a0add2fa8f726556bd807d9b0b242eb",
+		"/about.html": "26e8c520219601941e5f51538d1c8cbb",
+		"/css/main.scss": "2b9e9edaf34e03d6bf532fdbfe461654",
+		"/contact.html": "c63923ce50b33508c89a2d326b9eb11a",
+		"/siteicon.png": "891ba2d5cce5664b24824fbe92ec610f",
+		"/images/_screenshot.png": "0379156c058b581e7f8d7e06c81f816f",
+		"/images/favicon.png": "e3dc9d192120cd60c3cf7ecc7bd04bf2",
+		"/_posts/2016-11-11-real-estate-flipping.md": "344bb986621163ab485354d174ad3e25",
+		"/_posts/_defaults.md": "6620df240b1af5064d8ae5dddf56b1c7",
+		"/_posts/2016-08-10-business-mergers.md": "0888b814f66bb50636819773fe0ab392",
+		"/_staff_members/jane-doe.md": "a3048ec993bd5b81b5b16e1d72d11d65",
+		"/_staff_members/_defaults.md": "bde5474c247a7366332494078afc726d",
+		"/_staff_members/john-doe.md": "3bb750e335f4506d2c787069b7b71bf1",
+		"/404.html": "d136c2bf59de2411ae8b73c8c5e5804e",
+		"/uploads/building.jpg": "414db6159593b21e7de651e0713a0211",
+		"/contact-success.html": "a6e51cb7aab0ffcfc84c5b7b5bc0ea0b",
+		"/advice/index.html": "d9951dd5503a91b17ad36e2e6c990e9f",
+		"/_layouts/post.html": "7149f1811554645c645b802a7ec439eb",
+		"/_layouts/page.html": "bd92241697f5c26386594c826710b9c3",
+		"/_layouts/default.html": "3a8a5fa4a6df3bfa4fdf6d79cb49bdc5",
+		"/_layouts/archive.html": "4d98371645a7231974b75db47c2d2238",
+		"/README.md": "a61c961674c4444a12f965d43aa055a4",
+		"/touch-icon.png": "5b37c2bb51b0ee0e045180d23823a05b",
+		"/_config.yml": "623a85f8e4b5d5608609afcb1e941ed6",
+		"/terms.md": "2f8dd938d5b1bb4504dc0d9302e1827e",
+		"/Gemfile": "e4fb71f9cb46e720e03249a867cee6df",
+		"/Gemfile.lock": "856c93d6cc5ab4f998e917301d255f48",
+		"/_data/company.yml": "d3e7b3dce56d8af1e6084fffd1059a8d",
+		"/_data/footer.yml": "c01bee8796809184d0c72873e6128a18",
+		"/_sass/cloudcannon.scss": "ce97f3028e059b33226b7556277fd3b8",
+		"/_sass/_typography.scss": "3f145f0eacc81467899e88884f41eecb",
+		"/_sass/_layout.scss": "99959150cb92bba39d4824c7e0dd2b18",
+		"/_sass/_forms.scss": "81cf38ce3272982c92752660b6b2ff52",
+		"/services.html": "4928753641c1ba84780e35d59f2c0453",
+		"/robots.txt": "74a3e68227cb9814d3298dec55bcdf4d",
+		"/_posts/2020-09-15-nice.md": "43aae5ac28813e2e68182e2331cf6c37",
+		"/_posts/2020-09-16-very-nice-post.md": "3342a3efd2633fe446e356ec79e8784e",
+		"/uploads/explosion.jpeg": "636099bf8ba5b488f4401446f3b6dccf",
+		"/uploads/unnamed.jpg": "2e776a1117b6c635e9cb5caf0fd54b3e"
+	}
+}
