@@ -53,7 +53,21 @@ function parseToml(data) {
 	return Promise.reject();
 }
 
-async function getHugoConfig(configPath) {
+async function getHugoConfig() {
+	const configGlob = '**/config.???*';
+	let configFiles;
+
+	try {
+		configFiles = await globPromise(configGlob, { ignore: '**/exampleSite/**' });
+	} catch (globErr) {
+		console.err(globErr);
+	}
+
+	console.log('found config files:');
+	console.log(configFiles);
+
+	const configPath = configFiles[0];
+	// const configDir = Path.dirname(configPath);
 	const extension = Path.extname(configPath).toLowerCase();
 	const fileType = extensions[extension];
 
@@ -189,8 +203,8 @@ async function generateDefault(path) {
 	return Promise.resolve(defaultData);
 }
 
-async function generateConfig(config) {
-	const paths = getPaths(config);
+async function generateConfig(hugoConfig) {
+	const paths = getPaths(hugoConfig);
 	const defaultsPaths = await getDefaultsPaths(paths);
 
 	const defaults = [];
@@ -201,7 +215,7 @@ async function generateConfig(config) {
 
 	const collections = await getCollectionsPaths(paths);
 
-	const cloudCannonSpecific = config.params ? config.params.cloudcannon : null;
+	const cloudCannonSpecific = hugoConfig.params ? hugoConfig.params.cloudcannon : null;
 
 	return {
 		'time': '2020-09-16T22:50:17+00:00', // get build time here
@@ -210,7 +224,7 @@ async function generateConfig(config) {
 		'timezone': null, // hugo has no timezones - get this from cloudcannon
 		'include': cloudCannonSpecific ? cloudCannonSpecific['include'] : {},
 		'exclude': cloudCannonSpecific ? cloudCannonSpecific['exclude'] : {},
-		'base-url': config['baseURL'] || '',
+		'base-url': hugoConfig['baseURL'] || '',
 		'collections': collections, // perhaps taxonomies?
 		'comments': cloudCannonSpecific ? cloudCannonSpecific['comments'] : {},
 		'input-options': cloudCannonSpecific ? cloudCannonSpecific['input-options'] : {},
@@ -254,8 +268,7 @@ function runValidation(config) {
 // }
 
 (async function main() {
-	const path = 'config/_default/config.toml';
-	const hugoConfig = await getHugoConfig(path);
+	const hugoConfig = await getHugoConfig();
 
 	const config = await generateConfig(hugoConfig);
 	const data = JSON.stringify(config, null, 4);
