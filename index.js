@@ -3,7 +3,6 @@ const { Validator } = require('jsonschema');
 const { promisify } = require('util');
 const fs = require('fs');
 const Path = require('path');
-const util = require('util');
 const glob = require('glob');
 
 const toml = require('toml');
@@ -13,6 +12,9 @@ const readFile = promisify(fs.readFile);
 const globPromise = promisify(glob);
 
 const schema = require('./schema.json');
+
+const detailsTest = require('./details.json');
+const detailsSchema = require('./details-schema.json');
 
 const extensions = {
 	'.yml': 'yaml',
@@ -90,10 +92,13 @@ async function getDefaultsPaths (paths) {
 	const indexPaths = `**/${paths.content}/**/_index.md`;
 	const archetypes = `**/${paths.archetypes}/**.md`;
 
-	const defaultsGlobPath = '{'+indexPaths + ',' + archetypes+'}';
+	const defaultsGlob = '{'+indexPaths + ',' + archetypes+'}';
 	try {
-		const defaultsGlob = await globPromise(defaultsGlobPath, {nounique: true});
-		return defaultsGlob;
+		const defaultsPaths = await globPromise(defaultsGlob, {
+			nounique: true,
+			ignore: '**/exampleSite/**'
+		});
+		return defaultsPaths;
 	} catch (globErr) {
 		console.err(globErr);
 	}
@@ -159,20 +164,20 @@ async function parseFrontMatter (data) {
 }
 
 async function generateDefault (path) {
-	let content;
-	try {
-		content = await readFile(path, 'utf-8');
-	} catch (readErr) {
-		console.error(readErr);
-	}
+	// let content;
+	// try {
+	// 	content = await readFile(path, 'utf-8');
+	// } catch (readErr) {
+	// 	console.error(readErr);
+	// }
 
-	const frontMatter = content? await parseFrontMatter(content) : {};
+	// const frontMatter = content? await parseFrontMatter(content) : {};
 
 	let defaultData = {
 		"scope": {
-			"path": Path.dirname(path)
-		},
-		"values": frontMatter
+			"path": Path.dirname(path).replace('archetypes', ''),
+			"type": Path.basename(path, Path.extname(path))
+		}
 	}
 
 	return Promise.resolve(defaultData);
@@ -190,25 +195,25 @@ async function generateConfig (config) {
 
 	let collections = await getCollectionsPaths(paths);
 
-	const cloudCannonSpecific = config.cloudcannon;
+	const cloudCannonSpecific = config.params ? config.params.cloudcannon : null;
 
 	return {
 		"time": "2020-09-16T22:50:17+00:00", // get build time here
 		"cloudcannon": cloudCannonMeta,
 		"source": "", // don't think hugo has custom src / mabe get this from cloudcannon
-		"timezone": null, // hugo has no timezones yet
-		"include": [], // not supported in hugo
-		"exclude": [], // not supported in hugo
+		"timezone": null, // hugo has no timezones - get this from cloudcannon
+		"include": cloudCannonSpecific ? cloudCannonSpecific["include"] : {},
+		"exclude": cloudCannonSpecific ? cloudCannonSpecific["exclude"] : {},
 		"base-url": config["baseURL"] || "",
 		"collections": collections, // perhaps taxonomies?
-		"comments": cloudCannonSpecific? cloudCannonSpecific["comments"] : {},
-		"input-options": {},
-		"defaults": [], // difficult in hugo as defaults are dynamic
-		"editor": cloudCannonSpecific? cloudCannonSpecific["editor"] : {},
-		"source-editor": cloudCannonSpecific? cloudCannonSpecific["source-editor"] : {},
-		"explore": cloudCannonSpecific? cloudCannonSpecific["explore"] : {},
+		"comments": cloudCannonSpecific ? cloudCannonSpecific["comments"] : {},
+		"input-options": cloudCannonSpecific ? cloudCannonSpecific["input-options"] : {},
+		"defaults": defaults, // difficult in hugo as defaults are dynamic -
+		"editor": cloudCannonSpecific ? cloudCannonSpecific["editor"] : {},
+		"source-editor": cloudCannonSpecific ? cloudCannonSpecific["source-editor"] : {},
+		"explore": cloudCannonSpecific ? cloudCannonSpecific["explore"] : {},
 		"paths": paths,
-		"array-structures": config["_array_structures"],
+		"array-structures": cloudCannonSpecific ? cloudCannonSpecific["_array_structures"] : {},
 		"select-data": {},
 	}
 }
@@ -224,21 +229,31 @@ function runValidation (config) {
 	} else {
 		console.log("Config succusfully validated")
 	}
+
+	const resultsDetails = v.validate(detailsTest, detailsSchema);
+	if (resultsDetails.errors.length) {
+		console.warn("Details validation errored");
+		console.warn(resultsDetails.errors);
+	} else {
+		console.log("Details succusfully validated")
+	}
 }
 
-// function main () {
-// 	process.stdin.resume();
-// 	process.stdin.setEncoding('utf8');
-// 	process.stdin.on('data', function(data) {
-// 		parseConfig(data);
-// 	});
-// }
+function fromPiped () {
+	process.stdin.resume();
+	process.stdin.setEncoding('utf8');
+	process.stdin.on('data', function(data) {
+		parseConfig(data);
+	});
+}
 
 async function main () {
-	const path = 'config.toml';
+	const path = 'config/_default/config.toml';
 	const hugoConfig = await getHugoConfig(path);
 
 	const config = await generateConfig(hugoConfig);
+	const data = JSON.stringify(config, null, 4);
+	fs.writeFileSync('build-config.json', data);
 
 	runValidation(config);
 }
