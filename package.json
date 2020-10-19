@@ -29,9 +29,10 @@
     "eslint-plugin-mocha": "^8.0.0"
   },
   "dependencies": {
+    "csv-parse": "^4.12.0",
     "glob": "^7.1.6",
     "js-yaml": "^3.14.0",
-	"toml": "^3.0.0",
-	"jsonschema": "^1.2.11"
+    "jsonschema": "^1.2.11",
+    "toml": "^3.0.0"
   }
 }

@@ -11,12 +11,12 @@ const glob = require('glob');
 const toml = require('toml');
 const yaml = require('js-yaml');
 
-const packageJson = require('./package.json');
-
 const readFile = promisify(fs.readFile);
 const globPromise = promisify(glob);
 
 const schema = require('./schema.json');
+const { generateConfig } = require('./generators/buildConfig');
+const { generateDetails } = require('./generators/buildDetails');
 
 const detailsTest = require('./details.json');
 const detailsSchema = require('./details-schema.json');
@@ -26,11 +26,6 @@ const extensions = {
 	'.yaml': 'yaml',
 	'.toml': 'toml',
 	'.json': 'json'
-};
-
-const cloudCannonMeta = {
-	name: packageJson.name,
-	version: packageJson.version
 };
 
 function parseYaml(data) {
@@ -91,58 +86,6 @@ async function getHugoConfig() {
 	}
 }
 
-function getPaths(config) {
-	return {
-		'archetypes': config['archetypeDir'] || 'archetypes',
-		'assets': config['assetDir'] || 'assets',
-		'content': config['contentDir'] || 'content',
-		'data': config['dataDir'] || 'data',
-		'layouts': config['layoutDir'] || 'layouts',
-		'publish': config['publishDir'] || 'public',
-		'static': config['staticDir'] || 'static',
-		'themes': config['themesDir'] || 'themes'
-	};
-}
-
-async function getDefaultsPaths(paths) {
-	const indexPaths = `**/${paths.content}/**/_index.md`;
-	const archetypes = `**/${paths.archetypes}/**.md`;
-
-	const defaultsGlob = `{${indexPaths},${archetypes}}`;
-	try {
-		const defaultsPaths = await globPromise(defaultsGlob, {
-			nounique: true,
-			ignore: '**/exampleSite/**'
-		});
-		return defaultsPaths;
-	} catch (globErr) {
-		console.err(globErr);
-	}
-}
-
-async function getCollectionsPaths(paths) {
-	const archetypes = `**/${paths.archetypes}/**.**`;
-	const options = {
-		nounique: true,
-		ignore: '**/default.**'
-	};
-
-	let defaultsGlob = [];
-	try {
-		defaultsGlob = await globPromise(archetypes, options);
-	} catch (globErr) {
-		console.err(globErr);
-	}
-
-	const collectionsArray = defaultsGlob.map((item) => Path.basename(item, Path.extname(item)));
-
-	const collections = {};
-	collectionsArray.forEach((collection) => {
-		collections[collection] = {};
-	});
-	return collections;
-}
-
 /*
 async function parseFrontMatter(data) {
 	const normalised = data.replace(/(?:\r\n|\r|\n)/g, '\n');
@@ -179,65 +122,6 @@ async function parseFrontMatter(data) {
 }
 */
 
-async function generateDefault(path) {
-	// let content;
-	// try {
-	// content = await readFile(path, 'utf-8');
-	// } catch (readErr) {
-	// console.error(readErr);
-	// }
-
-	// const frontMatter = content? await parseFrontMatter(content) : {};
-	const scope = {};
-	scope.path = Path.dirname(path).replace('archetypes', '');
-
-	const type = Path.basename(path, Path.extname(path));
-	if (type !== 'default') {
-		scope.type = type;
-	}
-
-	const defaultData = {
-		'scope': scope
-	};
-
-	return Promise.resolve(defaultData);
-}
-
-async function generateConfig(hugoConfig) {
-	const paths = getPaths(hugoConfig);
-	const defaultsPaths = await getDefaultsPaths(paths);
-
-	const defaults = [];
-	await Promise.all(defaultsPaths.map(async (path) => {
-		const defaultData = await generateDefault(path);
-		defaults.push(defaultData);
-	}));
-
-	const collections = await getCollectionsPaths(paths);
-
-	const cloudCannonSpecific = hugoConfig.params ? hugoConfig.params.cloudcannon : null;
-
-	return {
-		'time': '2020-09-16T22:50:17+00:00', // get build time here
-		'cloudcannon': cloudCannonMeta,
-		'source': '', // don't think hugo has custom src / mabe get this from cloudcannon
-		'timezone': null, // hugo has no timezones - get this from cloudcannon
-		'include': cloudCannonSpecific ? cloudCannonSpecific['include'] : {},
-		'exclude': cloudCannonSpecific ? cloudCannonSpecific['exclude'] : {},
-		'base-url': hugoConfig['baseURL'] || '',
-		'collections': collections, // perhaps taxonomies?
-		'comments': cloudCannonSpecific ? cloudCannonSpecific['comments'] : {},
-		'input-options': cloudCannonSpecific ? cloudCannonSpecific['input-options'] : {},
-		'defaults': defaults, // difficult in hugo as defaults are dynamic -
-		'editor': cloudCannonSpecific ? cloudCannonSpecific['editor'] : {},
-		'source-editor': cloudCannonSpecific ? cloudCannonSpecific['source-editor'] : {},
-		'explore': cloudCannonSpecific ? cloudCannonSpecific['explore'] : {},
-		'paths': paths,
-		'array-structures': cloudCannonSpecific ? cloudCannonSpecific['_array_structures'] : {},
-		'select-data': {}
-	};
-}
-
 function runValidation(config) {
 	const v = new Validator();
 
@@ -271,8 +155,13 @@ function runValidation(config) {
 	const hugoConfig = await getHugoConfig();
 
 	const config = await generateConfig(hugoConfig);
-	const data = JSON.stringify(config, null, 4);
-	fs.writeFileSync('build-config.json', data);
+	const configData = JSON.stringify(config, null, 4);
+
+	const details = await generateDetails(hugoConfig);
+	const detailsData = JSON.stringify(details, null, 4);
+
+	fs.writeFileSync('build-config.json', configData);
+	fs.writeFileSync('build-details.json', detailsData);
 
 	runValidation(config);
 }());
