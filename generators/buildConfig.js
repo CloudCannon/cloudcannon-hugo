@@ -27,25 +27,29 @@ async function getDefaultsPaths(paths) {
 }
 
 async function getCollectionsPaths(paths) {
-	const archetypes = `**/${paths.archetypes}/**.**`;
-	const options = {
-		nounique: true,
-		ignore: '**/default.**'
-	};
+	const defaultsPaths = await getDefaultsPaths(paths);
+	const collectionsArray = defaultsPaths.map((item) => {
+		if (item.indexOf('index.md') > 0) {
+			return Path.basename(Path.dirname(item));
+		}
+		return Path.basename(item, Path.extname(item));
+	});
+	return collectionsArray;
+}
 
-	let defaultsGlob = [];
-	try {
-		defaultsGlob = await globPromise(archetypes, options);
-	} catch (globErr) {
-		console.err(globErr);
-	}
-
-	const collectionsArray = defaultsGlob.map((item) => Path.basename(item, Path.extname(item)));
-
+async function generateCollections(config, paths) {
+	// TODO get permalinks
+	const collectionPaths = await getCollectionsPaths(paths);
 	const collections = {};
-	collectionsArray.forEach((collection) => {
+	collectionPaths.forEach((collection) => {
 		collections[collection] = {};
 	});
+	if (config.permalinks) { // replace with a getConfig() call
+		Object.keys(config.permalinks).forEach((collection) => {
+			collections[collection]["permalink"] = config.permalinks[collection];
+		});
+	}
+
 	return collections;
 }
 
@@ -62,9 +66,7 @@ async function generateDefault(path) {
 	scope.path = Path.dirname(path).replace('archetypes', '');
 
 	const type = Path.basename(path, Path.extname(path));
-	if (type !== 'default') {
-		scope.type = type;
-	}
+	scope.type = type;
 
 	const defaultData = {
 		'scope': scope
@@ -82,7 +84,8 @@ function getPaths(config) {
 		"layouts": config["layoutDir"] || "layouts",
 		"publish": config["publishDir"] || "public",
 		"static": config["staticDir"] || "static",
-		"themes": config["themesDir"] || "themes"
+		"themes": config["themesDir"] || "themes",
+		"config": config["configDir"] || "" // can get configDir from CC itself (frontend)
 	};
 }
 
@@ -101,7 +104,8 @@ module.exports = {
 			defaults.push(defaultData);
 		}));
 
-		const collections = await getCollectionsPaths(paths);
+		const collections = await generateCollections(hugoConfig, paths);
+		// console.log(await helpers.getParams());
 
 		const cloudCannonSpecific = hugoConfig.params ? hugoConfig.params.cloudcannon : null;
 
