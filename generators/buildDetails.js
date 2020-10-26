@@ -66,8 +66,8 @@ async function getCollections(baseurl) {
 }
 
 async function getPages() {
-	// get the pages in `layouts,` but filtered somehow.
-	// need more info on what EXACTLY constitutes a standalone page
+	// get index.html and 404.html
+	// Then need to get all leaf pages.
 	return ['layouts/index.html'];
 }
 
