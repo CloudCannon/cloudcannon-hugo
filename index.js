@@ -3,88 +3,15 @@
 /* eslint-disable dot-notation */
 /* eslint-disable quote-props */
 const { Validator } = require('jsonschema');
-const { promisify } = require('util');
 const fs = require('fs');
-const Path = require('path');
-const glob = require('glob');
-
-const toml = require('toml');
-const yaml = require('js-yaml');
-
-const readFile = promisify(fs.readFile);
-const globPromise = promisify(glob);
 
 const schema = require('./schema.json');
 const { generateConfig } = require('./generators/buildConfig');
 const { generateDetails } = require('./generators/buildDetails');
+const helpers = require('./helpers/helpers');
 
 const detailsTest = require('./details.json');
 const detailsSchema = require('./details-schema.json');
-
-const extensions = {
-	'.yml': 'yaml',
-	'.yaml': 'yaml',
-	'.toml': 'toml',
-	'.json': 'json'
-};
-
-function parseYaml(data) {
-	try {
-		const yamlData = yaml.safeLoad(data, { json: true });
-		return Promise.resolve(yamlData);
-	} catch (parseError) {
-		console.error(parseError);
-	}
-	return Promise.reject();
-}
-
-function parseToml(data) {
-	try {
-		const tomlData = toml.parse(data);
-		return Promise.resolve(tomlData);
-	} catch (e) {
-		console.error(`Parsing error on line ${e.line}, column ${e.column}: ${e.message}`);
-	}
-	return Promise.reject();
-}
-
-async function getHugoConfig() {
-	const configGlob = '**/config.???*';
-	let configFiles;
-
-	try {
-		configFiles = await globPromise(configGlob, { ignore: '**/exampleSite/**' });
-	} catch (globErr) {
-		console.err(globErr);
-	}
-
-	console.log('found config files:');
-	console.log(configFiles);
-
-	const configPath = configFiles[0];
-	// const configDir = Path.dirname(configPath);
-	const extension = Path.extname(configPath).toLowerCase();
-	const fileType = extensions[extension];
-
-	let configContents;
-	try {
-		configContents = await readFile(configPath, 'utf-8');
-	} catch (readFileError) {
-		console.warn(readFileError);
-		return;
-	}
-
-	switch (fileType) {
-	case 'toml':
-		return parseToml(configContents);
-	case 'yaml':
-		return parseYaml(configContents);
-	case 'json':
-		return configContents;
-	default:
-		console.warn('could not parse config file');
-	}
-}
 
 /*
 async function parseFrontMatter(data) {
@@ -152,7 +79,8 @@ function runValidation(config) {
 // }
 
 (async function main() {
-	const hugoConfig = await getHugoConfig();
+	const hugoConfig = await helpers.getHugoConfig('config');
+	const hugoData = JSON.stringify(hugoConfig, null, 4);
 
 	const config = await generateConfig(hugoConfig);
 	const configData = JSON.stringify(config, null, 4);
@@ -162,6 +90,7 @@ function runValidation(config) {
 
 	fs.writeFileSync('build-config.json', configData);
 	fs.writeFileSync('build-details.json', detailsData);
+	fs.writeFileSync('hugoConfig.json', hugoData);
 
 	runValidation(config);
 }());
