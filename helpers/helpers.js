@@ -18,6 +18,21 @@ const exists = async function (path) {
 	}
 };
 
+const configSort = async function (fileArray) {
+	const extensionOrder = ['.toml', '.yaml', '.json'];
+
+	const sorted = fileArray.sort((a, b) => {
+		const aExt = Path.extname(a);
+		const bExt = Path.extname(b);
+		if (a.match(/config\.(toml|yaml|json)$/ig)) {
+			return extensionOrder.length + 1; // always less important
+		}
+		return extensionOrder.indexOf(bExt) - extensionOrder.indexOf(aExt);
+	});
+
+	return sorted;
+};
+
 /**
  * Simple object check.
  * @param item
@@ -25,7 +40,7 @@ const exists = async function (path) {
  */
 const isObject = function (item) {
 	return (item && typeof item === 'object' && !Array.isArray(item));
-}
+};
 
 /**
  * Deep merge two objects.
@@ -48,44 +63,29 @@ const mergeDeep = function (target, ...sources) {
 	}
 
 	return mergeDeep(target, ...sources);
-}
-
-const configSort = async function (fileArray) {
-	const extensionOrder = ['toml', 'yaml', 'json'];
-
-	const sorted = fileArray.sort((a, b) => {
-		const aExt = Path.extname(a);
-		const bExt = Path.extname(b);
-		if (a.match(/config\.(toml|yaml|json)$/)) {
-			return -99;
-		}
-		return extensionOrder.indexOf(aExt) - extensionOrder.indexOf(bExt);
-	});
-
-	return sorted;
 };
 
-function parseYaml(data) {
-	try {
-		const yamlData = yaml.safeLoad(data, { json: true });
-		return Promise.resolve(yamlData);
-	} catch (parseError) {
-		console.error(parseError);
-	}
-	return Promise.reject();
-}
-
-function parseToml(data) {
-	try {
-		const tomlData = toml.parse(data);
-		return Promise.resolve(tomlData);
-	} catch (e) {
-		console.error(`Parsing error on line ${e.line}, column ${e.column}: ${e.message}`);
-	}
-	return Promise.reject();
-}
-
 module.exports = {
+	parseYaml: function (data) {
+		try {
+			const yamlData = yaml.safeLoad(data, { json: true });
+			return Promise.resolve(yamlData);
+		} catch (parseError) {
+			console.error(parseError);
+		}
+		return Promise.reject();
+	},
+
+	parseToml: function (data) {
+		try {
+			const tomlData = toml.parse(data);
+			return Promise.resolve(tomlData);
+		} catch (e) {
+			console.error(`Parsing error on line ${e.line}, column ${e.column}: ${e.message}`);
+		}
+		return Promise.reject();
+	},
+
 	runProcess: async function (command, args) {
 		try {
 			const childProcess = await cp.spawnSync(command, args, {
@@ -100,7 +100,7 @@ module.exports = {
 		}
 	},
 
-	getHugoConfig: async function (configDir, environment) {
+	getHugoConfig: async function (configDir, environment, passedConfigFiles) {
 		environment = environment || 'production'; // or just use root
 		configDir = configDir || 'config';
 		// ^ maybe use 'development' if the site is specifically a staging branch
@@ -121,13 +121,17 @@ module.exports = {
 			configFileList = configFileList.concat(await configSort(files));
 		}
 
+		// TODO make this more exhaustive
+		configFileList.push('config.toml');
+
+		if (passedConfigFiles) {
+			configFileList = configFileList.concat(passedConfigFiles.reverse());
+		}
+
 		console.log('found config files:');
 		console.log(configFileList);
 
-		// TODO get base config.xxx
-		// TODO read --config files in reverse order (ignoring extension)
-
-		const extensions = {
+		const fileTypeByExtension = {
 			'.yml': 'yaml',
 			'.yaml': 'yaml',
 			'.toml': 'toml',
@@ -135,19 +139,19 @@ module.exports = {
 		};
 
 		const configPromises = configFileList.map(async (configPath) => {
-			let configContents;
 			const extension = Path.extname(configPath).toLowerCase();
+			const fileType = fileTypeByExtension[extension];
 			const filename = Path.basename(configPath, extension);
-			const fileType = extensions[extension];
+
 			let parsedData = {};
 			try {
-				configContents = await fsProm.readFile(configPath, 'utf-8');
+				const configContents = await fsProm.readFile(configPath, 'utf-8');
 				switch (fileType) {
 				case 'toml':
-					parsedData = await parseToml(configContents);
+					parsedData = await this.parseToml(configContents);
 					break;
 				case 'yaml':
-					parsedData = await parseYaml(configContents);
+					parsedData = await this.parseYaml(configContents);
 					break;
 				case 'json':
 					parsedData = await JSON.parse(configContents);
@@ -161,16 +165,16 @@ module.exports = {
 			}
 
 			if (filename !== 'config') {
-				return { [filename]: parsedData };
+				return Promise.resolve({ [filename]: parsedData });
 			}
-			return parsedData;
+			return Promise.resolve(parsedData);
 		});
 
-		const contents = await Promise.all(configPromises);
+		const configContents = await Promise.all(configPromises);
+		configContents.reverse(); // reversing because deep merge places priority on the second object
 
 		let configObject = {};
-		contents.forEach((configContent) => {
-			// TODO Object.assign is not deep
+		configContents.forEach((configContent) => {
 			configObject = mergeDeep(configObject, configContent);
 		});
 
