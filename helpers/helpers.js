@@ -77,7 +77,7 @@ module.exports = {
 			end = normalised.indexOf('\n---', start + 1);
 			if (start === 0 && end > start) {
 				const trimmed = normalised.substring(start + 3, end);
-				const parsed = await parseYaml(trimmed);
+				const parsed = await this.parseYaml(trimmed);
 				return Promise.resolve(parsed);
 			}
 			break;
@@ -86,7 +86,7 @@ module.exports = {
 			end = normalised.indexOf('\n+++', start + 1);
 			if (start === 0 && end > start) {
 				const trimmed = normalised.substring(start + 3, end);
-				const parsed = await parseToml(trimmed);
+				const parsed = await this.parseToml(trimmed);
 				return Promise.resolve(parsed);
 			}
 			break;

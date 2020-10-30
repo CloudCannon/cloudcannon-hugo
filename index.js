@@ -2,17 +2,14 @@
 /* eslint-disable no-tabs */
 /* eslint-disable dot-notation */
 /* eslint-disable quote-props */
-const { Validator } = require('jsonschema');
+// const { Validator } = require('jsonschema');
 const fs = require('fs');
 
-const schema = require('./schema.json');
 const { generateConfig } = require('./generators/buildConfig');
 const { generateDetails } = require('./generators/buildDetails');
 const helpers = require('./helpers/helpers');
 
-const detailsTest = require('./details.json');
-const detailsSchema = require('./details-schema.json');
-
+/*
 function runValidation(config) {
 	const v = new Validator();
 
@@ -33,6 +30,7 @@ function runValidation(config) {
 		console.log('Details succusfully validated');
 	}
 }
+*/
 
 (async function main() {
 	const hugoConfig = await helpers.getHugoConfig();
