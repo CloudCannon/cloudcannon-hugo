@@ -9,15 +9,6 @@ const globPromise = promisify(glob);
 const toml = require('toml');
 const yaml = require('js-yaml');
 
-const exists = async function (path) {
-	try {
-		const accessible = await fsProm.access(path);
-		return accessible;
-	} catch (err) {
-		return false;
-	}
-};
-
 const configSort = async function (fileArray) {
 	const extensionOrder = ['.toml', '.yaml', '.json'];
 
@@ -66,6 +57,49 @@ const mergeDeep = function (target, ...sources) {
 };
 
 module.exports = {
+	exists: async function (path) {
+		try {
+			const accessible = await fsProm.access(path);
+			return accessible;
+		} catch (err) {
+			return false;
+		}
+	},
+
+	parseFrontMatter: async function (data) {
+		const normalised = data.replace(/(?:\r\n|\r|\n)/g, '\n');
+		const identifyingChar = normalised.charAt(0);
+		let start;
+		let end;
+		switch (identifyingChar) {
+		case '-':
+			start = normalised.search(/^---\s*\n/);
+			end = normalised.indexOf('\n---', start + 1);
+			if (start === 0 && end > start) {
+				const trimmed = normalised.substring(start + 3, end);
+				const parsed = await parseYaml(trimmed);
+				return Promise.resolve(parsed);
+			}
+			break;
+		case '+':
+			start = normalised.search(/^\+\+\+\s*\n/);
+			end = normalised.indexOf('\n+++', start + 1);
+			if (start === 0 && end > start) {
+				const trimmed = normalised.substring(start + 3, end);
+				const parsed = await parseToml(trimmed);
+				return Promise.resolve(parsed);
+			}
+			break;
+		case '{':
+			console.warn('JSON Frontmatter not yet supported');
+			break;
+		default:
+			console.err('unsupported frontmatter');
+			break;
+		}
+		return Promise.reject(Error('couldnt parse'));
+	},
+
 	parseYaml: function (data) {
 		try {
 			const yamlData = yaml.safeLoad(data, { json: true });
@@ -111,12 +145,12 @@ module.exports = {
 
 		let configFileList = [];
 
-		if (exists(configEnvDir)) {
+		if (this.exists(configEnvDir)) {
 			const files = await globPromise(`${configEnvDir}/**.**`);
 			configFileList = configFileList.concat(await configSort(files));
 		}
 
-		if (exists(configDefaultDir)) {
+		if (this.exists(configDefaultDir)) {
 			const files = await globPromise(`${configDefaultDir}/**.**`);
 			configFileList = configFileList.concat(await configSort(files));
 		}
