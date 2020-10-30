@@ -41,9 +41,10 @@ async function generateCollections(config, paths) {
 	// TODO get permalinks
 	const collectionPaths = await getCollectionsPaths(paths);
 	const collections = {};
+	const contentDir = config.content || 'content';
 	collectionPaths.forEach((collection) => {
 		collections[collection] = {
-			_path: `${config.content}/"${collection}`
+			_path: `${contentDir}/${collection}`
 		};
 	});
 	if (config.permalinks) { // replace with a getConfig() call
