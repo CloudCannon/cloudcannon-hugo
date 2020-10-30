@@ -42,7 +42,9 @@ async function generateCollections(config, paths) {
 	const collectionPaths = await getCollectionsPaths(paths);
 	const collections = {};
 	collectionPaths.forEach((collection) => {
-		collections[collection] = {};
+		collections[collection] = {
+			_path: collection
+		};
 	});
 	if (config.permalinks) { // replace with a getConfig() call
 		Object.keys(config.permalinks).forEach((collection) => {
