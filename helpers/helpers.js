@@ -33,7 +33,7 @@ const isObject = function (item) {
 	return (item && typeof item === 'object' && !Array.isArray(item));
 };
 
-/**
+/** TODO make this eslint compatable
  * Deep merge two objects.
  * @param target
  * @param ...sources
@@ -57,6 +57,38 @@ const mergeDeep = function (target, ...sources) {
 };
 
 module.exports = {
+	getPaths: function (config) {
+		return {
+			archetypes: config.archetypeDir || 'archetypes',
+			assets: config.assetDir || 'assets',
+			content: config.contentDir || 'content',
+			data: config.dataDir || 'data',
+			layouts: config.layoutDir || 'layouts',
+			publish: config.publishDir || 'public',
+			static: config.staticDir || 'static',
+			themes: config.themesDir || 'themes',
+			config: config.configDir || '' // can get configDir from CC itself (frontend)
+		};
+	},
+
+	getGlob: async function (globPattern, options) {
+		options = options || {};
+		if (!options.ignore) {
+			options.ignore = [];
+		}
+		if (typeof options.ignore === 'string') {
+			options.ignore = [options.ignore];
+		}
+		options.ignore.push('**/exampleSite/**');
+
+		try {
+			const paths = await globPromise(globPattern, options);
+			return paths;
+		} catch (globErr) {
+			console.err(globErr);
+		}
+	},
+
 	exists: async function (path) {
 		try {
 			const accessible = await fsProm.access(path);
@@ -146,12 +178,12 @@ module.exports = {
 		let configFileList = [];
 
 		if (this.exists(configEnvDir)) {
-			const files = await globPromise(`${configEnvDir}/**.**`);
+			const files = await this.getGlob(`${configEnvDir}/**.**`);
 			configFileList = configFileList.concat(await configSort(files));
 		}
 
 		if (this.exists(configDefaultDir)) {
-			const files = await globPromise(`${configDefaultDir}/**.**`);
+			const files = await this.getGlob(`${configDefaultDir}/**.**`);
 			configFileList = configFileList.concat(await configSort(files));
 		}
 

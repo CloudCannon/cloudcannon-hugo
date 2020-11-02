@@ -2,33 +2,22 @@
 /* eslint-disable quote-props */
 /* eslint-disable dot-notation */
 const Path = require('path');
-const glob = require('glob');
 
-const { promisify } = require('util');
-
-const globPromise = promisify(glob);
-
+const { getGlob, getPaths } = require('../helpers/helpers');
 const { cloudCannonMeta } = require('../helpers/metadata');
 
 async function getDefaultsPaths(paths) {
 	const indexPaths = `**/${paths.content}/**/_index.md`;
-	const archetypes = `**/${paths.archetypes}/**.md`;
+	const archetypes = `**/${paths.archetypes}/**/**.md`;
 
 	const defaultsGlob = `{${indexPaths},${archetypes}}`;
-	try {
-		const defaultsPaths = await globPromise(defaultsGlob, {
-			nounique: true,
-			ignore: '**/exampleSite/**'
-		});
-		return defaultsPaths;
-	} catch (globErr) {
-		console.err(globErr);
-	}
+	return getGlob(defaultsGlob);
 }
 
 async function getCollectionsPaths(paths) {
-	const defaultsPaths = await getDefaultsPaths(paths);
-	const collectionsArray = defaultsPaths.map((item) => {
+	const archetypes = `**/${paths.archetypes}/**/**.md`;
+	const collectionsPaths = await getGlob(archetypes, { ignore: '**/default.md' });
+	const collectionsArray = collectionsPaths.map((item) => {
 		if (item.indexOf('index.md') > 0) {
 			return Path.basename(Path.dirname(item));
 		}
@@ -40,8 +29,13 @@ async function getCollectionsPaths(paths) {
 async function generateCollections(config, paths) {
 	// TODO get permalinks
 	const collectionPaths = await getCollectionsPaths(paths);
-	const collections = {};
 	const contentDir = config.content || 'content';
+	const collections = {
+		posts: {
+			_path: `${contentDir}/posts`
+		}
+	};
+
 	collectionPaths.forEach((collection) => {
 		collections[collection] = {
 			_path: `${contentDir}/${collection}`
@@ -76,20 +70,6 @@ async function generateDefault(path) {
 	};
 
 	return Promise.resolve(defaultData);
-}
-
-function getPaths(config) {
-	return {
-		"archetypes": config["archetypeDir"] || "archetypes",
-		"assets": config["assetDir"] || "assets",
-		"content": config["contentDir"] || "content",
-		"data": config["dataDir"] || "data",
-		"layouts": config["layoutDir"] || "layouts",
-		"publish": config["publishDir"] || "public",
-		"static": config["staticDir"] || "static",
-		"themes": config["themesDir"] || "themes",
-		"config": config["configDir"] || "" // can get configDir from CC itself (frontend)
-	};
 }
 
 module.exports = {

@@ -3,7 +3,7 @@
 /* eslint-disable dot-notation */
 const csvParse = require('csv-parse/lib/sync');
 const Path = require('path');
-const { runProcess } = require('../helpers/helpers');
+const { getGlob, runProcess, getPaths } = require('../helpers/helpers');
 
 const { cloudCannonMeta, markdownMeta } = require('../helpers/metadata');
 
@@ -42,6 +42,7 @@ function getCollectionName(path) {
 }
 
 async function getCollections(baseurl) {
+	// gets all publishable files in content/
 	const fileCsv = await runProcess('hugo', ['list', 'all']);
 	const fileList = csvParse(fileCsv, {
 		columns: true,
@@ -65,10 +66,10 @@ async function getCollections(baseurl) {
 	return Promise.resolve(collections);
 }
 
-async function getPages() {
-	// get index.html and 404.html
-	// Then need to get all leaf pages.
-	return ['layouts/index.html'];
+async function getPages(config) {
+	const paths = getPaths(config);
+	const indexFiles = await getGlob('**/index.md', { ignore: `**/${paths.archetypes}/**/**.md` });
+	return indexFiles.concat(['layouts/index.html', 'layouts/404.html']);
 }
 
 module.exports = {
@@ -76,7 +77,7 @@ module.exports = {
 		const baseurl = hugoConfig["baseURL"] || "";
 		const collections = await getCollections(baseurl);
 		const generator = await getGeneratorDetails(hugoConfig);
-		const pages = await getPages();
+		const pages = await getPages(hugoConfig);
 
 		return {
 			"time": "",
