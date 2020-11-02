@@ -69,7 +69,13 @@ async function getCollections(baseurl) {
 async function getPages(config) {
 	const paths = getPaths(config);
 	const indexFiles = await getGlob('**/index.md', { ignore: `**/${paths.archetypes}/**/**.md` });
-	return indexFiles.concat(['layouts/index.html', 'layouts/404.html']);
+	const allPages = indexFiles.concat(['layouts/index.html', 'layouts/404.html']);
+	const pages = allPages.map((page) => ({
+		dir: Path.dirname(page),
+		name: Path.basename(page),
+		path: page
+	}));
+	return pages;
 }
 
 module.exports = {
