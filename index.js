@@ -33,7 +33,9 @@ function runValidation(config) {
 */
 
 (async function main() {
-	const hugoConfig = await helpers.getHugoConfig();
+	const args = process.argv;
+
+	const hugoConfig = await helpers.getHugoConfig(args);
 	const hugoData = JSON.stringify(hugoConfig, null, 4);
 
 	const config = await generateConfig(hugoConfig);

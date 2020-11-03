@@ -166,9 +166,23 @@ module.exports = {
 		}
 	},
 
-	getHugoConfig: async function (configDir, environment, passedConfigFiles) {
-		environment = environment || 'production'; // or just use root
-		configDir = configDir || 'config';
+	processArgs: async function (args) {
+		const flagtest = /^(-.$)|(--\w*$)/i;
+		const argObject = {};
+		for (let i = 0; i < args.length; i += 1) {
+			if (flagtest.test(args[i])) {
+				argObject['baseurl'] = args[i + 1];
+				i += 1;
+			}
+		}
+		return argObject;
+	},
+
+	getHugoConfig: async function (args) {
+		const buildArguments = await this.processArgs(args);
+		const environment = buildArguments.environment || 'production'; // or just use root
+		const configDir = buildArguments.configDir || 'config';
+
 		// ^ maybe use 'development' if the site is specifically a staging branch
 
 		// TODO sanitize slashes
@@ -190,8 +204,8 @@ module.exports = {
 		// TODO make this more exhaustive
 		configFileList.push('config.toml');
 
-		if (passedConfigFiles) {
-			configFileList = configFileList.concat(passedConfigFiles.reverse());
+		if (buildArguments.passedConfigFiles) {
+			configFileList = configFileList.concat(buildArguments.passedConfigFiles.reverse());
 		}
 
 		console.log('found config files:');
@@ -244,6 +258,9 @@ module.exports = {
 			configObject = mergeDeep(configObject, configContent);
 		});
 
+		if (buildArguments.baseurl) {
+			configObject.baseurl = buildArguments.baseurl;
+		}
 		return configObject;
 	}
 };
