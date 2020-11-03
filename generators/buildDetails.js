@@ -73,7 +73,9 @@ async function getPages(config) {
 	const pages = allPages.map((page) => ({
 		dir: `/${Path.dirname(page)}/`,
 		name: Path.basename(page),
-		path: page
+		path: page,
+		url: `/${page}`,
+		title: Path.basename(page)
 	}));
 	return pages;
 }
