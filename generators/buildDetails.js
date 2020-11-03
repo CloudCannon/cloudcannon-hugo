@@ -71,7 +71,7 @@ async function getPages(config) {
 	const indexFiles = await getGlob('**/index.md', { ignore: `**/${paths.archetypes}/**/**.md` });
 	const allPages = indexFiles.concat(['layouts/index.html', 'layouts/404.html']);
 	const pages = allPages.map((page) => ({
-		dir: Path.dirname(page),
+		dir: `/${Path.dirname(page)}/`,
 		name: Path.basename(page),
 		path: page
 	}));
