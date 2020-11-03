@@ -9,6 +9,25 @@ const globPromise = promisify(glob);
 const toml = require('toml');
 const yaml = require('js-yaml');
 
+const getValidOptionName = async function (option) {
+	const relevantOptions = {
+		'--environment': 'environment',
+		'-e': 'environment',
+		'--source': 'source',
+		'-s': 'source',
+		'--baseURL': 'baseURL',
+		'-b': 'baseURL',
+		'--config': 'config',
+		'--configDir': 'configDir',
+		'--contentDir': 'contentDir',
+		'-c': 'contentDir'
+	};
+
+	if (relevantOptions[option]) {
+		return relevantOptions[option];
+	}
+};
+
 const configSort = async function (fileArray) {
 	const extensionOrder = ['.toml', '.yaml', '.json'];
 
@@ -171,8 +190,11 @@ module.exports = {
 		const argObject = {};
 		for (let i = 0; i < args.length; i += 1) {
 			if (flagtest.test(args[i])) {
-				argObject['baseurl'] = args[i + 1];
-				i += 1;
+				const item = getValidOptionName(args[i]);
+				if (item) {
+					argObject[item] = args[i + 1];
+					i += 1; // intentionally skipping the next one
+				}
 			}
 		}
 		return argObject;
@@ -204,8 +226,11 @@ module.exports = {
 		// TODO make this more exhaustive
 		configFileList.push('config.toml');
 
-		if (buildArguments.passedConfigFiles) {
-			configFileList = configFileList.concat(buildArguments.passedConfigFiles.reverse());
+		let passedConfigFiles = buildArguments.config;
+
+		if (passedConfigFiles) {
+			passedConfigFiles = passedConfigFiles.trim().split(',');
+			configFileList = configFileList.concat(passedConfigFiles.reverse());
 		}
 
 		console.log('found config files:');
