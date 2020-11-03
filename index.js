@@ -33,6 +33,7 @@ function runValidation(config) {
 */
 
 (async function main() {
+	console.log('running from github');
 	const hugoConfig = await helpers.getHugoConfig();
 	const hugoData = JSON.stringify(hugoConfig, null, 4);
 
