@@ -202,6 +202,7 @@ module.exports = {
 
 	getHugoConfig: async function (args) {
 		const buildArguments = await this.processArgs(args);
+		console.log(buildArguments);
 		const environment = buildArguments.environment || 'production'; // or just use root
 		const configDir = buildArguments.configDir || 'config';
 
@@ -229,6 +230,7 @@ module.exports = {
 		let passedConfigFiles = buildArguments.config;
 
 		if (passedConfigFiles) {
+			console.log('passedConfigFiles');
 			passedConfigFiles = passedConfigFiles.trim().split(',');
 			configFileList = configFileList.concat(passedConfigFiles.reverse());
 		}
