@@ -64,10 +64,10 @@ const mergeDeep = function (target, ...sources) {
 	if (isObject(target) && isObject(source)) {
 		for (const key in source) {
 			if (isObject(source[key])) {
-			if (!target[key]) Object.assign(target, { [key]: {} });
-			mergeDeep(target[key], source[key]);
+				if (!target[key]) Object.assign(target, { [key]: {} });
+				mergeDeep(target[key], source[key]);
 			} else {
-			Object.assign(target, { [key]: source[key] });
+				Object.assign(target, { [key]: source[key] });
 			}
 		}
 	}
@@ -201,11 +201,9 @@ module.exports = {
 
 	getHugoConfig: async function (args) {
 		const buildArguments = await this.processArgs(args);
-		console.log(buildArguments);
 		const environment = buildArguments.environment || 'production'; // or just use root
 		const configDir = buildArguments.configDir || 'config';
-
-		// ^ maybe use 'development' if the site is specifically a staging branch
+		// ^ maybe default to 'development' if the site is specifically a staging branch
 
 		// TODO sanitize slashes
 		const configEnvDir = `${configDir}/${environment}/`;
@@ -229,7 +227,6 @@ module.exports = {
 		let passedConfigFiles = buildArguments.config;
 
 		if (passedConfigFiles) {
-			console.log('passedConfigFiles');
 			passedConfigFiles = passedConfigFiles.trim().split(',');
 			configFileList = configFileList.concat(passedConfigFiles.reverse());
 		}
@@ -270,7 +267,7 @@ module.exports = {
 				console.warn(readFileError);
 			}
 
-			if (filename !== 'config') {
+			if (filename !== 'config' && passedConfigFiles.indexOf(configPath) < 0) {
 				return Promise.resolve({ [filename]: parsedData });
 			}
 			return Promise.resolve(parsedData);
