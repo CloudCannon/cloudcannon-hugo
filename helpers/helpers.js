@@ -188,15 +188,14 @@ module.exports = {
 	processArgs: async function (args) {
 		const flagtest = /^(-.$)|(--\w*$)/i;
 		const argObject = {};
-		for (let i = 0; i < args.length; i += 1) {
-			if (flagtest.test(args[i])) {
-				const item = getValidOptionName(args[i]);
+		args.forEach(async (argument, index) => {
+			if (flagtest.test(argument)) {
+				const item = await getValidOptionName(argument);
 				if (item) {
-					argObject[item] = args[i + 1];
-					i += 1; // intentionally skipping the next one
+					argObject[item] = args[index + 1];
 				}
 			}
-		}
+		});
 		return argObject;
 	},
 
