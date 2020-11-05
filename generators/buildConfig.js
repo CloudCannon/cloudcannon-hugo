@@ -91,6 +91,7 @@ module.exports = {
 		// console.log(await helpers.getParams());
 
 		const cloudCannonSpecific = hugoConfig.params ? hugoConfig.params.cloudcannon : null;
+		const baseURL = new URL(hugoConfig['baseURL'] || '');
 
 		return {
 			'time': '2020-09-16T22:50:17+00:00', // get build time here
@@ -99,7 +100,7 @@ module.exports = {
 			'timezone': null, // hugo has no timezones - get this from cloudcannon
 			'include': cloudCannonSpecific ? cloudCannonSpecific['include'] : {},
 			'exclude': cloudCannonSpecific ? cloudCannonSpecific['exclude'] : {},
-			'base-url': hugoConfig['baseURL'] || '',
+			'base-url': baseURL.pathname,
 			'collections': collections, // perhaps taxonomies?
 			'comments': cloudCannonSpecific ? cloudCannonSpecific['comments'] : {},
 			'input-options': cloudCannonSpecific ? cloudCannonSpecific['input-options'] : {},
