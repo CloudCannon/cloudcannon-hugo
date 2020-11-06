@@ -57,9 +57,9 @@ async function getCollections(baseurl) {
 		const collectionName = getCollectionName(path);
 		if (collectionName) {
 			if (collections[collectionName]) {
-				collections[collectionName].push({ "path": path, "url": url });
+				collections[collectionName].push({ "path": path, "url": url, collection: collectionName });
 			} else {
-				collections[collectionName] = [{ "path": path, "url": url }];
+				collections[collectionName] = [{ "path": path, "url": url, collection: collectionName }];
 			}
 		}
 	});
