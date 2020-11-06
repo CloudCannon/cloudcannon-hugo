@@ -224,7 +224,7 @@ module.exports = {
 		// TODO make this more exhaustive
 		configFileList.push('config.toml');
 
-		let passedConfigFiles = buildArguments.config || [];
+		let passedConfigFiles = buildArguments.config || '';
 
 		if (passedConfigFiles) {
 			passedConfigFiles = passedConfigFiles.trim().split(',');
