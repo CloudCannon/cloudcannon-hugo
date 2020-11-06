@@ -84,9 +84,9 @@ module.exports = {
 			data: config.dataDir || 'data',
 			layouts: config.layoutDir || 'layouts',
 			publish: config.publishDir || 'public',
-			static: config.staticDir || 'static',
+			uploads: config.staticDir || 'static',
 			themes: config.themesDir || 'themes',
-			config: config.configDir || '' // can get configDir from CC itself (frontend)
+			config: config.configDir || ''
 		};
 	},
 
@@ -224,7 +224,7 @@ module.exports = {
 		// TODO make this more exhaustive
 		configFileList.push('config.toml');
 
-		let passedConfigFiles = buildArguments.config;
+		let passedConfigFiles = buildArguments.config || [];
 
 		if (passedConfigFiles) {
 			passedConfigFiles = passedConfigFiles.trim().split(',');
