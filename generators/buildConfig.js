@@ -97,7 +97,6 @@ module.exports = {
 			'time': '2020-09-16T22:50:17+00:00', // get build time here
 			'cloudcannon': cloudCannonMeta,
 			'source': '', // don't think hugo has custom src / mabe get this from cloudcannon
-			'timezone': null, // hugo has no timezones - get this from cloudcannon
 			'include': cloudCannonSpecific ? cloudCannonSpecific['include'] : {},
 			'exclude': cloudCannonSpecific ? cloudCannonSpecific['exclude'] : {},
 			'base-url': baseURL.pathname,
