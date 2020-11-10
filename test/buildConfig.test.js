@@ -27,13 +27,6 @@ describe('buildConfig', function () {
 					expect(result).to.equal(undefined);
 				});
 			});
-			context('outside of directory', function () {
-				it('should return nothing', function () {
-					const path = 'content/index.md';
-					const result = buildConfig.getCollectionName(path, false);
-					expect(result).to.equal(undefined);
-				});
-			});
 		});
 		describe('archetypes', function () {
 			context('with index file', function () {
