@@ -89,9 +89,13 @@ async function getCollections(baseurl) {
 
 async function getPages(config) {
 	const paths = getPaths(config);
-	const indexFiles = await getGlob('**/index.md', { ignore: `**/${paths.archetypes}/**/**.md` });
-	const allPages = indexFiles.concat(['layouts/index.html', 'layouts/404.html']);
-	const pages = allPages.map((page) => ({
+	const contentFiles = await getGlob(`**/${paths.content}/**/*.md`, { ignore: `**/${paths.content}/*/*.md` });
+	const indexFiles = await getGlob(`**/${paths.content}/**/*index.md`);
+
+	// remove duplicates
+	const files = Array.from(new Set(contentFiles.concat(indexFiles)));
+
+	const pages = files.map((page) => ({
 		dir: `/${Path.dirname(page)}/`, // not needed
 		name: Path.basename(page),
 		path: page,
