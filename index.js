@@ -5,8 +5,8 @@
 // const { Validator } = require('jsonschema');
 const fs = require('fs');
 
-const { generateConfig } = require('./generators/buildConfig');
-const { generateDetails } = require('./generators/buildDetails');
+const configGen = require('./generators/buildConfig');
+const detailsGen = require('./generators/buildDetails');
 const helpers = require('./helpers/helpers');
 
 /*
@@ -38,10 +38,10 @@ function runValidation(config) {
 	const hugoConfig = await helpers.getHugoConfig(args);
 	const hugoData = JSON.stringify(hugoConfig, null, 4);
 
-	const config = await generateConfig(hugoConfig);
+	const config = await configGen.generateConfig(hugoConfig);
 	const configData = JSON.stringify(config, null, 4);
 
-	const details = await generateDetails(hugoConfig);
+	const details = await detailsGen.generateDetails(hugoConfig);
 	const detailsData = JSON.stringify(details, null, 4);
 
 	// TODO change public to configured PublishDir
