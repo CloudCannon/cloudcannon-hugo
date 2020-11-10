@@ -35,7 +35,7 @@ module.exports = {
 		const archetypePaths = await getGlob(archetypeGlob, { ignore: '**/default.md' });
 		const archetypeArray = archetypePaths.map((item) => this.getCollectionName(item, true));
 
-		const contentGlob = `**/${paths.content}/**/**`;
+		const contentGlob = `**/${paths.content}/*/**`;
 		const contentPaths = await getGlob(contentGlob);
 		const contentArray = contentPaths.map((item) => this.getCollectionName(item));
 
@@ -47,11 +47,7 @@ module.exports = {
 
 	generateCollections: async function (config, paths) {
 		const contentDir = paths.content;
-		const collections = {
-			posts: {
-				_path: `${contentDir}/posts`
-			}
-		};
+		const collections = {};
 
 		const collectionPaths = await this.getCollectionPaths(paths);
 
