@@ -145,7 +145,7 @@ module.exports = {
 			console.warn('JSON Frontmatter not yet supported');
 			break;
 		default:
-			console.err('unsupported frontmatter');
+			// console.error('unsupported frontmatter');
 			break;
 		}
 		return Promise.reject(Error('couldnt parse'));
