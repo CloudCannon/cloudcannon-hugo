@@ -72,9 +72,7 @@ module.exports = {
 		const collections = {};
 		const collectionPaths = await this.getCollectionPaths(paths);
 		collectionPaths.forEach(async (path) => {
-			console.log(path);
 			const collectionName = this.getCollectionName(path);
-			console.log(collectionName);
 			if (collectionName) {
 				const collectionItem = {
 					"url": `/${path}`,
@@ -83,7 +81,6 @@ module.exports = {
 				};
 				const itemDetails = await this.getItemDetails(path);
 				Object.assign(collectionItem, itemDetails);
-				console.log(collectionItem);
 
 				if (collections[collectionName]) {
 					collections[collectionName].push(collectionItem);
@@ -130,13 +127,19 @@ module.exports = {
 		// remove duplicates
 		const files = Array.from(new Set(contentFiles.concat(indexFiles)));
 
-		const pages = files.map((page) => ({
-			dir: `/${Path.dirname(page)}/`, // not needed
-			name: Path.basename(page),
-			path: page,
-			url: `/${page}`,
-			title: Path.basename(page)
+		const pages = Promise.all(files.map(async (page) => {
+			const itemDetails = await this.getItemDetails(page);
+			const item = {
+				dir: `/${Path.dirname(page)}/`, // not needed
+				name: Path.basename(page),
+				path: page,
+				url: `/${page}`,
+				title: Path.basename(page)
+			};
+			Object.assign(item, itemDetails);
+			return Promise.resolve(item);
 		}));
+
 		return pages;
 	},
 
