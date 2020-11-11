@@ -81,6 +81,7 @@ module.exports = {
 			archetypes: config.archetypeDir || 'archetypes',
 			assets: config.assetDir || 'assets',
 			content: config.contentDir || 'content',
+			pages: config.contentDir || 'content',
 			data: config.dataDir || 'data',
 			layouts: config.layoutDir || 'layouts',
 			publish: config.publishDir || 'public',
