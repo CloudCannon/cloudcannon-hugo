@@ -85,7 +85,7 @@ module.exports = {
 			data: config.dataDir || 'data',
 			layouts: config.layoutDir || 'layouts',
 			publish: config.publishDir || 'public',
-			uploads: config.staticDir || 'static',
+			uploads: `${config.staticDir}/uploads` || 'static/uploads',
 			themes: config.themesDir || 'themes',
 			config: config.configDir || ''
 		};
