@@ -83,6 +83,16 @@ module.exports = {
 				const itemDetails = await this.getItemDetails(path);
 				Object.assign(collectionItem, itemDetails);
 
+				if (collectionItem.draft) {
+					delete collectionItem.draft;
+					collectionItem.published = false;
+				}
+
+				if (collectionItem.headless) {
+					delete collectionItem.headless;
+					collectionItem.output = false;
+				}
+
 				if (collections[collectionName]) {
 					collections[collectionName].push(collectionItem);
 				} else {
@@ -131,13 +141,21 @@ module.exports = {
 		const pages = Promise.all(files.map(async (page) => {
 			const itemDetails = await this.getItemDetails(page);
 			const item = {
-				dir: `/${Path.dirname(page)}/`, // not needed
 				name: Path.basename(page),
 				path: page.replace(`${paths.content}/`, ''),
 				url: `/${page}`,
 				title: Path.basename(page)
 			};
 			Object.assign(item, itemDetails);
+			if (item.draft) {
+				delete item.draft;
+				item.published = false;
+			}
+
+			if (item.headless) {
+				delete item.headless;
+				item.output = false;
+			}
 			return Promise.resolve(item);
 		}));
 
