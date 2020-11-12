@@ -68,7 +68,8 @@ module.exports = {
 		return Array.from(new Set(collectionPaths.filter((item) => item)));
 	},
 
-	getCollections: async function (paths) {
+	getCollections: async function (config) {
+		const paths = getPaths(config);
 		const collections = {};
 		const collectionPaths = await this.getCollectionPaths(paths);
 		collectionPaths.forEach(async (path) => {
@@ -76,7 +77,7 @@ module.exports = {
 			if (collectionName) {
 				const collectionItem = {
 					"url": `/${path}`,
-					"path": path,
+					"path": path.replace(`${paths.content}/`, ''),
 					collection: collectionName
 				};
 				const itemDetails = await this.getItemDetails(path);
@@ -132,7 +133,7 @@ module.exports = {
 			const item = {
 				dir: `/${Path.dirname(page)}/`, // not needed
 				name: Path.basename(page),
-				path: page,
+				path: page.replace(`${paths.content}/`, ''),
 				url: `/${page}`,
 				title: Path.basename(page)
 			};
@@ -144,9 +145,8 @@ module.exports = {
 	},
 
 	generateDetails: async function (hugoConfig) {
-		const baseurl = hugoConfig["baseURL"] || "";
-		const paths = getPaths(hugoConfig);
-		const collections = await this.getCollections(paths, baseurl);
+		// const baseurl = hugoConfig["baseURL"] || "";
+		const collections = await this.getCollections(hugoConfig);
 		const generator = await this.getGeneratorDetails(hugoConfig);
 		const pages = await this.getPages(hugoConfig);
 
