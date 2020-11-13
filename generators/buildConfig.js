@@ -54,10 +54,17 @@ module.exports = {
 		collectionPaths.forEach((collectionName) => {
 			if (collectionName) {
 				collections[collectionName] = {
-					_path: `${contentDir}/${collectionName}`
+					_path: `${contentDir}/${collectionName}`,
+					output: true
 				};
 			}
 		});
+
+		collections.data = {
+			_path: paths.data,
+			output: false
+		};
+
 		if (config.permalinks) { // replace with a getConfig() call
 			Object.keys(config.permalinks).forEach((collection) => {
 				collections[collection]["permalink"] = config.permalinks[collection];
