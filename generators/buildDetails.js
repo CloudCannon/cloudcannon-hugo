@@ -101,6 +101,21 @@ module.exports = {
 			}
 		});
 
+		const dataFiles = await getGlob(paths.data) || [];
+		dataFiles.forEach(async (path) => {
+			const collectionItem = {
+				"url": `/${path}`,
+				"path": path.replace(`${paths.data}/`, ''),
+				collection: 'data',
+				output: false
+			};
+			const itemDetails = await this.getItemDetails(path);
+			Object.assign(collectionItem, itemDetails);
+
+			collections.data.push(collectionItem);
+		});
+
+
 		/*
 		gets all publishable files in content/
 		const fileCsv = await runProcess('hugo', ['list', 'all']);
