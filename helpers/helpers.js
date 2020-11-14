@@ -100,6 +100,7 @@ module.exports = {
 			options.ignore = [options.ignore];
 		}
 		options.ignore.push('**/exampleSite/**');
+		options.nodir = true;
 
 		try {
 			const paths = await globPromise(globPattern, options);
@@ -119,6 +120,9 @@ module.exports = {
 	},
 
 	parseFrontMatter: async function (data) {
+		if (!data) {
+			return Promise.reject(Error('File is empty'));
+		}
 		const normalised = data.replace(/(?:\r\n|\r|\n)/g, '\n');
 		const identifyingChar = normalised.charAt(0);
 		let start;
@@ -146,7 +150,6 @@ module.exports = {
 			console.warn('JSON Frontmatter not yet supported');
 			break;
 		default:
-			// console.error('unsupported frontmatter');
 			break;
 		}
 		return Promise.reject(Error('couldnt parse'));

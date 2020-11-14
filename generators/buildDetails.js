@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 /* eslint-disable quote-props */
 /* eslint-disable dot-notation */
-// const csvParse = require('csv-parse/lib/sync');
+const csvParse = require('csv-parse/lib/sync');
 const Path = require('path');
 const { promises: fsProm } = require('fs');
 const { getGlob, runProcess, getPaths } = require('../helpers/helpers');
@@ -46,8 +46,8 @@ module.exports = {
 	},
 
 	getItemDetails: async function (path) {
-		const data = await fsProm.readFile(path, 'utf-8');
 		try {
+			const data = await fsProm.readFile(path, 'utf-8');
 			const frontMatterObject = await helpers.parseFrontMatter(data);
 			return frontMatterObject;
 		} catch (parseError) {
@@ -68,15 +68,55 @@ module.exports = {
 		return Array.from(new Set(collectionPaths.filter((item) => item)));
 	},
 
+	getFileUrlsPerPath: async function (baseurl) {
+		const fileCsv = await runProcess('hugo', ['list', 'all']);
+		const fileList = csvParse(fileCsv, {
+			columns: true,
+			skipEmptyLines: true
+		});
+
+		const urlsPerPath = {};
+		fileList.forEach(async (file) => {
+			const { path } = file;
+			let { permalink: url } = file;
+			url = `/${url.replace(baseurl, '')}`;
+
+			urlsPerPath[path] = url;
+		});
+
+		return Promise.resolve(urlsPerPath);
+	},
+
+	getDataFiles: async function (dataPath) {
+		const data = [];
+		const dataFiles = await getGlob(dataPath) || [];
+		dataFiles.forEach(async (path) => {
+			const collectionItem = {
+				"url": `/${path}`,
+				"path": path.replace(`${dataPath}/`, ''),
+				collection: 'data',
+				output: false
+			};
+			const itemDetails = await this.getItemDetails(path);
+			Object.assign(collectionItem, itemDetails);
+
+			data.push(collectionItem);
+		});
+		return Promise.resolve(data);
+	},
+
 	getCollections: async function (config) {
-		const paths = getPaths(config);
 		const collections = {};
+		const paths = getPaths(config);
 		const collectionPaths = await this.getCollectionPaths(paths);
+		const urlsPerPath = await this.getFileUrlsPerPath(config.baseURL);
+
 		collectionPaths.forEach(async (path) => {
 			const collectionName = this.getCollectionName(path);
 			if (collectionName) {
+				const url = urlsPerPath[path];
 				const collectionItem = {
-					"url": `/${path}`,
+					"url": url || `/${path}`,
 					"path": path.replace(`${paths.content}/`, ''),
 					collection: collectionName
 				};
@@ -101,47 +141,8 @@ module.exports = {
 			}
 		});
 
-		const dataFiles = await getGlob(paths.data) || [];
-		dataFiles.forEach(async (path) => {
-			const collectionItem = {
-				"url": `/${path}`,
-				"path": path.replace(`${paths.data}/`, ''),
-				collection: 'data',
-				output: false
-			};
-			const itemDetails = await this.getItemDetails(path);
-			Object.assign(collectionItem, itemDetails);
+		collections.data = await this.getDataFiles(paths.data);
 
-			collections.data.push(collectionItem);
-		});
-
-
-		/*
-		gets all publishable files in content/
-		const fileCsv = await runProcess('hugo', ['list', 'all']);
-		const fileList = csvParse(fileCsv, {
-			columns: true,
-			skipEmptyLines: true
-		});
-
-		fileList.forEach(async (file) => {
-			const { path } = file;
-			const collectionName = this.getCollectionName(path);
-			if (collectionName) {
-				let { permalink: url } = file;
-				url = `/${url.replace(baseurl, "")}`;
-				const itemDetails = await this.getItemDetails(path);
-
-				Object.assign(collectionItem, itemDetails); // add itemDetails to collectionItem
-
-				if (collections[collectionName]) {
-					collections[collectionName].push(collectionItem);
-				} else {
-					collections[collectionName] = [collectionItem];
-				}
-			}
-		});
-		*/
 		return Promise.resolve(collections);
 	},
 
