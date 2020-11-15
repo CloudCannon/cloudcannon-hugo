@@ -68,7 +68,19 @@ module.exports = {
 		return Array.from(new Set(collectionPaths.filter((item) => item)));
 	},
 
-	getFileUrlsPerPath: async function (baseurl) {
+	getPageUrl: function (path, hugoUrls, contentDir) {
+		if (hugoUrls[path]) {
+			return hugoUrls[path];
+		}
+		if (path.indexOf('index') >= 0) {
+			return path
+				.replace(`${contentDir || ''}/`, '/')
+				.replace(/\/_?index\.md/, '/');
+		}
+		return '';
+	},
+
+	getHugoUrls: async function (baseurl) {
 		const fileCsv = await runProcess('hugo', ['list', 'all']);
 		const fileList = csvParse(fileCsv, {
 			columns: true,
@@ -92,7 +104,7 @@ module.exports = {
 		const dataFiles = await getGlob(dataPath) || [];
 		dataFiles.forEach(async (path) => {
 			const collectionItem = {
-				"url": `/${path}`,
+				"url": '',
 				"path": path.replace(`${dataPath}/`, ''),
 				collection: 'data',
 				output: false
@@ -105,18 +117,17 @@ module.exports = {
 		return Promise.resolve(data);
 	},
 
-	getCollections: async function (config) {
+	getCollections: async function (config, urlsPerPath) {
 		const collections = {};
 		const paths = getPaths(config);
 		const collectionPaths = await this.getCollectionPaths(paths);
-		const urlsPerPath = await this.getFileUrlsPerPath(config.baseURL);
 
 		collectionPaths.forEach(async (path) => {
 			const collectionName = this.getCollectionName(path);
 			if (collectionName) {
-				const url = urlsPerPath[path];
+				const url = this.getPageUrl(path, urlsPerPath, paths.content);
 				const collectionItem = {
-					"url": url || path.replace(`${paths.content}/`, ''),
+					"url": url || '',
 					"path": path.replace(`${paths.content}/`, ''),
 					collection: collectionName
 				};
@@ -128,7 +139,7 @@ module.exports = {
 					collectionItem.published = false;
 				}
 
-				if (collectionItem.headless) {
+				if (collectionItem.headless || (!url && path.indexOf('index') < 0)) {
 					delete collectionItem.headless;
 					collectionItem.output = false;
 				}
@@ -146,21 +157,22 @@ module.exports = {
 		return Promise.resolve(collections);
 	},
 
-	getPages: async function (config) {
+	getPages: async function (config, urlsPerPath) {
 		const paths = getPaths(config);
 		const contentFiles = await getGlob(`**/${paths.content}/**/*.md`, { ignore: `**/${paths.content}/*/*.md` });
 		const indexFiles = await getGlob(`**/${paths.content}/**/*index.md`);
 
-		// remove duplicates
+		// concat and remove duplicates
 		const files = Array.from(new Set(contentFiles.concat(indexFiles)));
 
-		const pages = Promise.all(files.map(async (page) => {
-			const itemDetails = await this.getItemDetails(page);
+		const pages = Promise.all(files.map(async (path) => {
+			const itemDetails = await this.getItemDetails(path);
+			const url = this.getPageUrl(path, urlsPerPath, paths.content);
 			const item = {
-				name: Path.basename(page),
-				path: page.replace(`${paths.content}/`, ''),
-				url: `/${page}`,
-				title: Path.basename(page)
+				name: Path.basename(path),
+				path: path.replace(`${paths.content}/`, ''),
+				url: url || '',
+				title: Path.basename(path)
 			};
 			Object.assign(item, itemDetails);
 			if (item.draft) {
@@ -179,10 +191,10 @@ module.exports = {
 	},
 
 	generateDetails: async function (hugoConfig) {
-		// const baseurl = hugoConfig["baseURL"] || "";
-		const collections = await this.getCollections(hugoConfig);
+		const urlsPerPath = await this.getHugoUrls(hugoConfig.baseURL);
+		const collections = await this.getCollections(hugoConfig, urlsPerPath);
+		const pages = await this.getPages(hugoConfig, urlsPerPath);
 		const generator = await this.getGeneratorDetails(hugoConfig);
-		const pages = await this.getPages(hugoConfig);
 
 		return {
 			"time": "",
