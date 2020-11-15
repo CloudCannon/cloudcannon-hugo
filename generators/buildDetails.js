@@ -75,7 +75,8 @@ module.exports = {
 		if (path.indexOf('index') >= 0) {
 			return path
 				.replace(`${contentDir || ''}/`, '/')
-				.replace(/\/_?index\.md/, '/');
+				.replace(/\/_?index\.md/, '/')
+				.replace('//', '/');
 		}
 		return '';
 	},
