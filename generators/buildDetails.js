@@ -116,7 +116,7 @@ module.exports = {
 			if (collectionName) {
 				const url = urlsPerPath[path];
 				const collectionItem = {
-					"url": url || `/${path}`,
+					"url": url || path.replace(`${paths.content}/`, ''),
 					"path": path.replace(`${paths.content}/`, ''),
 					collection: collectionName
 				};
