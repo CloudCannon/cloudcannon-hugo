@@ -3,7 +3,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable quote-props */
 // const { Validator } = require('jsonschema');
-const fs = require('fs');
+const { promises: fsProm } = require('fs');
 
 const configGen = require('./generators/buildConfig');
 const detailsGen = require('./generators/buildDetails');
@@ -36,7 +36,6 @@ function runValidation(config) {
 	const args = process.argv;
 
 	const hugoConfig = await helpers.getHugoConfig(args);
-	const hugoData = JSON.stringify(hugoConfig, null, 4);
 
 	const config = await configGen.generateConfig(hugoConfig);
 	const configData = JSON.stringify(config, null, 4);
@@ -47,12 +46,15 @@ function runValidation(config) {
 	const { publish } = helpers.getPaths(hugoConfig);
 
 	console.log('writing...');
+	try {
+		await fsProm.mkdir(`${publish}/_cloudcannon`, { recursive: true });
 
-	fs.mkdirSync(`${publish}/_cloudcannon`, { recursive: true });
-
-	fs.writeFileSync(`${publish}/_cloudcannon/config.json`, configData);
-	fs.writeFileSync(`${publish}/_cloudcannon/details.json`, detailsData);
-	fs.writeFileSync('hugoConfig.json', hugoData);
-
+		await Promise.all([
+			fsProm.writeFile(`${publish}/_cloudcannon/config.json`, configData),
+			fsProm.writeFile(`${publish}/_cloudcannon/details.json`, detailsData)
+		]);
+	} catch (writeError) {
+		console.error(`error writing to ${publish}/_cloudcannon`);
+	}
 	// runValidation(config);
 }());
