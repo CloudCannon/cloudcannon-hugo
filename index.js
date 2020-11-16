@@ -44,13 +44,14 @@ function runValidation(config) {
 	const details = await detailsGen.generateDetails(hugoConfig);
 	const detailsData = JSON.stringify(details, null, 4);
 
-	// TODO change public to configured PublishDir
-	fs.mkdirSync('public/_cloudcannon', { recursive: true });
+	const { publish } = helpers.getPaths(hugoConfig);
 
 	console.log('writing...');
 
-	fs.writeFileSync('public/_cloudcannon/config.json', configData);
-	fs.writeFileSync('public/_cloudcannon/details.json', detailsData);
+	fs.mkdirSync(`${publish}/_cloudcannon`, { recursive: true });
+
+	fs.writeFileSync(`${publish}/_cloudcannon/config.json`, configData);
+	fs.writeFileSync(`${publish}/_cloudcannon/details.json`, detailsData);
 	fs.writeFileSync('hugoConfig.json', hugoData);
 
 	// runValidation(config);
