@@ -54,7 +54,7 @@ function runValidation(config) {
 			fsProm.writeFile(`${publish}/_cloudcannon/details.json`, detailsData)
 		]);
 	} catch (writeError) {
-		console.error(`error writing to ${publish}/_cloudcannon`);
+		console.error(`error writing to ${publish}/_cloudcannon/`);
 	}
 	// runValidation(config);
 }());
