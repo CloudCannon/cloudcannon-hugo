@@ -94,9 +94,9 @@ module.exports = {
 		return data;
 	},
 
-	getCollections: async function (config, urlsPerPath) {
+	getCollections: async function (urlsPerPath) {
 		const collections = {};
-		const paths = helpers.getPaths(config);
+		const paths = pathHelper.getPaths();
 		const collectionPaths = await pathHelper.getCollectionPaths(paths);
 
 		collectionPaths.forEach(async (path) => {
@@ -134,8 +134,8 @@ module.exports = {
 		return collections;
 	},
 
-	getPages: async function (config, urlsPerPath) {
-		const paths = helpers.getPaths(config);
+	getPages: async function (urlsPerPath) {
+		const paths = pathHelper.getPaths();
 		const pagePaths = await pathHelper.getPagePaths(paths);
 
 		const pages = Promise.all(pagePaths.map(async (path) => {
@@ -165,8 +165,8 @@ module.exports = {
 
 	generateDetails: async function (hugoConfig) {
 		const urlsPerPath = this.getHugoUrls(hugoConfig.baseURL);
-		const collections = await this.getCollections(hugoConfig, urlsPerPath);
-		const pages = await this.getPages(hugoConfig, urlsPerPath);
+		const collections = await this.getCollections(urlsPerPath);
+		const pages = await this.getPages(urlsPerPath);
 		const generator = this.getGeneratorDetails(hugoConfig);
 		const baseURL = new URL(hugoConfig['baseURL'] || '');
 

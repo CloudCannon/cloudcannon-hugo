@@ -77,7 +77,7 @@ module.exports = {
 	},
 
 	generateConfig: async function (hugoConfig) {
-		const paths = helpers.getPaths(hugoConfig);
+		const paths = pathHelper.getPaths();
 		const defaultsPaths = await pathHelper.getDefaultsPaths(paths);
 
 		const defaults = [];

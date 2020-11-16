@@ -75,24 +75,6 @@ const mergeDeep = function (target, ...sources) {
 };
 
 module.exports = {
-	getPaths: function (config) {
-		if (!this.cachedPaths) {
-			this.cachedPaths = {
-				archetypes: config.archetypeDir || 'archetypes',
-				assets: config.assetDir || 'assets',
-				content: config.contentDir || 'content',
-				pages: config.contentDir || 'content',
-				data: config.dataDir || 'data',
-				layouts: config.layoutDir || 'layouts',
-				publish: config.publishDir || 'public',
-				uploads: `${config.staticDir}/uploads` || 'static/uploads',
-				themes: config.themesDir || 'themes',
-				config: config.configDir || ''
-			};
-		}
-		return this.cachedPaths;
-	},
-
 	exists: async function (path) {
 		try {
 			await fsProm.access(path);

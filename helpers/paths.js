@@ -1,6 +1,28 @@
 const globHelper = require('./globs');
 
 module.exports = {
+	getPaths: function (config) {
+		if (!this.cachedPaths) {
+			this.cachedPaths = {
+				archetypes: config.archetypeDir || 'archetypes',
+				assets: config.assetDir || 'assets',
+				content: config.contentDir || 'content',
+				pages: config.contentDir || 'content',
+				data: config.dataDir || 'data',
+				layouts: config.layoutDir || 'layouts',
+				publish: config.publishDir || 'public',
+				uploads: `${config.staticDir}/uploads` || 'static/uploads',
+				themes: config.themesDir || 'themes',
+				config: config.configDir || ''
+			};
+		}
+		return this.cachedPaths;
+	},
+
+	generatePaths: function (config) {
+		this.getPaths(config);
+	},
+
 	getDefaultsPaths: async function (paths) {
 		const indexGlob = `**/${paths.content}/**/_index.md`;
 		const archetypeGlob = `**/${paths.archetypes}/**/**.md`;
