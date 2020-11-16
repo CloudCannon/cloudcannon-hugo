@@ -39,8 +39,10 @@ module.exports = {
 
 		const collectionArray = archetypePaths.concat(contentPaths);
 
-		// remove empty string and duplicates
-		return Array.from(new Set(collectionArray.filter((item) => item)));
+		return Promise.resolve(
+			// remove empty string and duplicates
+			Array.from(new Set(collectionArray.filter((item) => item)))
+		);
 	},
 
 	generateCollections: async function (config, paths) {

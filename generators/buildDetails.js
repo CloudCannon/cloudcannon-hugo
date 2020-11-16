@@ -10,18 +10,18 @@ const { cloudCannonMeta, markdownMeta } = require('../helpers/metadata');
 
 module.exports = {
 
-	getMarkdownMetadata: async function (config) {
+	getMarkdownMetadata: function (config) {
 		if (config.markup) {
 			return config.markup;
 		}
 		return markdownMeta;
 	},
 
-	getGeneratorDetails: async function (config) {
-		const hugoVersion = await helpers.runProcess('hugo', ['version']);
+	getGeneratorDetails: function (config) {
+		const hugoVersion = helpers.runProcess('hugo', ['version']);
 		const versionNumber = hugoVersion.match(/[0-9]+\.[0-9]+\.[0-9]+/g);
 
-		const markdownDetails = await this.getMarkdownMetadata(config);
+		const markdownDetails = this.getMarkdownMetadata(config);
 
 		const generator = {
 			"name": "hugo",
@@ -29,7 +29,7 @@ module.exports = {
 			"metadata": markdownDetails
 		};
 
-		return Promise.resolve(generator);
+		return generator;
 	},
 
 	getCollectionName: function (path) {
@@ -70,8 +70,8 @@ module.exports = {
 		return '';
 	},
 
-	getHugoUrls: async function (baseurl) {
-		const fileCsv = await helpers.runProcess('hugo', ['list', 'all']);
+	getHugoUrls: function (baseurl) {
+		const fileCsv = helpers.runProcess('hugo', ['list', 'all']);
 		const fileList = csvParse(fileCsv, {
 			columns: true,
 			skipEmptyLines: true
@@ -85,7 +85,7 @@ module.exports = {
 			urlsPerPath[path] = url;
 		});
 
-		return Promise.resolve(urlsPerPath);
+		return urlsPerPath;
 	},
 
 	getDataFiles: async function (dataPath) {
@@ -180,10 +180,10 @@ module.exports = {
 	},
 
 	generateDetails: async function (hugoConfig) {
-		const urlsPerPath = await this.getHugoUrls(hugoConfig.baseURL);
+		const urlsPerPath = this.getHugoUrls(hugoConfig.baseURL);
 		const collections = await this.getCollections(hugoConfig, urlsPerPath);
 		const pages = await this.getPages(hugoConfig, urlsPerPath);
-		const generator = await this.getGeneratorDetails(hugoConfig);
+		const generator = this.getGeneratorDetails(hugoConfig);
 		const baseURL = new URL(hugoConfig['baseURL'] || '');
 
 		return {
@@ -192,7 +192,7 @@ module.exports = {
 			"generator": generator,
 			"collections": collections,
 			"pages": pages,
-			"baseurl": baseURL || ""
+			"baseurl": baseURL || ''
 		};
 	}
 };

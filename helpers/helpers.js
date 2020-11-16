@@ -9,7 +9,7 @@ const globPromise = promisify(glob);
 const toml = require('toml');
 const yaml = require('js-yaml');
 
-const getValidOptionName = async function (option) {
+const getValidOptionName = function (option) {
 	const relevantOptions = {
 		'--environment': 'environment',
 		'-e': 'environment',
@@ -28,7 +28,7 @@ const getValidOptionName = async function (option) {
 	}
 };
 
-const configSort = async function (fileArray) {
+const configSort = function (fileArray) {
 	const extensionOrder = ['.toml', '.yaml', '.json'];
 
 	const sorted = fileArray.sort((a, b) => {
@@ -113,26 +113,26 @@ module.exports = {
 
 	exists: async function (path) {
 		try {
-			const accessible = await fsProm.access(path);
-			return accessible;
+			await fsProm.access(path);
+			return Promise.resolve(true);
 		} catch (err) {
-			return false;
+			return Promise.resolve(false);
 		}
 	},
 
 	getItemDetails: async function (path) {
 		try {
 			const data = await fsProm.readFile(path, 'utf-8');
-			const frontMatterObject = await this.parseFrontMatter(data);
+			const frontMatterObject = this.parseFrontMatter(data);
 			return frontMatterObject;
 		} catch (parseError) {
 			return {};
 		}
 	},
 
-	parseFrontMatter: async function (data) {
+	parseFrontMatter: function (data) {
 		if (!data) {
-			return Promise.reject(Error('File is empty'));
+			return Error('File is empty');
 		}
 		const normalised = data
 			.replace(/{{.*}}/g, '') // remove Hugo code
@@ -147,8 +147,7 @@ module.exports = {
 			end = normalised.indexOf('\n---', start + 1);
 			if (start === 0 && end > start) {
 				const trimmed = normalised.substring(start + 3, end);
-				const parsed = await this.parseYaml(trimmed);
-				return Promise.resolve(parsed);
+				return this.parseYaml(trimmed);
 			}
 			break;
 		case '+':
@@ -156,8 +155,7 @@ module.exports = {
 			end = normalised.indexOf('\n+++', start + 1);
 			if (start === 0 && end > start) {
 				const trimmed = normalised.substring(start + 3, end);
-				const parsed = await this.parseToml(trimmed);
-				return Promise.resolve(parsed);
+				return this.parseToml(trimmed);
 			}
 			break;
 		case '{':
@@ -171,44 +169,40 @@ module.exports = {
 
 	parseYaml: function (data) {
 		try {
-			const yamlData = yaml.safeLoad(data, { json: true });
-			return Promise.resolve(yamlData);
+			return yaml.safeLoad(data, { json: true });
 		} catch (parseError) {
 			console.error(parseError);
 		}
-		return Promise.reject();
 	},
 
 	parseToml: function (data) {
 		try {
-			const tomlData = toml.parse(data);
-			return Promise.resolve(tomlData);
+			return toml.parse(data);
 		} catch (e) {
 			console.error(`Parsing error on line ${e.line}, column ${e.column}: ${e.message}`);
 		}
-		return Promise.reject();
 	},
 
-	runProcess: async function (command, args) {
+	runProcess: function (command, args) {
 		try {
-			const childProcess = await cp.spawnSync(command, args, {
+			const childProcess = cp.spawnSync(command, args, {
 				cwd: process.cwd(),
 				env: process.env,
 				stdio: 'pipe',
 				encoding: 'utf-8'
 			});
-			return Promise.resolve(childProcess.output[1]); // second item contains the actual response
+			return childProcess.output[1]; // second item contains the actual response
 		} catch (processError) {
-			return Promise.reject(processError);
+			console.error(processError);
 		}
 	},
 
-	processArgs: async function (args) {
+	processArgs: function (args) {
 		const flagtest = /^(-.$)|(--\w*$)/i;
 		const argObject = {};
-		args.forEach(async (argument, index) => {
+		args.forEach((argument, index) => {
 			if (flagtest.test(argument)) {
-				const item = await getValidOptionName(argument);
+				const item = getValidOptionName(argument);
 				if (item) {
 					argObject[item] = args[index + 1];
 				}
@@ -218,29 +212,33 @@ module.exports = {
 	},
 
 	getHugoConfig: async function (args) {
-		const buildArguments = await this.processArgs(args);
+		const buildArguments = this.processArgs(args);
 		const environment = buildArguments.environment || 'production'; // or just use root
 		const configDir = buildArguments.configDir || 'config';
 		// ^ maybe default to 'development' if the site is specifically a staging branch
 
-		// TODO sanitize slashes
 		const configEnvDir = `${configDir}/${environment}/`;
 		const configDefaultDir = `${configDir}/_default/`;
 
 		let configFileList = [];
 
-		if (this.exists(configEnvDir)) {
+		if (await this.exists(configEnvDir)) {
 			const files = await this.getGlob(`${configEnvDir}/**.**`);
-			configFileList = configFileList.concat(await configSort(files));
+			configFileList = configFileList.concat(configSort(files));
 		}
 
-		if (this.exists(configDefaultDir)) {
+		if (await this.exists(configDefaultDir)) {
 			const files = await this.getGlob(`${configDefaultDir}/**.**`);
-			configFileList = configFileList.concat(await configSort(files));
+			configFileList = configFileList.concat(configSort(files));
 		}
 
-		// TODO make this more exhaustive
-		configFileList.push('config.toml');
+		if (await this.exists('config.toml')) {
+			configFileList.push('config.toml');
+		} else if (await this.exists('config.yaml')) {
+			configFileList.push('config.yaml');
+		} else if (await this.exists('config.json')) {
+			configFileList.push('config.json');
+		}
 
 		let passedConfigFiles = buildArguments.config || '';
 
@@ -260,22 +258,25 @@ module.exports = {
 		};
 
 		const configPromises = configFileList.map(async (configPath) => {
+			configPath = configPath.replace('//', '/');
 			const extension = Path.extname(configPath).toLowerCase();
 			const fileType = fileTypeByExtension[extension];
-			const filename = Path.basename(configPath, extension);
+			if (!fileType) {
+				return Promise.resolve();
+			}
 
 			let parsedData = {};
 			try {
 				const configContents = await fsProm.readFile(configPath, 'utf-8');
 				switch (fileType) {
 				case 'toml':
-					parsedData = await this.parseToml(configContents);
+					parsedData = this.parseToml(configContents);
 					break;
 				case 'yaml':
-					parsedData = await this.parseYaml(configContents);
+					parsedData = this.parseYaml(configContents);
 					break;
 				case 'json':
-					parsedData = await JSON.parse(configContents);
+					parsedData = JSON.parse(configContents);
 					break;
 				default:
 					console.warn('could not parse config file');
@@ -285,6 +286,7 @@ module.exports = {
 				console.warn(readFileError);
 			}
 
+			const filename = Path.basename(configPath, extension);
 			if (filename !== 'config' && passedConfigFiles.indexOf(configPath) < 0) {
 				return Promise.resolve({ [filename]: parsedData });
 			}
@@ -294,11 +296,11 @@ module.exports = {
 		const configContents = await Promise.all(configPromises);
 		configContents.reverse(); // reversing because deep merge places priority on the second object
 
-		const configObject = await mergeDeep({}, ...configContents);
+		const configObject = mergeDeep({}, ...configContents);
 
 		if (buildArguments.baseurl) {
 			configObject.baseurl = buildArguments.baseurl;
 		}
-		return configObject;
+		return Promise.resolve(configObject);
 	}
 };
