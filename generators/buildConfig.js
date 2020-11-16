@@ -39,10 +39,8 @@ module.exports = {
 
 		const collectionArray = archetypePaths.concat(contentPaths);
 
-		return Promise.resolve(
-			// remove empty string and duplicates
-			Array.from(new Set(collectionArray.filter((item) => item)))
-		);
+		// remove empty string and duplicates
+		return Array.from(new Set(collectionArray.filter((item) => item)));
 	},
 
 	generateCollections: async function (config, paths) {
@@ -67,6 +65,7 @@ module.exports = {
 
 				collections[collectionName] = collection;
 			}
+			return Promise.resolve();
 		}));
 
 		collections.data = {
@@ -80,7 +79,7 @@ module.exports = {
 			});
 		}
 
-		return Promise.resolve(collections);
+		return collections;
 	},
 
 	generateDefault: async function (path) {
@@ -95,7 +94,7 @@ module.exports = {
 			'scope': scope
 		};
 
-		return Promise.resolve(defaultData);
+		return defaultData;
 	},
 
 	generateConfig: async function (hugoConfig) {
@@ -106,10 +105,10 @@ module.exports = {
 		await Promise.all(defaultsPaths.map(async (path) => {
 			const defaultData = await this.generateDefault(path);
 			defaults.push(defaultData);
+			return Promise.resolve();
 		}));
 
 		const collections = await this.generateCollections(hugoConfig, paths);
-		// console.log(await helpers.getParams());
 
 		const cloudCannonSpecific = hugoConfig.params ? hugoConfig.params.cloudcannon : null;
 		const baseURL = new URL(hugoConfig['baseURL'] || '');

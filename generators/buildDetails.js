@@ -103,7 +103,7 @@ module.exports = {
 
 			data.push(collectionItem);
 		});
-		return Promise.resolve(data);
+		return data;
 	},
 
 	getCollections: async function (config, urlsPerPath) {
@@ -143,7 +143,7 @@ module.exports = {
 
 		collections.data = await this.getDataFiles(paths.data);
 
-		return Promise.resolve(collections);
+		return collections;
 	},
 
 	getPages: async function (config, urlsPerPath) {
@@ -173,7 +173,7 @@ module.exports = {
 				delete item.headless;
 				item.output = false;
 			}
-			return Promise.resolve(item);
+			return item;
 		}));
 
 		return pages;

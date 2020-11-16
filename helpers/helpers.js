@@ -104,8 +104,7 @@ module.exports = {
 		options.nodir = true;
 
 		try {
-			const paths = await globPromise(globPattern, options);
-			return paths;
+			return await globPromise(globPattern, options);
 		} catch (globErr) {
 			console.err(globErr);
 		}
@@ -114,9 +113,9 @@ module.exports = {
 	exists: async function (path) {
 		try {
 			await fsProm.access(path);
-			return Promise.resolve(true);
+			return true;
 		} catch (err) {
-			return Promise.resolve(false);
+			return false;
 		}
 	},
 
@@ -164,7 +163,7 @@ module.exports = {
 		default:
 			break;
 		}
-		return Promise.reject(Error('couldnt parse'));
+		return Error('couldnt parse');
 	},
 
 	parseYaml: function (data) {
@@ -262,7 +261,7 @@ module.exports = {
 			const extension = Path.extname(configPath).toLowerCase();
 			const fileType = fileTypeByExtension[extension];
 			if (!fileType) {
-				return Promise.resolve();
+				return;
 			}
 
 			let parsedData = {};
@@ -288,9 +287,9 @@ module.exports = {
 
 			const filename = Path.basename(configPath, extension);
 			if (filename !== 'config' && passedConfigFiles.indexOf(configPath) < 0) {
-				return Promise.resolve({ [filename]: parsedData });
+				return { [filename]: parsedData };
 			}
-			return Promise.resolve(parsedData);
+			return parsedData;
 		});
 
 		const configContents = await Promise.all(configPromises);
@@ -301,6 +300,6 @@ module.exports = {
 		if (buildArguments.baseurl) {
 			configObject.baseurl = buildArguments.baseurl;
 		}
-		return Promise.resolve(configObject);
+		return configObject;
 	}
 };
