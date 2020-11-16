@@ -3,7 +3,7 @@
 /* eslint-disable dot-notation */
 const Path = require('path');
 
-const { getGlob, getPaths } = require('../helpers/helpers');
+const helpers = require('../helpers/helpers');
 const { cloudCannonMeta } = require('../helpers/metadata');
 
 module.exports = {
@@ -12,16 +12,16 @@ module.exports = {
 		const archetypes = `**/${paths.archetypes}/**/**.md`;
 
 		const defaultsGlob = `{${indexPaths},${archetypes}}`;
-		return getGlob(defaultsGlob);
+		return helpers.getGlob(defaultsGlob);
 	},
 
-	getCollectionName: function (path, isArchetype) {
+	getCollectionName: function (path, archetypePath) {
 		if (path.indexOf('index.md') >= 0) {
 			// need to remove content/index.md
 			return Path.basename(Path.dirname(path));
 		}
 
-		if (isArchetype) {
+		if (path.indexOf(archetypePath) >= 0) {
 			if (path.indexOf('default.md') >= 0) {
 				return;
 			}
@@ -32,14 +32,12 @@ module.exports = {
 
 	getCollectionPaths: async function (paths) {
 		const archetypeGlob = `**/${paths.archetypes}/**/**.md`;
-		const archetypePaths = await getGlob(archetypeGlob, { ignore: '**/default.md' });
-		const archetypeArray = archetypePaths.map((item) => this.getCollectionName(item, true));
+		const archetypePaths = await helpers.getGlob(archetypeGlob, { ignore: '**/default.md' });
 
 		const contentGlob = `**/${paths.content}/*/**`;
-		const contentPaths = await getGlob(contentGlob);
-		const contentArray = contentPaths.map((item) => this.getCollectionName(item));
+		const contentPaths = await helpers.getGlob(contentGlob);
 
-		const collectionArray = archetypeArray.concat(contentArray);
+		const collectionArray = archetypePaths.concat(contentPaths);
 
 		// remove empty string and duplicates
 		return Array.from(new Set(collectionArray.filter((item) => item)));
@@ -51,14 +49,23 @@ module.exports = {
 
 		const collectionPaths = await this.getCollectionPaths(paths);
 
-		collectionPaths.forEach((collectionName) => {
+		await Promise.all(collectionPaths.map(async (collectionPath) => {
+			const collectionName = this.getCollectionName(collectionPath, paths.archetypes);
 			if (collectionName) {
-				collections[collectionName] = {
-					_path: `${contentDir}/${collectionName}`,
+				const path = `${contentDir}/${collectionName}`;
+				const collection = {
+					_path: path,
 					output: true
 				};
+
+				const itemDetails = await helpers.getItemDetails(collectionPath);
+				if (itemDetails.headless) {
+					collection.output = false;
+				}
+
+				collections[collectionName] = collection;
 			}
-		});
+		}));
 
 		collections.data = {
 			_path: paths.data,
@@ -71,18 +78,11 @@ module.exports = {
 			});
 		}
 
-		return collections;
+		return Promise.resolve(collections);
 	},
 
 	generateDefault: async function (path) {
-		// let content;
-		// try {
-		// content = await readFile(path, 'utf-8');
-		// } catch (readErr) {
-		// console.error(readErr);
-		// }
-
-		// const frontMatter = content? await parseFrontMatter(content) : {};
+		// const frontMatter = await helpers.getItemDetails(path);
 		const scope = {};
 		scope.path = Path.dirname(path).replace('archetypes', '');
 
@@ -97,7 +97,7 @@ module.exports = {
 	},
 
 	generateConfig: async function (hugoConfig) {
-		const paths = getPaths(hugoConfig);
+		const paths = helpers.getPaths(hugoConfig);
 		const defaultsPaths = await this.getDefaultsPaths(paths);
 
 		const defaults = [];

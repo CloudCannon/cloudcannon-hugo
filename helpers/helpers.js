@@ -119,11 +119,24 @@ module.exports = {
 		}
 	},
 
+	getItemDetails: async function (path) {
+		try {
+			const data = await fsProm.readFile(path, 'utf-8');
+			const frontMatterObject = await this.parseFrontMatter(data);
+			return frontMatterObject;
+		} catch (parseError) {
+			return {};
+		}
+	},
+
 	parseFrontMatter: async function (data) {
 		if (!data) {
 			return Promise.reject(Error('File is empty'));
 		}
-		const normalised = data.replace(/(?:\r\n|\r|\n)/g, '\n');
+		const normalised = data
+			.replace(/{{.*}}/g, '') // remove Hugo code
+			.replace(/(?:\r\n|\r|\n)/g, '\n');
+
 		const identifyingChar = normalised.charAt(0);
 		let start;
 		let end;
