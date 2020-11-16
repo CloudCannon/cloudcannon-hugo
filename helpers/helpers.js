@@ -44,16 +44,17 @@ const configSort = async function (fileArray) {
 };
 
 /**
- * Simple object check.
- * @param item
+ * Simple object check, returning false for arrays and null objects.
+ * @param item the object
  * @returns {boolean}
  */
 const isObject = function (item) {
 	return (item && typeof item === 'object' && !Array.isArray(item));
 };
 
-/** TODO make this eslint compatable
- * Deep merge two objects.
+/**
+ * Deep merge objects.
+ * Adapted from https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
  * @param target
  * @param ...sources
  */
@@ -62,14 +63,14 @@ const mergeDeep = function (target, ...sources) {
 	const source = sources.shift();
 
 	if (isObject(target) && isObject(source)) {
-		for (const key in source) {
+		Object.keys(source).forEach((key) => {
 			if (isObject(source[key])) {
 				if (!target[key]) Object.assign(target, { [key]: {} });
 				mergeDeep(target[key], source[key]);
 			} else {
 				Object.assign(target, { [key]: source[key] });
 			}
-		}
+		});
 	}
 
 	return mergeDeep(target, ...sources);
@@ -293,10 +294,7 @@ module.exports = {
 		const configContents = await Promise.all(configPromises);
 		configContents.reverse(); // reversing because deep merge places priority on the second object
 
-		let configObject = {};
-		configContents.forEach((configContent) => {
-			configObject = mergeDeep(configObject, configContent);
-		});
+		const configObject = await mergeDeep({}, ...configContents);
 
 		if (buildArguments.baseurl) {
 			configObject.baseurl = buildArguments.baseurl;
