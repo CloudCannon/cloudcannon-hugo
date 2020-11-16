@@ -184,6 +184,7 @@ module.exports = {
 		const collections = await this.getCollections(hugoConfig, urlsPerPath);
 		const pages = await this.getPages(hugoConfig, urlsPerPath);
 		const generator = await this.getGeneratorDetails(hugoConfig);
+		const baseURL = new URL(hugoConfig['baseURL'] || '');
 
 		return {
 			"time": "",
@@ -191,7 +192,7 @@ module.exports = {
 			"generator": generator,
 			"collections": collections,
 			"pages": pages,
-			"baseurl": hugoConfig["baseURL"] || ""
+			"baseurl": baseURL || ""
 		};
 	}
 };
