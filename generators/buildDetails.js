@@ -5,6 +5,7 @@ const csvParse = require('csv-parse/lib/sync');
 const Path = require('path');
 
 const helpers = require('../helpers/helpers');
+const pathHelper = require('../helpers/paths');
 
 const { cloudCannonMeta, markdownMeta } = require('../helpers/metadata');
 
@@ -44,17 +45,6 @@ module.exports = {
 		return extraPart ? dir.replace(extraPart[0], '') : '';
 	},
 
-	// TODO remove duplicate in buildConfig
-	getCollectionPaths: async function (paths) {
-		const archetypeGlob = `**/${paths.archetypes}/**/**.md`;
-		const contentGlob = `**/${paths.content}/*/**`;
-
-		const collectionPaths = await helpers.getGlob([archetypeGlob, contentGlob], { ignore: `**/${paths.archetypes}/default.md` });
-
-		// remove empty strings and duplicates
-		return Array.from(new Set(collectionPaths.filter((item) => item)));
-	},
-
 	getPageUrl: function (path, hugoUrls, contentDir) {
 		if (hugoUrls[path]) {
 			return hugoUrls[path].replace('//', '/');
@@ -88,7 +78,7 @@ module.exports = {
 
 	getDataFiles: async function (dataPath) {
 		const data = [];
-		const dataFiles = await helpers.getGlob(dataPath) || [];
+		const dataFiles = await pathHelper.getDataPaths(dataPath);
 		dataFiles.forEach(async (path) => {
 			const collectionItem = {
 				"url": '',
@@ -107,7 +97,7 @@ module.exports = {
 	getCollections: async function (config, urlsPerPath) {
 		const collections = {};
 		const paths = helpers.getPaths(config);
-		const collectionPaths = await this.getCollectionPaths(paths);
+		const collectionPaths = await pathHelper.getCollectionPaths(paths);
 
 		collectionPaths.forEach(async (path) => {
 			const collectionName = this.getCollectionName(path);
@@ -146,13 +136,9 @@ module.exports = {
 
 	getPages: async function (config, urlsPerPath) {
 		const paths = helpers.getPaths(config);
-		const contentFiles = await helpers.getGlob(`**/${paths.content}/**/*.md`, { ignore: `**/${paths.content}/*/*.md` });
-		const indexFiles = await helpers.getGlob(`**/${paths.content}/**/*index.md`);
+		const pagePaths = await pathHelper.getPagePaths(paths);
 
-		// concat and remove duplicates
-		const files = Array.from(new Set(contentFiles.concat(indexFiles)));
-
-		const pages = Promise.all(files.map(async (path) => {
+		const pages = Promise.all(pagePaths.map(async (path) => {
 			const itemDetails = await helpers.getItemDetails(path);
 			const url = this.getPageUrl(path, urlsPerPath, paths.content);
 			const item = {

@@ -1,7 +1,7 @@
 /* eslint-disable prefer-arrow-callback */
 const { expect } = require('chai');
 
-const helpers = require('../helpers/helpers');
+const { getGlobString } = require('../helpers/globs');
 
 describe('globs', function () {
 	describe('getGlobString', function () {
@@ -13,7 +13,7 @@ describe('globs', function () {
 
 		tests.forEach((test) => {
 			it(test.context || '', function () {
-				const outputPattern = helpers.getGlobString(test.input);
+				const outputPattern = getGlobString(test.input);
 				expect(outputPattern).to.equal(test.expected);
 			});
 		});

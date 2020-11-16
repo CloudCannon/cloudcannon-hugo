@@ -4,17 +4,10 @@
 const Path = require('path');
 
 const helpers = require('../helpers/helpers');
+const pathHelper = require('../helpers/paths');
 const { cloudCannonMeta } = require('../helpers/metadata');
 
 module.exports = {
-	getDefaultsPaths: function (paths) {
-		const indexPaths = `**/${paths.content}/**/_index.md`;
-		const archetypes = `**/${paths.archetypes}/**/**.md`;
-
-		const defaultsGlob = `{${indexPaths},${archetypes}}`;
-		return helpers.getGlob(defaultsGlob);
-	},
-
 	getCollectionName: function (path, archetypePath) {
 		if (path.indexOf('index.md') >= 0) {
 			return Path.basename(Path.dirname(path));
@@ -29,22 +22,11 @@ module.exports = {
 		}
 	},
 
-	// TODO remove duplicate in buildDetails
-	getCollectionPaths: async function (paths) {
-		const archetypeGlob = `**/${paths.archetypes}/**/**.md`;
-		const contentGlob = `**/${paths.content}/*/**`;
-
-		const collectionPaths = await helpers.getGlob([archetypeGlob, contentGlob], { ignore: `**/${paths.archetypes}/default.md` });
-
-		// remove empty strings and duplicates
-		return Array.from(new Set(collectionPaths.filter((item) => item)));
-	},
-
 	generateCollections: async function (config, paths) {
 		const contentDir = paths.content;
 		const collections = {};
 
-		const collectionPaths = await this.getCollectionPaths(paths);
+		const collectionPaths = await pathHelper.getCollectionPaths(paths);
 
 		await Promise.all(collectionPaths.map(async (collectionPath) => {
 			const collectionName = this.getCollectionName(collectionPath, paths.archetypes);
@@ -96,7 +78,7 @@ module.exports = {
 
 	generateConfig: async function (hugoConfig) {
 		const paths = helpers.getPaths(hugoConfig);
-		const defaultsPaths = await this.getDefaultsPaths(paths);
+		const defaultsPaths = await pathHelper.getDefaultsPaths(paths);
 
 		const defaults = [];
 		await Promise.all(defaultsPaths.map(async (path) => {

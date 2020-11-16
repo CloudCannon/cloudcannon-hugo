@@ -1,13 +1,11 @@
 const cp = require('child_process');
 const Path = require('path');
 const { promises: fsProm } = require('fs');
-const glob = require('glob');
-const { promisify } = require('util');
-
-const globPromise = promisify(glob);
 
 const toml = require('toml');
 const yaml = require('js-yaml');
+
+const globHelper = require('./globs');
 
 const getValidOptionName = function (option) {
 	const relevantOptions = {
@@ -78,53 +76,21 @@ const mergeDeep = function (target, ...sources) {
 
 module.exports = {
 	getPaths: function (config) {
-		return {
-			archetypes: config.archetypeDir || 'archetypes',
-			assets: config.assetDir || 'assets',
-			content: config.contentDir || 'content',
-			pages: config.contentDir || 'content',
-			data: config.dataDir || 'data',
-			layouts: config.layoutDir || 'layouts',
-			publish: config.publishDir || 'public',
-			uploads: `${config.staticDir}/uploads` || 'static/uploads',
-			themes: config.themesDir || 'themes',
-			config: config.configDir || ''
-		};
-	},
-
-	getGlobString: function (globPatterns) {
-		if (globPatterns.length === 0) return '';
-		if (globPatterns.length === 1) return globPatterns[0];
-
-		let globString = '{';
-		globPatterns.forEach((globPattern, index) => {
-			globString += index > 0 ? ',' : '';
-			globString += globPattern;
-		});
-		globString += '}';
-		return globString;
-	},
-
-	getGlob: async function (globPattern, options) {
-		if (Array.isArray(globPattern)) {
-			globPattern = this.getGlobString(globPattern);
+		if (!this.cachedPaths) {
+			this.cachedPaths = {
+				archetypes: config.archetypeDir || 'archetypes',
+				assets: config.assetDir || 'assets',
+				content: config.contentDir || 'content',
+				pages: config.contentDir || 'content',
+				data: config.dataDir || 'data',
+				layouts: config.layoutDir || 'layouts',
+				publish: config.publishDir || 'public',
+				uploads: `${config.staticDir}/uploads` || 'static/uploads',
+				themes: config.themesDir || 'themes',
+				config: config.configDir || ''
+			};
 		}
-
-		options = options || {};
-		if (!options.ignore) {
-			options.ignore = [];
-		}
-		if (typeof options.ignore === 'string') {
-			options.ignore = [options.ignore];
-		}
-		options.ignore.push('**/exampleSite/**');
-		options.nodir = true;
-
-		try {
-			return await globPromise(globPattern, options);
-		} catch (globErr) {
-			console.err(globErr);
-		}
+		return this.cachedPaths;
 	},
 
 	exists: async function (path) {
@@ -239,12 +205,12 @@ module.exports = {
 		let configFileList = [];
 
 		if (await this.exists(configEnvDir)) {
-			const files = await this.getGlob(`${configEnvDir}/**.**`);
+			const files = await globHelper.getGlob(`${configEnvDir}/**.**`);
 			configFileList = configFileList.concat(configSort(files));
 		}
 
 		if (await this.exists(configDefaultDir)) {
-			const files = await this.getGlob(`${configDefaultDir}/**.**`);
+			const files = await globHelper.getGlob(`${configDefaultDir}/**.**`);
 			configFileList = configFileList.concat(configSort(files));
 		}
 
