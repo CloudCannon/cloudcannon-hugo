@@ -17,7 +17,6 @@ module.exports = {
 
 	getCollectionName: function (path, archetypePath) {
 		if (path.indexOf('index.md') >= 0) {
-			// need to remove content/index.md
 			return Path.basename(Path.dirname(path));
 		}
 
@@ -30,17 +29,15 @@ module.exports = {
 		}
 	},
 
+	// TODO remove duplicate in buildDetails
 	getCollectionPaths: async function (paths) {
 		const archetypeGlob = `**/${paths.archetypes}/**/**.md`;
-		const archetypePaths = await helpers.getGlob(archetypeGlob, { ignore: '**/default.md' });
-
 		const contentGlob = `**/${paths.content}/*/**`;
-		const contentPaths = await helpers.getGlob(contentGlob);
 
-		const collectionArray = archetypePaths.concat(contentPaths);
+		const collectionPaths = await helpers.getGlob([archetypeGlob, contentGlob], { ignore: `**/${paths.archetypes}/default.md` });
 
-		// remove empty string and duplicates
-		return Array.from(new Set(collectionArray.filter((item) => item)));
+		// remove empty strings and duplicates
+		return Array.from(new Set(collectionPaths.filter((item) => item)));
 	},
 
 	generateCollections: async function (config, paths) {

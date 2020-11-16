@@ -92,7 +92,24 @@ module.exports = {
 		};
 	},
 
+	getGlobString: function (globPatterns) {
+		if (globPatterns.length === 0) return '';
+		if (globPatterns.length === 1) return globPatterns[0];
+
+		let globString = '{';
+		globPatterns.forEach((globPattern, index) => {
+			globString += index > 0 ? ',' : '';
+			globString += globPattern;
+		});
+		globString += '}';
+		return globString;
+	},
+
 	getGlob: async function (globPattern, options) {
+		if (Array.isArray(globPattern)) {
+			globPattern = this.getGlobString(globPattern);
+		}
+
 		options = options || {};
 		if (!options.ignore) {
 			options.ignore = [];

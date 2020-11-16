@@ -44,16 +44,14 @@ module.exports = {
 		return extraPart ? dir.replace(extraPart[0], '') : '';
 	},
 
+	// TODO remove duplicate in buildConfig
 	getCollectionPaths: async function (paths) {
 		const archetypeGlob = `**/${paths.archetypes}/**/**.md`;
-		const archetypePaths = await helpers.getGlob(archetypeGlob, { ignore: '**/default.md' });
-
 		const contentGlob = `**/${paths.content}/*/**`;
-		const contentPaths = await helpers.getGlob(contentGlob);
 
-		const collectionPaths = archetypePaths.concat(contentPaths);
+		const collectionPaths = await helpers.getGlob([archetypeGlob, contentGlob], { ignore: `**/${paths.archetypes}/default.md` });
 
-		// remove empty string and duplicates
+		// remove empty strings and duplicates
 		return Array.from(new Set(collectionPaths.filter((item) => item)));
 	},
 
