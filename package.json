@@ -7,7 +7,8 @@
     "lint-code": "eslint index.js",
     "lint": "npm run lint-autofix && npm run lint-code",
     "start": "hugo config | node index.js",
-    "test": "nyc mocha --full-trace --recursive"
+	"test": "nyc mocha --full-trace --recursive",
+	"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "bin": {
     "cloudcannon-hugo": "./index.js"
