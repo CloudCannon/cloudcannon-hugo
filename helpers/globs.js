@@ -23,14 +23,17 @@ module.exports = {
 		}
 
 		options = options || {};
-		if (!options.ignore) {
-			options.ignore = [];
-		}
+		const defaultOptions = {
+			nodir: true,
+			noUnique: true
+		};
+		options = Object.assign(defaultOptions, options);
+
+		options.ignore = options.ignore || [];
 		if (typeof options.ignore === 'string') {
 			options.ignore = [options.ignore];
 		}
 		options.ignore.push('**/exampleSite/**');
-		options.nodir = true;
 
 		try {
 			return await globPromise(globPattern, options);
