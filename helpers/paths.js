@@ -31,7 +31,7 @@ module.exports = {
 	},
 
 	getDataPaths: async function (dataPath) {
-		return globHelper.getGlob(dataPath) || [];
+		return globHelper.getGlob(`${dataPath}/**`) || [];
 	},
 
 	getPagePaths: async function (paths) {
