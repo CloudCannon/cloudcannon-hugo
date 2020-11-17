@@ -26,7 +26,7 @@ module.exports = {
 		const contentDir = paths.content;
 		const collections = {};
 
-		const collectionPaths = await pathHelper.getCollectionPaths(paths);
+		const collectionPaths = await pathHelper.getCollectionPaths();
 
 		await Promise.all(collectionPaths.map(async (collectionPath) => {
 			const collectionName = this.getCollectionName(collectionPath, paths.archetypes);
@@ -78,7 +78,7 @@ module.exports = {
 
 	generateConfig: async function (hugoConfig) {
 		const paths = pathHelper.getPaths();
-		const defaultsPaths = await pathHelper.getDefaultsPaths(paths);
+		const defaultsPaths = await pathHelper.getDefaultsPaths();
 
 		const defaults = [];
 		await Promise.all(defaultsPaths.map(async (path) => {

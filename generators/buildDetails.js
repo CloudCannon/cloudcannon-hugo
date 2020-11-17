@@ -78,7 +78,7 @@ module.exports = {
 
 	getDataFiles: async function (dataPath) {
 		const data = [];
-		const dataFiles = await pathHelper.getDataPaths(dataPath);
+		const dataFiles = await pathHelper.getDataPaths();
 		dataFiles.forEach(async (path) => {
 			const collectionItem = {
 				"url": '',
@@ -136,7 +136,7 @@ module.exports = {
 
 	getPages: async function (urlsPerPath) {
 		const paths = pathHelper.getPaths();
-		const pagePaths = await pathHelper.getPagePaths(paths);
+		const pagePaths = await pathHelper.getPagePaths();
 
 		const pages = Promise.all(pagePaths.map(async (path) => {
 			const itemDetails = await helpers.getItemDetails(path);

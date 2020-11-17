@@ -1,7 +1,7 @@
 const globHelper = require('./globs');
 
 module.exports = {
-	getPaths: function (config) {
+	getPaths: function (config = {}) {
 		if (!this.cachedPaths) {
 			this.cachedPaths = {
 				archetypes: config.archetypeDir || 'archetypes',
@@ -11,7 +11,7 @@ module.exports = {
 				data: config.dataDir || 'data',
 				layouts: config.layoutDir || 'layouts',
 				publish: config.publishDir || 'public',
-				uploads: `${config.staticDir}/uploads` || 'static/uploads',
+				uploads: `${config.staticDir || 'static'}/uploads`,
 				themes: config.themesDir || 'themes',
 				config: config.configDir || ''
 			};
@@ -23,31 +23,34 @@ module.exports = {
 		this.getPaths(config);
 	},
 
-	getDefaultsPaths: async function (paths) {
-		const indexGlob = `**/${paths.content}/**/_index.md`;
-		const archetypeGlob = `**/${paths.archetypes}/**/**.md`;
+	getDefaultsPaths: async function () {
+		const { archetypes } = this.getPaths();
+		const archetypeGlob = `**/${archetypes}/**/**.md`;
 
-		return globHelper.getGlob([indexGlob, archetypeGlob]);
+		return globHelper.getGlob(archetypeGlob);
 	},
 
-	getDataPaths: async function (dataPath) {
-		return globHelper.getGlob(`${dataPath}/**`) || [];
+	getDataPaths: async function () {
+		const { data } = this.getPaths();
+		return globHelper.getGlob(`${data}/**`);
 	},
 
-	getPagePaths: async function (paths) {
-		const contentFiles = await globHelper.getGlob(`**/${paths.content}/**/*.md`, { ignore: `**/${paths.content}/*/*.md` });
-		const indexFiles = await globHelper.getGlob(`**/${paths.content}/**/*index.md`);
+	getPagePaths: async function () {
+		const { content } = this.getPaths();
+		const contentFiles = await globHelper.getGlob(`**/${content}/**/*.md`, { ignore: `**/${content}/*/*.md` });
+		const indexFiles = await globHelper.getGlob(`**/${content}/**/*index.md`);
 
 		// concat and remove duplicates
 		return Array.from(new Set(contentFiles.concat(indexFiles)));
 	},
 
-	getCollectionPaths: async function (paths) {
-		const archetypeGlob = `**/${paths.archetypes}/**/**.md`;
-		const contentGlob = `**/${paths.content}/*/**`;
+	getCollectionPaths: async function () {
+		const { archetypes, content } = this.getPaths();
+		const archetypeGlob = `**/${archetypes}/**/**.md`;
+		const contentGlob = `**/${content}/*/**`;
 
 		// TODO cache this
-		const collectionPaths = await globHelper.getGlob([archetypeGlob, contentGlob], { ignore: `**/${paths.archetypes}/default.md` });
+		const collectionPaths = await globHelper.getGlob([archetypeGlob, contentGlob], { ignore: `**/${archetypes}/default.md` });
 
 		// remove empty strings and duplicates
 		return Array.from(new Set(collectionPaths.filter((item) => item)));
