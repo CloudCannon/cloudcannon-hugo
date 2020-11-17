@@ -6,24 +6,17 @@ const mock = require('mock-fs');
 const pathHelper = require('../../helpers/paths');
 
 const testFileStructure = {
-	'archetypes': {
-		'default.md': 'content'
-	},
-	'data': {
-		'authors': {
-			'jane-doe.md': 'content',
-			'john-smith.md': 'content'
-		}
-	},
-	'content': {
-		'collectionName': {
-			'index.md': 'content'
-		},
-		'emptyCollection': {}
-	},
-	'theme/exampleSite': {
-		'index.html': 'content'
-	}
+	'archetypes/default.md': 'content',
+	'archetypes/notes.md': 'content',
+	'data/authors/jane-doe.md': 'content',
+	'data/authors/john-smith.md': 'content',
+	'content/collectionName/_index.md': 'content',
+	'content/about/index.md': 'content',
+	'content/index.md': 'content',
+	'content/posts/_index.md': 'content',
+	'content/posts/firstPost.md': 'content',
+	'content/emptyCollection': {},
+	'theme/exampleSite/index.html': 'content'
 };
 
 describe('pathHelper', function () {
@@ -39,33 +32,28 @@ describe('pathHelper', function () {
 	describe('getDefaultsPaths', function () {
 		it('should get all defaults files (archetypes)', async function () {
 			const paths = await pathHelper.getDefaultsPaths();
-			expect(paths).to.deep.equal(['archetypes/default.md']);
+			expect(paths).to.deep.equal(['archetypes/default.md', 'archetypes/notes.md']);
 		});
 	});
 
 	describe('getDataPaths', function () {
 		it('should retrieve data files', async function () {
-			const paths = await pathHelper.getDataPaths();
+			const paths = (await pathHelper.getDataPaths()).sort();
 			expect(paths).to.deep.equal(['data/authors/jane-doe.md', 'data/authors/john-smith.md']);
 		});
-
-		// it('no files', async function () {
-		// const paths = await pathHelper.getDataPaths();
-		// expect(paths).to.deep.equal([]);
-		// });
 	});
 
 	describe('getPagePaths', function () {
-		it.skip('should get all single pages', async function () {
-			const paths = await pathHelper.getPagePaths();
-			expect(paths).to.deep.equal([]);
+		it('should get all single pages', async function () {
+			const paths = (await pathHelper.getPagePaths()).sort();
+			expect(paths).to.deep.equal(['content/about/index.md', 'content/collectionName/_index.md', 'content/index.md', 'content/posts/_index.md']);
 		});
 	});
 
 	describe('getCollectionPaths', function () {
-		it.skip('should get all collections', async function () {
+		it('should get all collections', async function () {
 			const paths = await pathHelper.getCollectionPaths();
-			expect(paths).to.deep.equal([]);
+			expect(paths).to.deep.equal(['archetypes/notes.md', 'content/collectionName/_index.md', 'content/posts/_index.md', 'content/posts/firstPost.md']);
 		});
 	});
 
