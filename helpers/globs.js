@@ -23,10 +23,7 @@ module.exports = {
 		}
 
 		options = options || {};
-		const defaultOptions = {
-			nodir: true,
-			noUnique: true
-		};
+		const defaultOptions = { nodir: true };
 		options = Object.assign(defaultOptions, options);
 
 		options.ignore = options.ignore || [];
