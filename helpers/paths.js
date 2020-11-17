@@ -50,7 +50,8 @@ module.exports = {
 		const contentGlob = `**/${content}/*/**`;
 
 		// TODO cache this
-		const collectionPaths = await globHelper.getGlob([archetypeGlob, contentGlob], { ignore: `**/${archetypes}/default.md` });
+		const collectionPaths = await globHelper.getGlob([archetypeGlob, contentGlob],
+			{ ignore: [`**/${archetypes}/default.md`, `**/${content}/**/index.md`] });
 
 		// remove empty strings and duplicates
 		return Array.from(new Set(collectionPaths.filter((item) => item)));
