@@ -13,7 +13,8 @@ describe('pathHelper', function () {
 			},
 			'data': {
 				'authors': {
-					'jane-doe.md': 'content'
+					'jane-doe.md': 'content',
+					'john-smith.md': 'content'
 				}
 			},
 			'content': {
@@ -29,9 +30,9 @@ describe('pathHelper', function () {
 	});
 
 	describe('getDataPaths', function () {
-		it('should workeroo', async function () {
+		it('should retrieve data files', async function () {
 			const paths = await pathHelper.getDataPaths('data');
-			expect(paths).to.deep.equal(['data/authors/jane-doe.md']);
+			expect(paths).to.deep.equal(['data/authors/jane-doe.md', 'data/authors/john-smith.md']);
 		});
 	});
 
