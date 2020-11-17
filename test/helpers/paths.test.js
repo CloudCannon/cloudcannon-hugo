@@ -34,6 +34,11 @@ describe('pathHelper', function () {
 			const paths = await pathHelper.getDataPaths('data');
 			expect(paths).to.deep.equal(['data/authors/jane-doe.md', 'data/authors/john-smith.md']);
 		});
+
+		it('no files', async function () {
+			const paths = await pathHelper.getDataPaths('wrongDir');
+			expect(paths).to.deep.equal([]);
+		});
 	});
 
 	after(function () {
