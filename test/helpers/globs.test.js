@@ -1,10 +1,10 @@
 /* eslint-disable prefer-arrow-callback */
 const { expect } = require('chai');
 
-const { getGlobString } = require('../helpers/globs');
+const { getGlobString } = require('../../helpers/globs');
 
 describe('globs', function () {
-	describe('getGlobString', function () {
+	describe('getGlobString()', function () {
 		const tests = [
 			{ input: ['glob1', 'glob2', 'glob3'], expected: '{glob1,glob2,glob3}', context: 'input: an array of glob patterns' },
 			{ input: ['glob1'], expected: 'glob1', context: 'input: an array containing one glob pattern' },

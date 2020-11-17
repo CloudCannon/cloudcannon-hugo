@@ -41,6 +41,13 @@ const configSort = function (fileArray) {
 	return sorted;
 };
 
+const fileTypeByExtension = {
+	'.yml': 'yaml',
+	'.yaml': 'yaml',
+	'.toml': 'toml',
+	'.json': 'json'
+};
+
 /**
  * Simple object check, returning false for arrays and null objects.
  * @param item the object
@@ -213,13 +220,6 @@ module.exports = {
 
 		console.log('found config files:');
 		console.log(configFileList);
-
-		const fileTypeByExtension = {
-			'.yml': 'yaml',
-			'.yaml': 'yaml',
-			'.toml': 'toml',
-			'.json': 'json'
-		};
 
 		const configPromises = configFileList.map(async (configPath) => {
 			configPath = configPath.replace('//', '/');

@@ -7,7 +7,7 @@
     "lint-code": "eslint index.js",
     "lint": "npm run lint-autofix && npm run lint-code",
     "start": "hugo config | node index.js",
-    "test": "nyc mocha --full-trace"
+    "test": "nyc mocha --full-trace --recursive"
   },
   "bin": {
     "cloudcannon-hugo": "./index.js"
