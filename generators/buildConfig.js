@@ -19,7 +19,9 @@ module.exports = {
 
 			return Path.basename(path, Path.extname(path)); // e.g. archetypes/type.md
 		}
-		return Path.basename(Path.dirname(path));
+		if (path.indexOf('_index.md') >= 0) {
+			return Path.basename(Path.dirname(path));
+		}
 	},
 
 	generateCollections: async function (config, paths) {

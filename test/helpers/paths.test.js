@@ -6,16 +6,16 @@ const mock = require('mock-fs');
 const pathHelper = require('../../helpers/paths');
 
 const testFileStructure = {
-	'archetypes/default.md': 'content',
-	'archetypes/notes.md': 'content',
-	'content/authors/jane-doe.md': 'content',
-	'content/authors/john-smith.md': 'content',
-	'data/info.yml': 'content',
-	'content/collectionName/_index.md': 'content',
-	'content/about/index.md': 'content',
-	'content/index.md': 'content',
-	'content/posts/_index.md': 'content',
-	'content/posts/firstPost.md': 'content',
+	'archetypes/default.md': 'default',
+	'archetypes/notes.md': 'default',
+	'content/authors/jane-doe.md': 'page',
+	'content/authors/john-smith.md': 'page',
+	'data/info.yml': 'data',
+	'content/collectionName/_index.md': 'collection',
+	'content/about/index.md': 'page',
+	'content/index.md': 'page',
+	'content/posts/_index.md': 'page',
+	'content/posts/firstPost.md': 'collection',
 	'content/emptyCollection': {},
 	'theme/exampleSite/index.html': 'content'
 };
