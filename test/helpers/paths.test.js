@@ -8,8 +8,9 @@ const pathHelper = require('../../helpers/paths');
 const testFileStructure = {
 	'archetypes/default.md': 'content',
 	'archetypes/notes.md': 'content',
-	'data/authors/jane-doe.md': 'content',
-	'data/authors/john-smith.md': 'content',
+	'content/authors/jane-doe.md': 'content',
+	'content/authors/john-smith.md': 'content',
+	'data/info.yml': 'content',
 	'content/collectionName/_index.md': 'content',
 	'content/about/index.md': 'content',
 	'content/index.md': 'content',
@@ -39,7 +40,7 @@ describe('pathHelper', function () {
 	describe('getDataPaths', function () {
 		it('should retrieve data files', async function () {
 			const paths = (await pathHelper.getDataPaths()).sort();
-			expect(paths).to.deep.equal(['data/authors/jane-doe.md', 'data/authors/john-smith.md']);
+			expect(paths).to.deep.equal(['data/info.yml']);
 		});
 	});
 
@@ -53,7 +54,7 @@ describe('pathHelper', function () {
 	describe('getCollectionPaths', function () {
 		it('should get all collections', async function () {
 			const paths = await pathHelper.getCollectionPaths();
-			expect(paths).to.deep.equal(['archetypes/notes.md', 'content/collectionName/_index.md', 'content/posts/_index.md', 'content/posts/firstPost.md']);
+			expect(paths).to.deep.equal(['archetypes/notes.md', 'content/authors/jane-doe.md', 'content/authors/john-smith.md', 'content/collectionName/_index.md', 'content/posts/_index.md', 'content/posts/firstPost.md']);
 		});
 	});
 

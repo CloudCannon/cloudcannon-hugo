@@ -9,10 +9,6 @@ const { cloudCannonMeta } = require('../helpers/metadata');
 
 module.exports = {
 	getCollectionName: function (path, archetypePath) {
-		if (path.indexOf('_index.md') >= 0) {
-			return Path.basename(Path.dirname(path));
-		}
-
 		if (path.indexOf(archetypePath) >= 0) {
 			if (path.indexOf('default.md') >= 0) {
 				return;
@@ -23,6 +19,7 @@ module.exports = {
 
 			return Path.basename(path, Path.extname(path)); // e.g. archetypes/type.md
 		}
+		return Path.basename(Path.dirname(path));
 	},
 
 	generateCollections: async function (config, paths) {

@@ -7,9 +7,8 @@ describe('buildConfig', function () {
 	describe('getCollectionName', function () {
 		describe('contentDirectory', function () {
 			const tests = [
-				{ input: 'content/collectionName/_index.md', expected: 'collectionName', context: 'input: index file' },
-				{ input: 'content/collectionName/item.md', expected: undefined, context: 'input: no index file' },
-				{ input: 'content/collectionName/item.md', expected: undefined, context: 'input: item not in directory' }
+				{ input: 'content/collectionName/_index.md', expected: 'collectionName', context: 'input: _index file' },
+				{ input: 'content/authors/jane-doe.md', expected: 'authors', context: 'input: no _index file' }
 			];
 
 			tests.forEach((test) => {
