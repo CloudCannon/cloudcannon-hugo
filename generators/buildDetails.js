@@ -79,7 +79,7 @@ module.exports = {
 	getDataFiles: async function (dataPath) {
 		const data = [];
 		const dataFiles = await pathHelper.getDataPaths();
-		dataFiles.forEach(async (path) => {
+		await Promise.all(dataFiles.map(async (path) => {
 			const collectionItem = {
 				"url": '',
 				"path": path.replace(`${dataPath}/`, ''),
@@ -90,22 +90,23 @@ module.exports = {
 			Object.assign(collectionItem, itemDetails);
 
 			data.push(collectionItem);
-		});
+			return Promise.resolve();
+		}));
 		return data;
 	},
 
 	getCollections: async function (urlsPerPath) {
 		const collections = {};
-		const paths = pathHelper.getPaths();
-		const collectionPaths = await pathHelper.getCollectionPaths(paths);
+		const { content, data } = pathHelper.getPaths();
+		const collectionPaths = await pathHelper.getCollectionPaths();
 
-		collectionPaths.forEach(async (path) => {
+		await Promise.all(collectionPaths.map(async (path) => {
 			const collectionName = this.getCollectionName(path);
 			if (collectionName) {
-				const url = this.getPageUrl(path, urlsPerPath, paths.content);
+				const url = this.getPageUrl(path, urlsPerPath, content);
 				const collectionItem = {
 					"url": url || '',
-					"path": path.replace(`${paths.content}/`, ''),
+					"path": path.replace(`${content}/`, ''),
 					collection: collectionName
 				};
 				const itemDetails = await helpers.getItemDetails(path);
@@ -127,9 +128,10 @@ module.exports = {
 					collections[collectionName] = [collectionItem];
 				}
 			}
-		});
+			return Promise.resolve();
+		}));
 
-		collections.data = await this.getDataFiles(paths.data);
+		collections.data = await this.getDataFiles(data);
 
 		return collections;
 	},
