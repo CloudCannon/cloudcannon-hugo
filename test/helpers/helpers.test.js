@@ -91,7 +91,7 @@ describe('helpers.js', function () {
 			{
 				context: 'file with small invalid yaml frontmatter',
 				input: '---\n,\n---\n',
-				expected: {}
+				expected: undefined
 			},
 			{
 				context: 'file with small valid yaml frontmatter but invalid fences',
