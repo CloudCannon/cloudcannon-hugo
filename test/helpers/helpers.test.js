@@ -1,19 +1,10 @@
 /* eslint-disable prefer-arrow-callback */
-/* eslint-disable disable-quote-prop */
+/* eslint-disable quote-props */
 const { expect } = require('chai');
 const mock = require('mock-fs');
 
 const helpers = require('../../helpers/helpers');
-const testPaths = require('../test-paths');
-
-const testFileStructure = {};
-Object.keys(testPaths).forEach((pathType) => {
-	testPaths[pathType].forEach((path) => {
-		if (!testFileStructure[path]) {
-			testFileStructure[path] = 'file contents';
-		}
-	});
-});
+const { testFileStructure } = require('../test-paths');
 
 describe('helpers.js', function () {
 	before(function () {
@@ -29,6 +20,14 @@ describe('helpers.js', function () {
 		it('should return false with nonexistant path', async function () {
 			const doesExist = await helpers.exists('nonExistantPath');
 			expect(doesExist).to.equal(false);
+		});
+	});
+
+	describe('getItemDetails', function () {
+		it('should return empty when path is empty', async function () {
+			const details = await helpers.getItemDetails('fakePath');
+			const expected = {};
+			expect(details).to.deep.equal(expected);
 		});
 	});
 

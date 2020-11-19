@@ -1,23 +1,16 @@
 /* eslint-disable prefer-arrow-callback */
 const { expect } = require('chai');
+const mock = require('mock-fs');
+
 const buildDetails = require('../../generators/buildDetails');
 
-const testFileStructure = {
-	'archetypes/default.md': 'content',
-	'archetypes/notes.md': 'content',
-	'content/authors/jane-doe.md': 'content',
-	'content/authors/john-smith.md': 'content',
-	'data/info.yml': 'content',
-	'content/collectionName/_index.md': 'content',
-	'content/about/index.md': 'content',
-	'content/index.md': 'content',
-	'content/posts/_index.md': 'content',
-	'content/posts/firstPost.md': 'content',
-	'content/emptyCollection': {},
-	'theme/exampleSite/index.html': 'content'
-};
+const { testFileStructure } = require('../test-paths');
 
 describe('buildDetails', function () {
+	before(function () {
+		mock(testFileStructure);
+	});
+
 	describe('getCollectionName()', function () {
 		const tests = [
 			{ input: 'content/authors/jane-doe.md', expected: 'authors', context: 'input: data file' }
@@ -43,5 +36,22 @@ describe('buildDetails', function () {
 				expect(result).to.equal(test.expected);
 			});
 		});
+	});
+
+	describe('getDataFiles()', function () {
+		it('should work', async function () {
+			const dataObjects = await buildDetails.getDataFiles('data');
+			const expected = [{
+				url: '',
+				path: 'info.yml',
+				collection: 'data',
+				output: false
+			}];
+			expect(dataObjects).to.deep.equal(expected);
+		});
+	});
+
+	after(function () {
+		mock.restore();
 	});
 });
