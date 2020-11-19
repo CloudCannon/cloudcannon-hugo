@@ -30,4 +30,18 @@ describe('buildDetails', function () {
 			});
 		});
 	});
+
+	describe('getPageUrl()', function () {
+		const tests = [
+			{ input: ['content/authors/_index.md', {}, 'content'], expected: '/authors/', context: 'input: _index file' },
+			{ input: ['content/about/index.md', {}, 'content'], expected: '/about/', context: 'input: index file' }
+		];
+
+		tests.forEach((test) => {
+			it(test.context || '', function () {
+				const result = buildDetails.getPageUrl(...test.input);
+				expect(result).to.equal(test.expected);
+			});
+		});
+	});
 });

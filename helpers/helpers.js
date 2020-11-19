@@ -95,7 +95,7 @@ module.exports = {
 		try {
 			const data = await fsProm.readFile(path, 'utf-8');
 			const frontMatterObject = this.parseFrontMatter(data);
-			return frontMatterObject;
+			return frontMatterObject || {};
 		} catch (parseError) {
 			return {};
 		}
@@ -103,7 +103,7 @@ module.exports = {
 
 	parseFrontMatter: function (data) {
 		if (!data) {
-			return Error('File is empty');
+			return {};
 		}
 		const normalised = data
 			.replace(/{{.*}}/g, '') // remove Hugo code
@@ -135,7 +135,7 @@ module.exports = {
 		default:
 			break;
 		}
-		return Error('couldnt parse');
+		return {};
 	},
 
 	parseYaml: function (data) {
@@ -155,17 +155,13 @@ module.exports = {
 	},
 
 	runProcess: function (command, args) {
-		try {
-			const childProcess = cp.spawnSync(command, args, {
-				cwd: process.cwd(),
-				env: process.env,
-				stdio: 'pipe',
-				encoding: 'utf-8'
-			});
-			return childProcess.output[1]; // second item contains the actual response
-		} catch (processError) {
-			console.error(processError);
-		}
+		const childProcess = cp.spawnSync(command, args, {
+			cwd: process.cwd(),
+			env: process.env,
+			stdio: 'pipe',
+			encoding: 'utf-8'
+		});
+		return childProcess.output[1].trim(); // second item contains the actual response
 	},
 
 	processArgs: function (args) {
