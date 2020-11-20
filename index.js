@@ -6,13 +6,13 @@ const { promises: fsProm } = require('fs');
 
 const configGenerator = require('./generators/buildConfig');
 const detailsGenerator = require('./generators/buildDetails');
-const helpers = require('./helpers/helpers');
+const hugoHelper = require('./helpers/hugo-config');
 const pathHelper = require('./helpers/paths');
 
 (async function main() {
 	const args = process.argv;
 
-	const hugoConfig = await helpers.getHugoConfig(args);
+	const hugoConfig = await hugoHelper.getHugoConfig(args);
 	pathHelper.generatePaths(hugoConfig);
 
 	const config = await configGenerator.generateConfig(hugoConfig);
