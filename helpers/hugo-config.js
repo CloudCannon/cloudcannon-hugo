@@ -52,7 +52,7 @@ const configSort = function (fileArray) {
 		if (a.match(/config\.(toml|yaml|json)$/ig)) {
 			return extensionOrder.length + 1; // always less important
 		}
-		return extensionOrder.indexOf(bExt) - extensionOrder.indexOf(aExt);
+		return extensionOrder.indexOf(aExt) - extensionOrder.indexOf(bExt);
 	});
 
 	return sorted;
