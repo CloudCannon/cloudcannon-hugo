@@ -12,9 +12,9 @@ const {
 describe('hugo-config', function () {
 	describe('configSort', function () {
 		it('should sort based on extension name', function () {
-			const testArray = ['a.json', 'b.toml', 'c.yaml'];
+			const testArray = ['config.toml', 'a.json', 'b.toml', 'c.yaml'];
 			const sorted = hugoHelper._configSort(testArray);
-			expect(sorted).to.deep.equal(['b.toml', 'c.yaml', 'a.json']);
+			expect(sorted).to.deep.equal(['b.toml', 'c.yaml', 'a.json', 'config.toml']);
 		});
 	});
 

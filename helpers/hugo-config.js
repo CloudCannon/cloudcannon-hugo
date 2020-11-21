@@ -49,7 +49,7 @@ const configSort = function (fileArray) {
 	const sorted = fileArray.sort((a, b) => {
 		const aExt = Path.extname(a);
 		const bExt = Path.extname(b);
-		if (a.match(/config\.(toml|yaml|json)$/ig)) {
+		if (a.match(/config\.(toml|yaml|json)$/i)) {
 			return extensionOrder.length + 1; // always less important
 		}
 		return extensionOrder.indexOf(aExt) - extensionOrder.indexOf(bExt);
