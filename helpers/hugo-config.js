@@ -47,11 +47,12 @@ const configSort = function (fileArray) {
 	const extensionOrder = ['.toml', '.yaml', '.json'];
 
 	const sorted = fileArray.sort((a, b) => {
+		const configRegex = /config\.(toml|yaml|json)$/i;
+		if (a.match(configRegex)) return extensionOrder.length + 1; // always less important
+		if (b.match(configRegex)) return -1 - extensionOrder.length;
+
 		const aExt = Path.extname(a);
 		const bExt = Path.extname(b);
-		if (a.match(/config\.(toml|yaml|json)$/i)) {
-			return extensionOrder.length + 1; // always less important
-		}
 		return extensionOrder.indexOf(aExt) - extensionOrder.indexOf(bExt);
 	});
 
