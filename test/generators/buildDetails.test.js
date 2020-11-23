@@ -193,7 +193,6 @@ describe('buildDetails', function () {
 				}
 				expect(result[key]).to.deep.equal(expected[key]);
 			});
-			expect(result).to.deep.equal(expected);
 		});
 	});
 });
