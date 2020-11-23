@@ -135,6 +135,30 @@ const configOrder = [
 	'config/production/params.toml'
 ];
 
+const collectionFiles = {
+	archetypes: {
+		leaf: {
+			'index.md': ''
+		},
+		'default.md': '',
+		'type.md': '+++\nheadless = true\n+++\n'
+	},
+	content: {
+		coll1: {
+			'_index.md': '',
+			'item1.md': '',
+			'item2.md': ''
+		},
+
+		coll2: {
+			'_index.md': 'nice'
+		}
+	},
+	data: {
+		'info.toml': ''
+	}
+};
+
 const testFileStructure = {};
 Object.keys(pathsByType).forEach((pathType) => {
 	pathsByType[pathType].forEach((path) => {
@@ -148,5 +172,6 @@ module.exports = {
 	pathsByType: pathsByType,
 	testFileStructure: testFileStructure, // in a structure that is readable to mock-fs
 	configFiles: configFiles,
-	configOrder: configOrder
+	configOrder: configOrder,
+	collectionFiles: collectionFiles
 };

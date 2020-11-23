@@ -46,7 +46,7 @@ module.exports = {
 
 	getCollectionPaths: async function () {
 		const { archetypes, content } = this.getPaths();
-		const archetypeGlob = `**/${archetypes}/**/**.md`;
+		const archetypeGlob = `**/${archetypes}/**/*.md`;
 		const contentGlob = `**/${content}/*/**`;
 
 		// TODO cache this

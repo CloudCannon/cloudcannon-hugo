@@ -63,48 +63,26 @@ module.exports = {
 		return collections;
 	},
 
-	generateDefault: async function (path) {
-		// const frontMatter = await helpers.getItemDetails(path);
-		const scope = {};
-		scope.path = Path.dirname(path).replace('archetypes', '');
-
-		const type = Path.basename(path, Path.extname(path));
-		scope.type = type;
-
-		const defaultData = {
-			'scope': scope
-		};
-
-		return defaultData;
-	},
-
 	generateConfig: async function (hugoConfig) {
 		const paths = pathHelper.getPaths();
-		const defaultsPaths = await pathHelper.getDefaultsPaths();
-
-		const defaults = [];
-		await Promise.all(defaultsPaths.map(async (path) => {
-			const defaultData = await this.generateDefault(path);
-			defaults.push(defaultData);
-			return Promise.resolve();
-		}));
-
 		const collections = await this.generateCollections(hugoConfig, paths);
 
 		const cloudCannonSpecific = hugoConfig.params ? hugoConfig.params.cloudcannon : null;
-		const baseURL = new URL(hugoConfig['baseURL'] || '');
+		const baseURL = new URL(hugoConfig['baseURL'] || 'http://www.example.com');
+
+		const date = new Date(Date.now()).toUTCString();
 
 		return {
-			'time': '2020-09-16T22:50:17+00:00', // get build time here
+			'time': date, // get build time here
 			'cloudcannon': cloudCannonMeta,
-			'source': '', // don't think hugo has custom src / mabe get this from cloudcannon
-			'include': cloudCannonSpecific ? cloudCannonSpecific['include'] : {},
-			'exclude': cloudCannonSpecific ? cloudCannonSpecific['exclude'] : {},
+			'source': '', // don't think hugo has custom src - maybe get this from cloudcannon
+			'include': cloudCannonSpecific ? cloudCannonSpecific['include'] : [],
+			'exclude': cloudCannonSpecific ? cloudCannonSpecific['exclude'] : [],
 			'base-url': baseURL.pathname,
-			'collections': collections, // perhaps taxonomies?
+			'collections': collections,
 			'comments': cloudCannonSpecific ? cloudCannonSpecific['comments'] : {},
 			'input-options': cloudCannonSpecific ? cloudCannonSpecific['input-options'] : {},
-			'defaults': defaults, // difficult in hugo as defaults are dynamic -
+			'defaults': [], // Currently Unused
 			'editor': cloudCannonSpecific ? cloudCannonSpecific['editor'] : {},
 			'source-editor': cloudCannonSpecific ? cloudCannonSpecific['source-editor'] : {},
 			'explore': cloudCannonSpecific ? cloudCannonSpecific['explore'] : {},

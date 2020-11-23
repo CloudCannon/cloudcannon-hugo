@@ -1,7 +1,13 @@
 /* eslint-disable prefer-arrow-callback */
+/* eslint-disable quote-props */
+/* eslint-disable dot-notation */
 const { expect } = require('chai');
+const mock = require('mock-fs');
 
+const { collectionFiles } = require('../test-paths');
+const { cloudCannonMeta } = require('../../helpers/metadata');
 const buildConfig = require('../../generators/buildConfig');
+const pathHelper = require('../../helpers/paths');
 
 describe('buildConfig', function () {
 	describe('getCollectionName', function () {
@@ -30,6 +36,126 @@ describe('buildConfig', function () {
 					const result = buildConfig.getCollectionName(...test.input);
 					expect(result).to.equal(test.expected);
 				});
+			});
+		});
+	});
+
+	describe('generateCollection', function () {
+		before(function () {
+			mock(collectionFiles);
+		});
+
+		it('should return all collections', async function () {
+			const expected = {
+				coll1: {
+					_path: 'content/coll1',
+					output: true
+				},
+				coll2: {
+					_path: 'content/coll2',
+					output: true,
+					permalink: '/collection2/:title/'
+				},
+				data: {
+					_path: 'data',
+					output: false
+				},
+				leaf: {
+					_path: 'content/leaf',
+					output: true
+				},
+				type: {
+					_path: 'content/type',
+					output: false
+				}
+			};
+			const results = await buildConfig.generateCollections({ permalinks: { coll2: '/collection2/:title/' } }, { content: 'content', archetypes: 'archetypes', data: 'data' });
+			expect(results).to.deep.equal(expected);
+		});
+
+		after(function () {
+			mock.restore();
+		});
+	});
+
+	describe('generateConfig', function () {
+		this.timeout(10000); // sometimes takes longer than 2000ms (default)
+		it('work with no cloudcannon specific config', async function () {
+			const expected = {
+				'time': '',
+				'cloudcannon': cloudCannonMeta,
+				'source': '', // don't think hugo has custom src / mabe get this from cloudcannon
+				'include': [],
+				'exclude': [],
+				'base-url': '/',
+				'collections': {
+					'data': {
+						'_path': 'data',
+						'output': false
+					}
+				},
+				'comments': {},
+				'input-options': {},
+				'defaults': [], // Currently Unused
+				'editor': {},
+				'source-editor': {},
+				'explore': {},
+				'paths': pathHelper.getPaths(),
+				'array-structures': {},
+				'select-data': {}
+			};
+
+			const result = await buildConfig.generateConfig({});
+			Object.keys(result).forEach((key) => {
+				if (key === 'time') {
+					return;
+				}
+				expect(result[key]).to.deep.equal(expected[key]);
+			});
+		});
+
+		it('work with cloudcannon specific config', async function () {
+			const cloudcannon = {
+				'include': ['include'],
+				'exclude': ['exclude'],
+				'comments': { 'comment': 'comment' },
+				'input-options': { 'option': 'value' },
+				'editor': { 'default-path': '/' },
+				'source-editor': { 'default-path': '/' },
+				'explore': { 'groups': [] },
+				'_array_structures': { 'object': {} }
+			};
+
+			const expected = {
+				'time': '',
+				'cloudcannon': cloudCannonMeta,
+				'source': '', // don't think hugo has custom src / mabe get this from cloudcannon
+				'include': cloudcannon.include,
+				'exclude': cloudcannon.exclude,
+				'base-url': '/',
+				'collections': {
+					'data': {
+						'_path': 'data',
+						'output': false
+					}
+				},
+				'comments': cloudcannon.comments,
+				'input-options': cloudcannon['input-options'],
+				'defaults': [], // Currently Unused
+				'editor': cloudcannon.editor,
+				'source-editor': cloudcannon['source-editor'],
+				'explore': cloudcannon.explore,
+				'paths': pathHelper.getPaths(),
+				'array-structures': cloudcannon['_array_structures'],
+				'select-data': {}
+			};
+
+			const result = await buildConfig.generateConfig({ params: { cloudcannon: cloudcannon } });
+			Object.keys(result).forEach((key) => {
+				if (key === 'time') {
+					return;
+				}
+				expect(result[key]).to.deep.equal(expected[key]);
 			});
 		});
 	});
