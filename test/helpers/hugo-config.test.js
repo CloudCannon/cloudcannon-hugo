@@ -137,7 +137,7 @@ describe('hugo-config', function () {
 		describe('getHugoConfig', function () {
 			it('should return the correct object', async function () {
 				const expected = {
-					baseURL: 'http://example.org/',
+					baseURL: '/',
 					title: 'Hugo Test Site',
 					params: {
 						prio1: 'prodparams',

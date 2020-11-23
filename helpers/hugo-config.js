@@ -150,9 +150,13 @@ module.exports = {
 
 		const configObject = mergeDeep({}, ...configContents);
 
-		if (buildArguments.baseurl) {
-			configObject.baseurl = buildArguments.baseurl;
+		const url = buildArguments.baseURL || configObject.baseURL || '/';
+		try {
+			configObject.baseURL = new URL(url).pathname;
+		} catch (urlError) {
+			configObject.baseURL = url;
 		}
+
 		return configObject;
 	}
 };

@@ -170,15 +170,13 @@ module.exports = {
 		const collections = await this.getCollections(urlsPerPath);
 		const pages = await this.getPages(urlsPerPath);
 		const generator = this.getGeneratorDetails(hugoConfig);
-		const baseURL = new URL(hugoConfig['baseURL'] || '');
 
 		return {
 			"time": "",
 			"cloudcannon": cloudCannonMeta,
 			"generator": generator,
 			"collections": collections,
-			"pages": pages,
-			"baseurl": baseURL || ''
+			"pages": pages
 		};
 	}
 };

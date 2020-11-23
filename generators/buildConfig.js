@@ -70,7 +70,6 @@ module.exports = {
 		const collections = await this.generateCollections(hugoConfig, paths);
 
 		const cloudCannonSpecific = hugoConfig.params ? hugoConfig.params.cloudcannon : null;
-		const baseURL = new URL(hugoConfig['baseURL'] || 'http://www.example.com');
 
 		const date = new Date(Date.now()).toUTCString();
 
@@ -80,7 +79,7 @@ module.exports = {
 			'source': '', // don't think hugo has custom src - maybe get this from cloudcannon
 			'include': cloudCannonSpecific ? cloudCannonSpecific['include'] : [],
 			'exclude': cloudCannonSpecific ? cloudCannonSpecific['exclude'] : [],
-			'base-url': baseURL.pathname,
+			'base-url': hugoConfig.baseURL,
 			'collections': collections,
 			'comments': cloudCannonSpecific ? cloudCannonSpecific['comments'] : {},
 			'input-options': cloudCannonSpecific ? cloudCannonSpecific['input-options'] : {},

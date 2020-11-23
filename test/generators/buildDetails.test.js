@@ -3,10 +3,24 @@ const { expect } = require('chai');
 const mock = require('mock-fs');
 
 const buildDetails = require('../../generators/buildDetails');
+const { cloudCannonMeta, markdownMeta } = require('../../helpers/metadata');
 
 const { testFileStructure, collectionFiles, pages } = require('../test-paths');
 
 describe('buildDetails', function () {
+	describe('getMarkdownMeta', function () {
+		it('should return default markdown metadata', function () {
+			const result = buildDetails.getMarkdownMetadata({});
+			expect(result).to.deep.equal(markdownMeta);
+		});
+
+		it('should return markup in config', function () {
+			const markup = { kramdown: {} };
+			const result = buildDetails.getMarkdownMetadata({ markup: markup });
+			expect(result).to.deep.equal(markup);
+		});
+	});
+
 	describe('getCollectionName()', function () {
 		const tests = [
 			{ input: 'content/authors/jane-doe.md', expected: 'authors', context: 'input: data file' }
@@ -153,6 +167,27 @@ describe('buildDetails', function () {
 
 		after(function () {
 			mock.restore();
+		});
+	});
+
+	describe('generateDetails', function () {
+		this.timeout(10000); // can take slightly longer than 2000ms
+		it('should return default details', async function () {
+			const expected = {
+				collections: {
+					data: []
+				},
+				generator: {
+					metadata: markdownMeta,
+					name: 'hugo',
+					version: '0.76.5'
+				},
+				cloudcannon: cloudCannonMeta,
+				pages: [],
+				time: ''
+			};
+			const result = await buildDetails.generateDetails({});
+			expect(result).to.deep.equal(expected);
 		});
 	});
 });
