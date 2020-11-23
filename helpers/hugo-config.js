@@ -105,13 +105,10 @@ module.exports = {
 			configPath = configPath.replace('//', '/');
 			const extension = Path.extname(configPath).toLowerCase();
 			const fileType = fileTypeByExtension[extension];
-			if (!fileType) {
-				return;
-			}
 
 			let parsedData = {};
 			try {
-				const contents = await fsProm.readFile(configPath, 'utf-8');
+				const contents = fileType ? await fsProm.readFile(configPath, 'utf-8') : '';
 				switch (fileType) {
 				case 'toml':
 					parsedData = helpers.parseToml(contents);
@@ -123,8 +120,8 @@ module.exports = {
 					parsedData = JSON.parse(contents);
 					break;
 				default:
-					console.warn('unsupported config filetype:', fileType);
-					break;
+					console.warn('Unsupported config filetype:', extension);
+					return;
 				}
 			} catch (readFileError) {
 				console.warn(readFileError);
