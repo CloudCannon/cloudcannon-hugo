@@ -125,6 +125,7 @@ prio2 = "prodconfig"`
 };
 
 const configOrder = [
+	'nonexistentFile.yaml',
 	'extraconfig.toml',
 	'directory/moreconfig.json',
 	'config.toml',

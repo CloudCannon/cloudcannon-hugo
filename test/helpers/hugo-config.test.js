@@ -3,6 +3,7 @@
 /* eslint-disable no-underscore-dangle */
 const { expect } = require('chai');
 const mock = require('mock-fs');
+const hugoConfig = require('../../helpers/hugo-config');
 
 const hugoHelper = require('../../helpers/hugo-config');
 const {
@@ -19,18 +20,56 @@ describe('hugo-config', function () {
 	});
 
 	describe('getConfigPaths', function () {
-		before(function () {
-			mock(testFileStructure);
-		});
-		it('should get all configPaths', async function () {
-			const expected = pathsByType.configPathsProduction.concat(pathsByType.configPaths);
-			expected.push('extraconfig.json');
+		context('"Standard" file structure', function () {
+			before(function () {
+				mock(testFileStructure);
+			});
+			it('should get all configPaths', async function () {
+				const expected = pathsByType.configPathsProduction.concat(pathsByType.configPaths);
+				expected.push('extraconfig.json');
 
-			const configPaths = await hugoHelper.getConfigPaths({ config: 'extraconfig.json' });
-			expect(configPaths).to.deep.equal(expected);
+				const configPaths = await hugoHelper.getConfigPaths({ config: 'extraconfig.json' });
+				expect(configPaths).to.deep.equal(expected);
+			});
+			after(function () {
+				mock.restore();
+			});
 		});
-		after(function () {
-			mock.restore();
+		context('yaml and json config file', function () {
+			before(function () {
+				mock({ 'config.yaml': '', 'config.json': '' });
+			});
+			it('should get just config.yaml', async function () {
+				const configPaths = await hugoHelper.getConfigPaths();
+				expect(configPaths).to.deep.equal(['config.yaml']);
+			});
+			after(function () {
+				mock.restore();
+			});
+		});
+		context('json config file', function () {
+			before(function () {
+				mock({ 'config.json': '' });
+			});
+			it('should get all configPaths', async function () {
+				const configPaths = await hugoHelper.getConfigPaths();
+				expect(configPaths).to.deep.equal(['config.json']);
+			});
+			after(function () {
+				mock.restore();
+			});
+		});
+		context('no config files', function () {
+			before(function () {
+				mock({ 'notconfig.md': '' });
+			});
+			it('should get all configPaths', async function () {
+				const configPaths = await hugoHelper.getConfigPaths();
+				expect(configPaths).to.deep.equal([]);
+			});
+			after(function () {
+				mock.restore();
+			});
 		});
 	});
 
@@ -130,33 +169,51 @@ describe('hugo-config', function () {
 					}
 				}
 			];
-			const result = await hugoHelper.getConfigContents(configOrder, 'extraconfig.toml, directory/moreconfig.json');
+			const result = await hugoHelper.getConfigContents(configOrder, 'extraconfig.toml,directory/moreconfig.json');
 			expect(result).to.deep.equal(expected);
 		});
 
-		describe('getHugoConfig', function () {
-			it('should return the correct object', async function () {
-				const expected = {
-					baseURL: '/',
-					title: 'Hugo Test Site',
-					params: {
-						prio1: 'prodparams',
-						prio2: 'prodconfig',
-						prio3: 'tomldefaultparams',
-						prio4: 'yamldefaultparams',
-						prio5: 'jsondefaultparams',
-						prio6: 'defaultconfig',
-						prio7: 'config',
-						prio8: 'moreconfig',
-						prio9: 'extraconfig'
-					}
-				};
+		after(function () {
+			mock.restore();
+		});
+	});
 
-				const obj = await hugoHelper.getHugoConfig(['--config', 'extraconfig.toml,directory/moreconfig.json']);
-				expect(obj).to.deep.equal(expected);
+	describe('getBaseUrl', function () {
+		const tests = [
+			{ context: 'should error with an invalid url', input: [], expected: '/' }
+		];
+		tests.forEach((test) => {
+			it(test.context, function () {
+				const result = hugoConfig.getBaseUrl(...test.input);
+				expect(result).to.equal(test.expected);
 			});
 		});
+	});
 
+	describe('getHugoConfig', function () {
+		before(function () {
+			mock(configFiles);
+		});
+		it('should return an object with only baseurl', async function () {
+			const expected = {
+				baseURL: '/',
+				title: 'Hugo Test Site',
+				params: {
+					prio1: 'prodparams',
+					prio2: 'prodconfig',
+					prio3: 'tomldefaultparams',
+					prio4: 'yamldefaultparams',
+					prio5: 'jsondefaultparams',
+					prio6: 'defaultconfig',
+					prio7: 'config',
+					prio8: 'moreconfig',
+					prio9: 'extraconfig'
+				}
+			};
+
+			const obj = await hugoHelper.getHugoConfig(['--config', 'extraconfig.toml,directory/moreconfig.json']);
+			expect(obj).to.deep.equal(expected);
+		});
 		after(function () {
 			mock.restore();
 		});

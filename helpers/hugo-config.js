@@ -63,7 +63,7 @@ module.exports = {
 	// 'Private' functions
 	_configSort: configSort,
 
-	getConfigPaths: async function (buildArguments) {
+	getConfigPaths: async function (buildArguments = {}) {
 		const environment = buildArguments.environment || 'production'; // or just use root
 		const configDir = buildArguments.configDir || 'config';
 		// ^ maybe default to 'development' if the site is specifically a staging branch
@@ -100,8 +100,8 @@ module.exports = {
 		return configFileList;
 	},
 
-	getConfigContents: async function (configFileList, passedConfigFiles) {
-		return Promise.all(configFileList.map(async (configPath) => {
+	getConfigContents: async function (configFileList, passedConfigFiles = '') {
+		const contentList = await Promise.all(configFileList.map(async (configPath) => {
 			configPath = configPath.replace('//', '/');
 			const extension = Path.extname(configPath).toLowerCase();
 			const fileType = fileTypeByExtension[extension];
@@ -125,6 +125,7 @@ module.exports = {
 				}
 			} catch (readFileError) {
 				console.warn(readFileError);
+				return;
 			}
 
 			const filename = Path.basename(configPath, extension);
@@ -133,6 +134,16 @@ module.exports = {
 			}
 			return parsedData;
 		}));
+		return contentList.filter((item) => item); // remove empties
+	},
+
+	getBaseUrl: function (configUrl = '', argUrl = '') {
+		const url = argUrl || configUrl || '/';
+		try {
+			return new URL(url).pathname;
+		} catch (urlError) {
+			return url;
+		}
 	},
 
 	getHugoConfig: async function (args) {
@@ -142,17 +153,12 @@ module.exports = {
 		console.log('found config files:');
 		console.log(configFileList);
 
-		const configContents = await this.getConfigContents(configFileList, buildArguments.config || '');
+		const configContents = await this.getConfigContents(configFileList, buildArguments.config);
 		configContents.reverse(); // reversing because deep merge places priority on the second object
 
 		const configObject = mergeDeep({}, ...configContents);
 
-		const url = buildArguments.baseURL || configObject.baseURL || '/';
-		try {
-			configObject.baseURL = new URL(url).pathname;
-		} catch (urlError) {
-			configObject.baseURL = url;
-		}
+		configObject.baseURL = this.getBaseUrl(configObject.baseURL, buildArguments.baseURL);
 
 		return configObject;
 	}
