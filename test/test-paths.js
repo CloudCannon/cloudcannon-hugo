@@ -110,8 +110,8 @@ prio5 = "defaultconfig"
 prio6 = "defaultconfig"`
 		},
 		production: {
-			'params.toml':
-			'prio1 = "prodparams"',
+			'invalid.md': '',
+			'params.toml': 'prio1 = "prodparams"',
 			'config.toml':
 `[params]
 prio1 = "prodconfig"
