@@ -103,7 +103,7 @@ module.exports = {
 			stdio: 'pipe',
 			encoding: 'utf-8'
 		});
-		return childProcess.output[1].trim(); // second item contains the actual response
+		return childProcess.output ? childProcess.output[1].trim() : ''; // second item contains the actual response
 	},
 
 	processArgs: function (args) {
