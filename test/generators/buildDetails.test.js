@@ -187,6 +187,12 @@ describe('buildDetails', function () {
 				time: ''
 			};
 			const result = await buildDetails.generateDetails({});
+			Object.keys(result).forEach((key) => {
+				if (key === 'generator') {
+					return;
+				}
+				expect(result[key]).to.deep.equal(expected[key]);
+			});
 			expect(result).to.deep.equal(expected);
 		});
 	});
