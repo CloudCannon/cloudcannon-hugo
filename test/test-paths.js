@@ -147,7 +147,7 @@ const collectionFiles = {
 	content: {
 		coll1: {
 			'_index.md': '',
-			'item1.md': '',
+			'item1.md': '---\n,\n---\n',
 			'item2.md': '+++\nheadless = true\n+++\n'
 		},
 
