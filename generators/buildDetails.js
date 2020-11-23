@@ -45,7 +45,7 @@ module.exports = {
 		return extraPart ? dir.replace(extraPart[0], '') : '';
 	},
 
-	getPageUrl: function (path, hugoUrls, contentDir) {
+	getPageUrl: function (path, hugoUrls = {}, contentDir) {
 		if (hugoUrls[path]) {
 			return hugoUrls[path].replace('//', '/');
 		}
@@ -137,15 +137,15 @@ module.exports = {
 	},
 
 	getPages: async function (urlsPerPath) {
-		const paths = pathHelper.getPaths();
+		const { content } = pathHelper.getPaths();
 		const pagePaths = await pathHelper.getPagePaths();
 
 		const pages = Promise.all(pagePaths.map(async (path) => {
 			const itemDetails = await helpers.getItemDetails(path);
-			const url = this.getPageUrl(path, urlsPerPath, paths.content);
+			const url = this.getPageUrl(path, urlsPerPath, content);
 			const item = {
 				name: Path.basename(path),
-				path: path.replace(`${paths.content}/`, ''),
+				path: path.replace(`${content}/`, ''),
 				url: url || '',
 				title: Path.basename(path)
 			};

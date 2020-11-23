@@ -27,9 +27,10 @@ const pathsByType = {
 	dataPaths: [
 		'data/info.yml'],
 	pagePaths: [
+		'content/_index.md',
+		'content/about.md',
 		'content/about/index.md',
 		'content/collectionName/_index.md',
-		'content/index.md',
 		'content/posts/_index.md'],
 	otherPages: [
 		'config.yaml',
@@ -147,15 +148,36 @@ const collectionFiles = {
 		coll1: {
 			'_index.md': '',
 			'item1.md': '',
-			'item2.md': ''
+			'item2.md': '+++\nheadless = true\n+++\n'
 		},
 
-		coll2: {
-			'_index.md': 'nice'
+		posts: {
+			'_index.md': 'nice',
+			'post1.md': '---\ndraft: true\n---\n'
 		}
 	},
 	data: {
 		'info.toml': ''
+	}
+};
+
+const pages = {
+	content: {
+		'about.md': '',
+		posts: {
+			'_index.md': 'nice',
+			'post1.md': '---\ndraft: true\n---\n'
+		},
+		coll1: {
+			'_index.md': '',
+			item1: {
+				'index.md': ''
+			},
+			'item2.md': '+++\nheadless = true\n+++\n'
+		},
+		help: {
+			'index.md': '+++\nheadless = true\n+++\n'
+		}
 	}
 };
 
@@ -173,5 +195,6 @@ module.exports = {
 	testFileStructure: testFileStructure, // in a structure that is readable to mock-fs
 	configFiles: configFiles,
 	configOrder: configOrder,
-	collectionFiles: collectionFiles
+	collectionFiles: collectionFiles,
+	pages: pages
 };

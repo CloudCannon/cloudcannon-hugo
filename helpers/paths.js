@@ -37,11 +37,14 @@ module.exports = {
 
 	getPagePaths: async function () {
 		const { content } = this.getPaths();
-		const contentFiles = await globHelper.getGlob(`**/${content}/**/*.md`, { ignore: `**/${content}/*/*.md` });
-		const indexFiles = await globHelper.getGlob(`**/${content}/**/*index.md`);
+		const indexFiles = await globHelper.getGlob([
+			`**/${content}/*/index.md`,
+			`**/${content}/**/_index.md`,
+			`**/${content}/*.md`
+		]);
 
-		// concat and remove duplicates
-		return Array.from(new Set(contentFiles.concat(indexFiles)));
+		// remove duplicates
+		return Array.from(new Set(indexFiles));
 	},
 
 	getCollectionPaths: async function () {

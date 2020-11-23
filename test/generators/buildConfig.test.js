@@ -51,10 +51,10 @@ describe('buildConfig', function () {
 					_path: 'content/coll1',
 					output: true
 				},
-				coll2: {
-					_path: 'content/coll2',
+				posts: {
+					_path: 'content/posts',
 					output: true,
-					permalink: '/collection2/:title/'
+					permalink: '/blog/:title/'
 				},
 				data: {
 					_path: 'data',
@@ -69,7 +69,7 @@ describe('buildConfig', function () {
 					output: false
 				}
 			};
-			const results = await buildConfig.generateCollections({ permalinks: { coll2: '/collection2/:title/' } }, { content: 'content', archetypes: 'archetypes', data: 'data' });
+			const results = await buildConfig.generateCollections({ permalinks: { posts: '/blog/:title/', fakeCollection: 'wackyLink' } }, { content: 'content', archetypes: 'archetypes', data: 'data' });
 			expect(results).to.deep.equal(expected);
 		});
 

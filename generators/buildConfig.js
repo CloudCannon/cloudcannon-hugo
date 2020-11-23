@@ -54,9 +54,11 @@ module.exports = {
 			output: false
 		};
 
-		if (config.permalinks) { // replace with a getConfig() call
+		if (config.permalinks) {
 			Object.keys(config.permalinks).forEach((collection) => {
-				collections[collection]["permalink"] = config.permalinks[collection];
+				if (collections[collection]) {
+					collections[collection]["permalink"] = config.permalinks[collection];
+				}
 			});
 		}
 
