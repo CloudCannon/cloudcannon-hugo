@@ -114,10 +114,17 @@ describe('buildDetails', function () {
 		it('should retrieve only pages', async function () {
 			const expected = [
 				{
+					name: '_index.md',
+					path: '_index.md',
+					title: '_index.md',
+					url: '/'
+				},
+				{
 					name: 'about.md',
 					path: 'about.md',
 					title: 'about.md',
-					url: ''
+					url: '',
+					published: false
 				},
 				{
 					name: '_index.md',

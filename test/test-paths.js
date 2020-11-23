@@ -163,7 +163,8 @@ const collectionFiles = {
 
 const pages = {
 	content: {
-		'about.md': '',
+		'_index.md': '',
+		'about.md': '---\ndraft: true\n---\n',
 		posts: {
 			'_index.md': 'nice',
 			'post1.md': '---\ndraft: true\n---\n'
