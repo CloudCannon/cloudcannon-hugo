@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NJKode/cloudcannon-hugo.git"
+    "url": "git+https://github.com/CloudCannon/cloudcannon-hugo.git"
   },
   "author": "Nathan Kennedy",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/NJKode/cloudcannon-hugo/issues"
+    "url": "https://github.com/CloudCannon/cloudcannon-hugo/issues"
   },
-  "homepage": "https://github.com/NJKode/cloudcannon-hugo#readme",
+  "homepage": "https://github.com/CloudCannon/cloudcannon-hugo#readme",
   "devDependencies": {
     "chai": "^4.2.0",
     "eslint": "^7.11.0",
