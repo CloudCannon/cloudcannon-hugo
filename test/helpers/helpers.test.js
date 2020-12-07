@@ -139,6 +139,16 @@ describe('helpers.js', function () {
 			const result = helpers.runProcess('echo', ['hello']);
 			expect(result).to.equal('hello');
 		});
+
+		it('should return empty', function () {
+			const result = helpers.runProcess('echo');
+			expect(result).to.equal('');
+		});
+
+		it('should return empty string with unknown command', function () {
+			const result = helpers.runProcess('fakeCommand');
+			expect(result).to.equal('');
+		});
 	});
 
 	describe('processArgs', function () {
