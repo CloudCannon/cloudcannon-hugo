@@ -137,15 +137,6 @@ module.exports = {
 		return contentList.filter((item) => item); // remove empties
 	},
 
-	getBaseUrl: function (configUrl = '', argUrl = '') {
-		const url = argUrl || configUrl || '/';
-		try {
-			return new URL(url).pathname;
-		} catch (urlError) {
-			return url;
-		}
-	},
-
 	getHugoConfig: async function (args) {
 		const buildArguments = helpers.processArgs(args);
 		const configFileList = await this.getConfigPaths(buildArguments);
@@ -158,7 +149,7 @@ module.exports = {
 
 		const configObject = mergeDeep({}, ...configContents);
 
-		configObject.baseURL = this.getBaseUrl(configObject.baseURL, buildArguments.baseURL);
+		configObject.baseURL = buildArguments.baseURL || configObject.baseURL || '/';
 
 		return configObject;
 	}

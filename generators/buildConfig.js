@@ -65,6 +65,14 @@ module.exports = {
 		return collections;
 	},
 
+	getShortenedBaseURL: function (baseURL = '/') {
+		try {
+			return new URL(baseURL).pathname;
+		} catch (urlError) {
+			return baseURL;
+		}
+	},
+
 	generateConfig: async function (hugoConfig) {
 		const paths = pathHelper.getPaths();
 		const collections = await this.generateCollections(hugoConfig, paths);
@@ -73,13 +81,15 @@ module.exports = {
 
 		const date = new Date(Date.now()).toUTCString();
 
+		const baseURL = this.getShortenedBaseURL(hugoConfig.baseURL);
+
 		return {
 			'time': date, // get build time here
 			'cloudcannon': cloudCannonMeta,
 			'source': '', // don't think hugo has custom src - maybe get this from cloudcannon
 			'include': cloudCannonSpecific ? cloudCannonSpecific['include'] : [],
 			'exclude': cloudCannonSpecific ? cloudCannonSpecific['exclude'] : [],
-			'base-url': hugoConfig.baseURL,
+			'base-url': baseURL,
 			'collections': collections,
 			'comments': cloudCannonSpecific ? cloudCannonSpecific['comments'] : {},
 			'input-options': cloudCannonSpecific ? cloudCannonSpecific['input-options'] : {},

@@ -3,7 +3,6 @@
 /* eslint-disable no-underscore-dangle */
 const { expect } = require('chai');
 const mock = require('mock-fs');
-const hugoConfig = require('../../helpers/hugo-config');
 
 const hugoHelper = require('../../helpers/hugo-config');
 const {
@@ -178,44 +177,61 @@ describe('hugo-config', function () {
 		});
 	});
 
-	describe('getBaseUrl', function () {
-		const tests = [
-			{ context: 'should error with an invalid url', input: [], expected: '/' }
-		];
-		tests.forEach((test) => {
-			it(test.context, function () {
-				const result = hugoConfig.getBaseUrl(...test.input);
-				expect(result).to.equal(test.expected);
+	describe('getHugoConfig', function () {
+		context('many files to merge', function () {
+			before(function () {
+				mock(configFiles);
+			});
+			it('should return the correctly merged object', async function () {
+				const expected = {
+					baseURL: 'http://example.org/',
+					title: 'Hugo Test Site',
+					params: {
+						prio1: 'prodparams',
+						prio2: 'prodconfig',
+						prio3: 'tomldefaultparams',
+						prio4: 'yamldefaultparams',
+						prio5: 'jsondefaultparams',
+						prio6: 'defaultconfig',
+						prio7: 'config',
+						prio8: 'moreconfig',
+						prio9: 'extraconfig'
+					}
+				};
+
+				const obj = await hugoHelper.getHugoConfig(['--config', 'extraconfig.toml,directory/moreconfig.json']);
+				expect(obj).to.deep.equal(expected);
+			});
+			after(function () {
+				mock.restore();
 			});
 		});
-	});
 
-	describe('getHugoConfig', function () {
-		before(function () {
-			mock(configFiles);
+		context('baseURL supplied in both buildArgs and config', function () {
+			before(function () {
+				mock({ 'config.toml': 'baseURL = "http://config.org/"' });
+			});
+
+			it('should return buildArg baseURL', async function () {
+				const expected = {
+					baseURL: 'http://build-arg.org/'
+				};
+				const obj = await hugoHelper.getHugoConfig(['--baseURL', 'http://build-arg.org/']);
+				expect(obj).to.deep.equal(expected);
+			});
+
+			after(function () {
+				mock.restore();
+			});
 		});
-		it('should return an object with only baseurl', async function () {
+
+		it('should return object with only baseurl', async function () {
 			const expected = {
-				baseURL: '/',
-				title: 'Hugo Test Site',
-				params: {
-					prio1: 'prodparams',
-					prio2: 'prodconfig',
-					prio3: 'tomldefaultparams',
-					prio4: 'yamldefaultparams',
-					prio5: 'jsondefaultparams',
-					prio6: 'defaultconfig',
-					prio7: 'config',
-					prio8: 'moreconfig',
-					prio9: 'extraconfig'
-				}
+				baseURL: '/'
 			};
 
-			const obj = await hugoHelper.getHugoConfig(['--config', 'extraconfig.toml,directory/moreconfig.json']);
+			const obj = await hugoHelper.getHugoConfig();
 			expect(obj).to.deep.equal(expected);
-		});
-		after(function () {
-			mock.restore();
 		});
 	});
 });

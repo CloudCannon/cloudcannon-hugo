@@ -47,7 +47,7 @@ module.exports = {
 
 	getPageUrl: function (path, hugoUrls = {}, contentDir) {
 		if (hugoUrls[path]) {
-			return hugoUrls[path].replace('//', '/');
+			return hugoUrls[path];
 		}
 		if (path.indexOf('index') >= 0) {
 			return path
