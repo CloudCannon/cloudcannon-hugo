@@ -96,6 +96,14 @@ module.exports = {
 		}
 	},
 
+	getUrlPathname: function (url = '/') {
+		try {
+			return new URL(url).pathname;
+		} catch (urlError) {
+			return url;
+		}
+	},
+
 	runProcess: function (command, args) {
 		const childProcess = cp.spawnSync(command, args, {
 			cwd: process.cwd(),

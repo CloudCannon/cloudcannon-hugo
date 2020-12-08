@@ -78,18 +78,6 @@ describe('buildConfig', function () {
 		});
 	});
 
-	describe('getShortenedBaseURL', function () {
-		const tests = [
-			{ context: 'should error with an invalid url', input: [], expected: '/' }
-		];
-		tests.forEach((test) => {
-			it(test.context, function () {
-				const result = buildConfig.getShortenedBaseURL(...test.input);
-				expect(result).to.equal(test.expected);
-			});
-		});
-	});
-
 	describe('generateConfig', function () {
 		this.timeout(10000); // sometimes takes longer than 2000ms (default)
 		it('work with no cloudcannon specific config', async function () {

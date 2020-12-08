@@ -58,7 +58,7 @@ module.exports = {
 		return '';
 	},
 
-	getHugoUrls: function (baseurl) {
+	getHugoUrls: function () {
 		const fileCsv = helpers.runProcess('hugo', ['list', 'all']);
 		const fileList = csvParse(fileCsv, {
 			columns: true,
@@ -68,9 +68,7 @@ module.exports = {
 		const urlsPerPath = {};
 		fileList.forEach((file) => {
 			const { path, permalink } = file;
-			const url = `/${permalink.replace(baseurl, '')}`;
-
-			urlsPerPath[path] = url;
+			urlsPerPath[path] = helpers.getUrlPathname(permalink);
 		});
 
 		return urlsPerPath;
@@ -166,7 +164,7 @@ module.exports = {
 	},
 
 	generateDetails: async function (hugoConfig) {
-		const urlsPerPath = this.getHugoUrls(hugoConfig.baseURL);
+		const urlsPerPath = this.getHugoUrls();
 		const collections = await this.getCollections(urlsPerPath);
 		const pages = await this.getPages(urlsPerPath);
 		const generator = this.getGeneratorDetails(hugoConfig);

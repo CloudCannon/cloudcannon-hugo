@@ -134,6 +134,18 @@ describe('helpers.js', function () {
 		});
 	});
 
+	describe('getUrlPathname', function () {
+		const tests = [
+			{ context: 'should error with an invalid url', input: [], expected: '/' }
+		];
+		tests.forEach((test) => {
+			it(test.context, function () {
+				const result = helpers.getUrlPathname(...test.input);
+				expect(result).to.equal(test.expected);
+			});
+		});
+	});
+
 	describe('runProcess', function () {
 		it('should echo', function () {
 			const result = helpers.runProcess('echo', ['hello']);

@@ -65,14 +65,6 @@ module.exports = {
 		return collections;
 	},
 
-	getShortenedBaseURL: function (baseURL = '/') {
-		try {
-			return new URL(baseURL).pathname;
-		} catch (urlError) {
-			return baseURL;
-		}
-	},
-
 	generateConfig: async function (hugoConfig) {
 		const paths = pathHelper.getPaths();
 		const collections = await this.generateCollections(hugoConfig, paths);
@@ -81,7 +73,7 @@ module.exports = {
 
 		const date = new Date(Date.now()).toUTCString();
 
-		const baseURL = this.getShortenedBaseURL(hugoConfig.baseURL);
+		const baseURL = helpers.getUrlPathname(hugoConfig.baseURL);
 
 		return {
 			'time': date, // get build time here
