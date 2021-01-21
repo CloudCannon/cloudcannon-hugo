@@ -150,7 +150,7 @@ describe('buildConfig', function () {
 				'select-data': {}
 			};
 
-			const result = await buildConfig.generateConfig({ baseURL: '/', params: { cloudcannon: cloudcannon } });
+			const result = await buildConfig.generateConfig({ baseURL: '/', params: cloudcannon });
 			Object.keys(result).forEach((key) => {
 				if (key === 'time') {
 					return;

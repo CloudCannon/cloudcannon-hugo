@@ -69,7 +69,7 @@ module.exports = {
 		const paths = pathHelper.getPaths();
 		const collections = await this.generateCollections(hugoConfig, paths);
 
-		const cloudCannonSpecific = hugoConfig.params ? hugoConfig.params.cloudcannon : null;
+		const hugoParams = hugoConfig.params || {};
 
 		const date = new Date(Date.now()).toUTCString();
 
@@ -79,18 +79,18 @@ module.exports = {
 			'time': date, // get build time here
 			'cloudcannon': cloudCannonMeta,
 			'source': '', // don't think hugo has custom src - maybe get this from cloudcannon
-			'include': cloudCannonSpecific ? cloudCannonSpecific['include'] : [],
-			'exclude': cloudCannonSpecific ? cloudCannonSpecific['exclude'] : [],
+			'include': hugoParams['include'] || [],
+			'exclude': hugoParams['exclude'] || [],
 			'base-url': baseURL,
 			'collections': collections,
-			'comments': cloudCannonSpecific ? cloudCannonSpecific['comments'] : {},
-			'input-options': cloudCannonSpecific ? cloudCannonSpecific['input-options'] : {},
+			'comments': hugoParams['comments'] || {},
+			'input-options': hugoParams['input-options'] || {},
 			'defaults': [], // Currently Unused
-			'editor': cloudCannonSpecific ? cloudCannonSpecific['editor'] : {},
-			'source-editor': cloudCannonSpecific ? cloudCannonSpecific['source-editor'] : {},
-			'explore': cloudCannonSpecific ? cloudCannonSpecific['explore'] : {},
+			'editor': hugoParams['editor'] || {},
+			'source-editor': hugoParams['source-editor'] || {},
+			'explore': hugoParams['explore'] || {},
 			'paths': paths,
-			'array-structures': cloudCannonSpecific ? cloudCannonSpecific['_array_structures'] : {},
+			'array-structures': hugoParams['_array_structures'] || {},
 			'select-data': {}
 		};
 	}
