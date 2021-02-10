@@ -69,7 +69,9 @@ module.exports = {
 		const paths = pathHelper.getPaths();
 		const collections = await this.generateCollections(hugoConfig, paths);
 
-		const hugoParams = hugoConfig.params || {};
+		// params key is case insensitive
+		const paramsKey = Object.keys(hugoConfig).find((key) => key.toLowerCase() === 'params');
+		const hugoParams = hugoConfig[paramsKey] || {};
 
 		const date = new Date(Date.now()).toUTCString();
 
@@ -83,14 +85,14 @@ module.exports = {
 			'exclude': hugoParams['exclude'] || [],
 			'base-url': baseURL,
 			'collections': collections,
-			'comments': hugoParams['comments'] || {},
-			'input-options': hugoParams['input-options'] || {},
+			'comments': hugoParams['_comments'] || {},
+			'input-options': hugoParams['_options'] || {},
 			'defaults': [], // Currently Unused
-			'editor': hugoParams['editor'] || {},
-			'source-editor': hugoParams['source-editor'] || {},
-			'explore': hugoParams['explore'] || {},
+			'editor': hugoParams['_editor'] || {},
+			'source-editor': hugoParams['_sourceEditor'] || {},
+			'explore': hugoParams['_explore'] || {},
 			'paths': paths,
-			'array-structures': hugoParams['_array_structures'] || {},
+			'array-structures': hugoParams['_arrayStructures'] || {},
 			'select-data': {}
 		};
 	}

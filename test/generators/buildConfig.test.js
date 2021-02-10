@@ -118,12 +118,12 @@ describe('buildConfig', function () {
 			const cloudcannon = {
 				'include': ['include'],
 				'exclude': ['exclude'],
-				'comments': { 'comment': 'comment' },
-				'input-options': { 'option': 'value' },
-				'editor': { 'default-path': '/' },
-				'source-editor': { 'default-path': '/' },
-				'explore': { 'groups': [] },
-				'_array_structures': { 'object': {} }
+				'_comments': { 'comment': 'comment' },
+				'_options': { 'option': 'value' },
+				'_editor': { 'default-path': '/' },
+				'_sourceEditor': { 'default-path': '/' },
+				'_explore': { 'groups': [] },
+				'_arrayStructures': { 'object': {} }
 			};
 
 			const expected = {
@@ -139,14 +139,14 @@ describe('buildConfig', function () {
 						'output': false
 					}
 				},
-				'comments': cloudcannon.comments,
-				'input-options': cloudcannon['input-options'],
+				'comments': cloudcannon['_comments'],
+				'input-options': cloudcannon['_options'],
 				'defaults': [], // Currently Unused
-				'editor': cloudcannon.editor,
-				'source-editor': cloudcannon['source-editor'],
-				'explore': cloudcannon.explore,
+				'editor': cloudcannon['_editor'],
+				'source-editor': cloudcannon['_sourceEditor'],
+				'explore': cloudcannon['_explore'],
 				'paths': pathHelper.getPaths(),
-				'array-structures': cloudcannon['_array_structures'],
+				'array-structures': cloudcannon['_arrayStructures'],
 				'select-data': {}
 			};
 
