@@ -92,8 +92,8 @@ module.exports = {
 			'source-editor': hugoParams['_sourceEditor'] || {},
 			'explore': hugoParams['_explore'] || {},
 			'paths': paths,
-			'array-structures': hugoParams['_arrayStructures'] || {},
-			'select-data': {}
+			'array-structures': hugoParams['_array_structures'] || {},
+			'select-data': hugoParams['_selectData'] || {}
 		};
 	}
 };

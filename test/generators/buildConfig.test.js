@@ -123,7 +123,8 @@ describe('buildConfig', function () {
 				'_editor': { 'default-path': '/' },
 				'_sourceEditor': { 'default-path': '/' },
 				'_explore': { 'groups': [] },
-				'_arrayStructures': { 'object': {} }
+				'_array_structures': { 'object': {} },
+				'_selectData': { 'object': {} }
 			};
 
 			const expected = {
@@ -146,8 +147,8 @@ describe('buildConfig', function () {
 				'source-editor': cloudcannon['_sourceEditor'],
 				'explore': cloudcannon['_explore'],
 				'paths': pathHelper.getPaths(),
-				'array-structures': cloudcannon['_arrayStructures'],
-				'select-data': {}
+				'array-structures': cloudcannon['_array_structures'],
+				'select-data': cloudcannon['_selectData']
 			};
 
 			const result = await buildConfig.generateConfig({ baseURL: '/', params: cloudcannon });
