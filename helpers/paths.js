@@ -11,7 +11,7 @@ module.exports = {
 				data: config.dataDir || 'data',
 				layouts: config.layoutDir || 'layouts',
 				publish: config.publishDir || 'public',
-				uploads: `${config.staticDir || 'static'}/uploads`,
+				uploads: config.uploadsDir || `${config.staticDir || 'static'}/uploads`,
 				themes: config.themesDir || 'themes',
 				config: config.configDir || ''
 			};
