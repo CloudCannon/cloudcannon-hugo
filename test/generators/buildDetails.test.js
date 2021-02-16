@@ -129,33 +129,33 @@ describe('buildDetails', function () {
 			const expected = [
 				{
 					name: '_index.md',
-					path: '_index.md',
+					path: 'content/_index.md',
 					title: '_index.md',
 					url: '/'
 				},
 				{
 					name: 'about.md',
-					path: 'about.md',
+					path: 'content/about.md',
 					title: 'about.md',
 					url: '',
 					published: false
 				},
 				{
 					name: '_index.md',
-					path: 'coll1/_index.md',
+					path: 'content/coll1/_index.md',
 					title: '_index.md',
 					url: '/coll1/'
 				},
 				{
 					name: 'index.md',
-					path: 'help/index.md',
+					path: 'content/help/index.md',
 					title: 'index.md',
 					url: '/help/',
 					output: false
 				},
 				{
 					name: '_index.md',
-					path: 'posts/_index.md',
+					path: 'content/posts/_index.md',
 					title: '_index.md',
 					url: '/posts/'
 				}

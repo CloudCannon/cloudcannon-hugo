@@ -143,7 +143,7 @@ module.exports = {
 			const url = this.getPageUrl(path, urlsPerPath, content);
 			const item = {
 				name: Path.basename(path),
-				path: path.replace(`${content}/`, ''),
+				path: path,
 				url: url || '',
 				title: Path.basename(path)
 			};
