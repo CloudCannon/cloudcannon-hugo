@@ -57,7 +57,7 @@ describe('buildDetails', function () {
 			const dataObjects = await buildDetails.getDataFiles('data');
 			const expected = [{
 				url: '',
-				path: 'info.yml',
+				path: 'data/info.yml',
 				collection: 'data',
 				output: false
 			}];
@@ -85,13 +85,13 @@ describe('buildDetails', function () {
 				coll1: [
 					{
 						collection: 'coll1',
-						path: 'coll1/item1.md',
+						path: 'content/coll1/item1.md',
 						url: '/coll1/item1/'
 					},
 					{
 						collection: 'coll1',
 						output: false,
-						path: 'coll1/item2.md',
+						path: 'content/coll1/item2.md',
 						url: '/coll1/item2/'
 					}
 				],
@@ -99,7 +99,7 @@ describe('buildDetails', function () {
 					{
 						collection: 'posts',
 						published: false,
-						path: 'posts/post1.md',
+						path: 'content/posts/post1.md',
 						url: '/posts/post1/'
 					}
 				],
@@ -107,7 +107,7 @@ describe('buildDetails', function () {
 					{
 						collection: 'data',
 						output: false,
-						path: 'info.toml',
+						path: 'data/info.toml',
 						url: ''
 					}
 				]

@@ -79,8 +79,8 @@ module.exports = {
 		const dataFiles = await pathHelper.getDataPaths();
 		await Promise.all(dataFiles.map(async (path) => {
 			const collectionItem = {
-				"url": '',
-				"path": path.replace(`${dataPath}/`, ''),
+				url: '',
+				path: path,
 				collection: 'data',
 				output: false
 			};
@@ -103,8 +103,8 @@ module.exports = {
 			if (collectionName) {
 				const url = this.getPageUrl(path, urlsPerPath, content);
 				const collectionItem = {
-					"url": url || '',
-					"path": path.replace(`${content}/`, ''),
+					url: url || '',
+					path: path,
 					collection: collectionName
 				};
 				const itemDetails = await helpers.getItemDetails(path);
