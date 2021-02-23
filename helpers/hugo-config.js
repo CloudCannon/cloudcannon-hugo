@@ -1,14 +1,6 @@
 const Path = require('path');
-const { promises: fsProm } = require('fs');
 const globHelper = require('./globs');
 const helpers = require('./helpers');
-
-const fileTypeByExtension = {
-	'.yml': 'yaml',
-	'.yaml': 'yaml',
-	'.toml': 'toml',
-	'.json': 'json'
-};
 
 /**
  * Simple object check, returning false for arrays and null objects.
@@ -103,32 +95,13 @@ module.exports = {
 	getConfigContents: async function (configFileList, passedConfigFiles = '') {
 		const contentList = await Promise.all(configFileList.map(async (configPath) => {
 			configPath = configPath.replace('//', '/');
-			const extension = Path.extname(configPath).toLowerCase();
-			const fileType = fileTypeByExtension[extension];
 
-			let parsedData = {};
-			try {
-				const contents = fileType ? await fsProm.readFile(configPath, 'utf-8') : '';
-				switch (fileType) {
-				case 'toml':
-					parsedData = helpers.parseToml(contents);
-					break;
-				case 'yaml':
-					parsedData = helpers.parseYaml(contents);
-					break;
-				case 'json':
-					parsedData = JSON.parse(contents);
-					break;
-				default:
-					console.warn('Unsupported config filetype:', extension);
-					return;
-				}
-			} catch (readFileError) {
-				console.warn(readFileError);
+			const parsedData = await helpers.parseDataFile(configPath);
+			if (!parsedData) {
 				return;
 			}
 
-			const filename = Path.basename(configPath, extension);
+			const filename = Path.basename(configPath, Path.extname(configPath));
 			if (filename !== 'config' && passedConfigFiles.indexOf(configPath) < 0) {
 				return { [filename]: parsedData };
 			}

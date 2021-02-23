@@ -5,7 +5,7 @@ const mock = require('mock-fs');
 const buildDetails = require('../../generators/buildDetails');
 const { cloudCannonMeta, markdownMeta } = require('../../helpers/metadata');
 
-const { testFileStructure, collectionFiles, pages } = require('../test-paths');
+const { collectionFiles, dataFiles, pages } = require('../test-paths');
 
 describe('buildDetails', function () {
 	describe('getMarkdownMeta', function () {
@@ -23,12 +23,15 @@ describe('buildDetails', function () {
 
 	describe('getCollectionName()', function () {
 		const tests = [
-			{ input: 'content/authors/jane-doe.md', expected: 'authors', context: 'input: data file' }
+			{ input: ['content/authors/jane-doe.md'], expected: 'authors', context: 'input: author collection' },
+			{ input: ['data/staff/john.toml', 'data'], expected: 'staff', context: 'input: datafile' },
+			{ input: ['content/posts/test-post/index.md'], expected: 'posts', context: 'post in page bundle' },
+			{ input: ['nested/content/dir/_index.md', 'nested/content/dir'], expected: '', context: '_index page in nested content dir' }
 		];
 
 		tests.forEach((test) => {
 			it(test.context || '', function () {
-				const result = buildDetails.getCollectionName(test.input);
+				const result = buildDetails.getCollectionName(...test.input);
 				expect(result).to.equal(test.expected);
 			});
 		});
@@ -50,17 +53,20 @@ describe('buildDetails', function () {
 
 	describe('getDataFiles()', function () {
 		before(function () {
-			mock(testFileStructure);
+			mock(dataFiles);
 		});
 
 		it('should work', async function () {
-			const dataObjects = await buildDetails.getDataFiles('data');
-			const expected = [{
-				url: '',
-				path: 'data/info.yml',
-				collection: 'data',
-				output: false
-			}];
+			const dataObjects = await buildDetails.getDataFiles();
+			const expected = {
+				footer: [{ name: 'Github', order: 0 }, { name: 'RSS', order: 1 }],
+				nav: [{ name: 'About', url: '/about/' }, { name: 'Contact', url: '/contact/' }],
+				staff_members: {
+					jane: { name: 'Jane Doe', title: 'Developer' },
+					john: { name: 'John Smith', title: 'Designer' }
+				}
+			};
+
 			expect(dataObjects).to.deep.equal(expected);
 		});
 
@@ -101,14 +107,6 @@ describe('buildDetails', function () {
 						published: false,
 						path: 'content/posts/post1.md',
 						url: '/posts/post1/'
-					}
-				],
-				data: [
-					{
-						collection: 'data',
-						output: false,
-						path: 'data/info.toml',
-						url: ''
 					}
 				]
 			};
@@ -174,14 +172,7 @@ describe('buildDetails', function () {
 		this.timeout(10000); // can take slightly longer than 2000ms
 		it('should return default details', async function () {
 			const expected = {
-				collections: {
-					data: []
-				},
-				generator: {
-					metadata: markdownMeta,
-					name: 'hugo',
-					version: '0.76.5'
-				},
+				collections: {},
 				cloudcannon: cloudCannonMeta,
 				pages: [],
 				time: ''
@@ -193,6 +184,60 @@ describe('buildDetails', function () {
 				}
 				expect(result[key]).to.deep.equal(expected[key]);
 			});
+		});
+
+		describe('with data', async function () {
+			before(function () {
+				mock(dataFiles);
+			});
+
+			it('should return all data', async function () {
+				const expected = {
+					data: {
+						footer: [
+							{ name: 'Github', order: 0 },
+							{ name: 'RSS', order: 1 }
+						],
+						nav: [
+							{ name: 'About', url: '/about/' },
+							{ name: 'Contact', url: '/contact/' }
+						],
+						staff_members: {
+							jane: { name: 'Jane Doe', title: 'Developer' },
+							john: { name: 'John Smith', title: 'Designer' }
+						}
+					}
+				};
+
+				const result = await buildDetails.generateDetails({
+					cloudcannon: { data: true }
+				});
+				expect(result.data).to.deep.equal(expected.data);
+			});
+
+			it('should return the specified data', async function () {
+				const expected = {
+					data: {
+						nav: [
+							{ name: 'About', url: '/about/' },
+							{ name: 'Contact', url: '/contact/' }
+						],
+						staff_members: {
+							jane: { name: 'Jane Doe', title: 'Developer' },
+							john: { name: 'John Smith', title: 'Designer' }
+						}
+					}
+				};
+
+				const result = await buildDetails.generateDetails({
+					cloudcannon: { data: { nav: true, staff_members: true } }
+				});
+				expect(result.data).to.deep.equal(expected.data);
+			});
+		});
+
+		after(function () {
+			mock.restore();
 		});
 	});
 });

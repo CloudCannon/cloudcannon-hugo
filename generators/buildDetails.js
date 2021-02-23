@@ -33,16 +33,17 @@ module.exports = {
 		return generator;
 	},
 
-	getCollectionName: function (path) {
+	getCollectionName: function (path, rootDir = '') {
+		path = path.replace(rootDir, '');
 		const fileName = Path.basename(path);
 		let dir = Path.dirname(path);
 		if (fileName.search(/^(_?)index/g) >= 0) {
 			dir = Path.dirname(dir);
 		}
-		const nameFilter = /.*\//g; // the unimportant part
-		const extraPart = dir.match(nameFilter);
+		const leadingPathFilter = /.*\//g; // the unimportant part
+		const leadingPath = dir.match(leadingPathFilter);
 
-		return extraPart ? dir.replace(extraPart[0], '') : '';
+		return leadingPath ? dir.replace(leadingPath[0], '') : '';
 	},
 
 	getPageUrl: function (path, hugoUrls = {}, contentDir) {
@@ -74,20 +75,30 @@ module.exports = {
 		return urlsPerPath;
 	},
 
-	getDataFiles: async function (dataPath) {
-		const data = [];
+	getDataFiles: async function (allowedCollections) {
+		const data = {};
+		const { data: dataDir } = pathHelper.getPaths();
 		const dataFiles = await pathHelper.getDataPaths();
-		await Promise.all(dataFiles.map(async (path) => {
-			const collectionItem = {
-				url: '',
-				path: path,
-				collection: 'data',
-				output: false
-			};
-			const itemDetails = await helpers.getItemDetails(path);
-			Object.assign(collectionItem, itemDetails);
 
-			data.push(collectionItem);
+		await Promise.all(dataFiles.map(async (path) => {
+			const filename = Path.basename(path, Path.extname(path));
+			const collectionName = this.getCollectionName(path, dataDir);
+
+			if (allowedCollections && !allowedCollections.includes(collectionName || filename)) {
+				return;
+			}
+
+			const contents = await helpers.parseDataFile(path) || {};
+
+			if (collectionName) {
+				if (!data[collectionName]) {
+					data[collectionName] = {};
+				}
+				data[collectionName][filename] = contents;
+			} else {
+				data[filename] = contents;
+			}
+
 			return Promise.resolve();
 		}));
 		return data;
@@ -95,11 +106,11 @@ module.exports = {
 
 	getCollections: async function (urlsPerPath) {
 		const collections = {};
-		const { content, data } = pathHelper.getPaths();
+		const { content } = pathHelper.getPaths();
 		const collectionPaths = await pathHelper.getCollectionPaths();
 
 		await Promise.all(collectionPaths.map(async (path) => {
-			const collectionName = this.getCollectionName(path);
+			const collectionName = this.getCollectionName(path, content);
 			if (collectionName) {
 				const url = this.getPageUrl(path, urlsPerPath, content);
 				const collectionItem = {
@@ -128,8 +139,6 @@ module.exports = {
 			}
 			return Promise.resolve();
 		}));
-
-		collections.data = await this.getDataFiles(data);
 
 		return collections;
 	},
@@ -169,12 +178,24 @@ module.exports = {
 		const pages = await this.getPages(urlsPerPath);
 		const generator = this.getGeneratorDetails(hugoConfig);
 
-		return {
+		const details = {
 			"time": "",
 			"cloudcannon": cloudCannonMeta,
 			"generator": generator,
 			"collections": collections,
 			"pages": pages
 		};
+
+		if (hugoConfig.cloudcannon && hugoConfig.cloudcannon.data) {
+			const dataConfig = hugoConfig.cloudcannon.data;
+			let dataCollections;
+			if (typeof dataConfig === 'object') {
+				dataCollections = Object.keys(dataConfig);
+			}
+			const data = await this.getDataFiles(dataCollections);
+			details.data = data;
+		}
+
+		return details;
 	}
 };

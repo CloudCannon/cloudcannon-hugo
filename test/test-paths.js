@@ -25,7 +25,11 @@ const pathsByType = {
 		'config/staging/params'
 	],
 	dataPaths: [
-		'data/info.yml'],
+		'data/footer.json',
+		'data/nav.yml',
+		'data/staff_members/jane.toml',
+		'data/staff_members/john.toml'
+	],
 	pagePaths: [
 		'content/_index.md',
 		'content/about.md',
@@ -156,9 +160,6 @@ const collectionFiles = {
 			'_index.md': 'nice',
 			'post1.md': '---\ndraft: true\n---\n'
 		}
-	},
-	data: {
-		'info.toml': ''
 	}
 };
 
@@ -183,6 +184,37 @@ const pages = {
 	}
 };
 
+const dataFiles = {
+	data: {
+		'footer.json':
+`[
+	{
+		"name": "Github", "order": 0
+	},
+	{
+		"name": "RSS", "order": 1
+	}
+]
+`,
+		'nav.yml':
+`- name: About
+  url: /about/
+- name: Contact
+  url: /contact/
+`,
+		staff_members: {
+			'jane.toml':
+`name = "Jane Doe"
+title = "Developer"
+`,
+			'john.toml':
+`name = "John Smith"
+title = "Designer"
+`
+		}
+	}
+};
+
 const testFileStructure = {};
 Object.keys(pathsByType).forEach((pathType) => {
 	pathsByType[pathType].forEach((path) => {
@@ -198,5 +230,6 @@ module.exports = {
 	configFiles: configFiles,
 	configOrder: configOrder,
 	collectionFiles: collectionFiles,
+	dataFiles: dataFiles,
 	pages: pages
 };

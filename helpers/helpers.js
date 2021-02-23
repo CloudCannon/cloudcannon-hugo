@@ -1,5 +1,6 @@
 const cp = require('child_process');
 const { promises: fsProm } = require('fs');
+const Path = require('path');
 
 const toml = require('toml');
 const yaml = require('js-yaml');
@@ -40,6 +41,31 @@ module.exports = {
 			return frontMatterObject || {};
 		} catch (parseError) {
 			return {};
+		}
+	},
+
+	parseDataFile: async function (path) {
+		const type = Path.extname(path).toLowerCase();
+		try {
+			let parsedData;
+			const contents = await fsProm.readFile(path, 'utf-8');
+			switch (type) {
+			case '.yml':
+			case '.yaml':
+				parsedData = this.parseYaml(contents);
+				break;
+			case '.toml':
+				parsedData = this.parseToml(contents);
+				break;
+			case '.json':
+				parsedData = JSON.parse(contents);
+				break;
+			default:
+				break;
+			}
+			return parsedData;
+		} catch (parseError) {
+			console.warn('Failed to read file:', path);
 		}
 	},
 
