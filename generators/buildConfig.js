@@ -7,6 +7,13 @@ const helpers = require('../helpers/helpers');
 const pathHelper = require('../helpers/paths');
 const { cloudCannonMeta } = require('../helpers/metadata');
 
+function renameKey(object, key, newKey) {
+	if (Object.prototype.hasOwnProperty.call(object, key)) {
+		object[newKey] = object[key];
+		delete object[key];
+	}
+}
+
 module.exports = {
 	getCollectionName: function (path, archetypePath) {
 		if (path.indexOf(archetypePath) >= 0) {
@@ -57,7 +64,7 @@ module.exports = {
 		if (config.permalinks) {
 			Object.keys(config.permalinks).forEach((collection) => {
 				if (collections[collection]) {
-					collections[collection]["permalink"] = config.permalinks[collection];
+					collections[collection].permalink = config.permalinks[collection];
 				}
 			});
 		}
@@ -77,6 +84,13 @@ module.exports = {
 
 		const baseURL = helpers.getUrlPathname(hugoConfig.baseURL);
 
+		const editor = hugoParams['_editor'] || {};
+		renameKey(editor, 'default_path', 'default-path');
+
+		const sourceEditor = hugoParams['_sourceEditor'] || {};
+		renameKey(sourceEditor, 'tab_size', 'tab-size');
+		renameKey(sourceEditor, 'show_gutter', 'show-gutter');
+
 		return {
 			'time': date, // get build time here
 			'cloudcannon': cloudCannonMeta,
@@ -88,8 +102,8 @@ module.exports = {
 			'comments': hugoParams['_comments'] || {},
 			'input-options': hugoParams['_options'] || {},
 			'defaults': [], // Currently Unused
-			'editor': hugoParams['_editor'] || {},
-			'source-editor': hugoParams['_sourceEditor'] || {},
+			'editor': editor,
+			'source-editor': sourceEditor,
 			'explore': hugoParams['_explore'] || {},
 			'paths': paths,
 			'array-structures': hugoParams['_array_structures'] || {},

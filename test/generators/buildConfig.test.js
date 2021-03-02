@@ -120,8 +120,8 @@ describe('buildConfig', function () {
 				'exclude': ['exclude'],
 				'_comments': { 'comment': 'comment' },
 				'_options': { 'option': 'value' },
-				'_editor': { 'default-path': '/' },
-				'_sourceEditor': { 'default-path': '/' },
+				'_editor': { default_path: '/about/' },
+				'_sourceEditor': { theme: 'monokai', tab_size: 2, show_gutter: false },
 				'_explore': { 'groups': [] },
 				'_array_structures': { 'object': {} },
 				'_selectData': { 'object': {} }
@@ -143,8 +143,8 @@ describe('buildConfig', function () {
 				'comments': cloudcannon['_comments'],
 				'input-options': cloudcannon['_options'],
 				'defaults': [], // Currently Unused
-				'editor': cloudcannon['_editor'],
-				'source-editor': cloudcannon['_sourceEditor'],
+				'editor': { 'default-path': '/about/' },
+				'source-editor': { theme: 'monokai', 'tab-size': 2, 'show-gutter': false },
 				'explore': cloudcannon['_explore'],
 				'paths': pathHelper.getPaths(),
 				'array-structures': cloudcannon['_array_structures'],
