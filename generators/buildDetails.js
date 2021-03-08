@@ -143,6 +143,45 @@ module.exports = {
 		return collections;
 	},
 
+	getLayout: async function (path, details) {
+		const typeFolders = [];
+		const layoutFiles = [];
+		const { content } = pathHelper.getPaths();
+		const isHome = path.indexOf(`${content}/_index.md`) >= 0;
+
+		const basename = Path.basename(path);
+		const isSingle = basename.indexOf('_index.md') < 0;
+
+		const { layout, type } = details;
+		const section = this.getCollectionName(path);
+
+		if (isHome) {
+			typeFolders.push(type, '/', '_default'); // '/' signifies to use root folder
+			layoutFiles.push(layout, 'index', 'home', 'list');
+		} else if (isSingle) {
+			typeFolders.push(section, '_default');
+			layoutFiles.push(layout, 'single');
+		} else {
+			typeFolders.push(type, section, 'section', '_default');
+			layoutFiles.push(layout, section, 'section', 'list');
+		}
+
+		const tree = await pathHelper.getLayoutTree();
+
+		for (let t = 0; t < typeFolders.length; t += 1) {
+			for (let l = 0; l < layoutFiles.length; l += 1) {
+				const typeFolder = typeFolders[t];
+				const layoutFile = layoutFiles[l];
+				if (typeFolder === '/' && typeof tree[layoutFile] === 'string') {
+					return tree[layoutFile];
+				}
+				if (tree[typeFolder] && typeof tree[typeFolder][layoutFile] === 'string') {
+					return tree[typeFolder][layoutFile];
+				}
+			}
+		}
+	},
+
 	getPages: async function (urlsPerPath) {
 		const { content } = pathHelper.getPaths();
 		const pagePaths = await pathHelper.getPagePaths();
@@ -150,11 +189,14 @@ module.exports = {
 		const pages = Promise.all(pagePaths.map(async (path) => {
 			const itemDetails = await helpers.getItemDetails(path);
 			const url = this.getPageUrl(path, urlsPerPath, content);
+			const layout = await this.getLayout(path, itemDetails);
+
 			const item = {
 				name: Path.basename(path),
 				path: path,
 				url: url || '',
-				title: Path.basename(path)
+				title: Path.basename(path),
+				layout: layout || ''
 			};
 			Object.assign(item, itemDetails);
 			if (item.draft) {

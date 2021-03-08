@@ -35,6 +35,41 @@ module.exports = {
 		return globHelper.getGlob(`${data}/**`);
 	},
 
+	getLayoutTree: async function () {
+		if (!this.cachedLayouts) {
+			const tree = {};
+			const { layouts } = this.getPaths();
+
+			const layoutPaths = await this.getLayoutPaths();
+
+			layoutPaths.forEach((layoutPath) => {
+				layoutPath = layoutPath.replace(/\..+$/i, '');
+				const relLayoutPath = layoutPath.replace(`${layouts}/`, '');
+				const parts = relLayoutPath.split('/');
+				if (parts.length === 2) {
+					if (!tree[parts[0]]) {
+						tree[parts[0]] = {};
+					}
+					tree[parts[0]][parts[1]] = relLayoutPath;
+				} else {
+					tree[parts[0]] = relLayoutPath;
+				}
+			});
+			this.cachedLayouts = tree;
+		}
+		return this.cachedLayouts;
+	},
+
+	getLayoutPaths: async function () {
+		const { layouts } = this.getPaths();
+		return globHelper.getGlob(`${layouts}/**`);
+	},
+
+	/**
+	 * top-level index files (e.g. /contact.md)
+	 * index.md files in top-level folders (e.g. /about/index.md)
+	 * _index.md files anywhere (e.g. /categories/authors/_index.md)
+	 */
 	getPagePaths: async function () {
 		const { content } = this.getPaths();
 		const indexFiles = await globHelper.getGlob([

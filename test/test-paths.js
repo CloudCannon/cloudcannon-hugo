@@ -36,6 +36,14 @@ const pathsByType = {
 		'content/about/index.md',
 		'content/collectionName/_index.md',
 		'content/posts/_index.md'],
+	layoutPaths: [
+		'layouts/_defaults/list.html',
+		'layouts/index.html',
+		'layouts/mytype/list.html',
+		'layouts/mytype/mylayout.html',
+		'layouts/posts/mylayout.html',
+		'layouts/posts/single.html'
+	],
 	otherPages: [
 		'config.yaml',
 		'extraconfig.json',

@@ -5,7 +5,7 @@ const mock = require('mock-fs');
 const buildDetails = require('../../generators/buildDetails');
 const { cloudCannonMeta, markdownMeta } = require('../../helpers/metadata');
 
-const { collectionFiles, dataFiles, pages } = require('../test-paths');
+const { collectionFiles, dataFiles, pages, testFileStructure } = require('../test-paths');
 
 describe('buildDetails', function () {
 	describe('getMarkdownMeta', function () {
@@ -118,6 +118,36 @@ describe('buildDetails', function () {
 		});
 	});
 
+	describe('getLayout', function () {
+		before(function () {
+			mock(testFileStructure);
+		});
+
+		const tests = [
+			{
+				input: ['content/_index.md', {}],
+				expected: 'index',
+				context: 'input: Home page'
+			},
+			{
+				input: ['content/posts/post.md', {}],
+				expected: 'posts/single',
+				context: 'input: posts'
+			}
+		];
+
+		tests.forEach((test) => {
+			it(test.context || '', async function () {
+				const result = await buildDetails.getLayout(...test.input);
+				expect(result).to.equal(test.expected);
+			});
+		});
+
+		after(function () {
+			mock.restore();
+		});
+	});
+
 	describe('getPages', function () {
 		before(function () {
 			mock(pages);
@@ -129,33 +159,38 @@ describe('buildDetails', function () {
 					name: '_index.md',
 					path: 'content/_index.md',
 					title: '_index.md',
-					url: '/'
+					url: '/',
+					layout: 'index'
 				},
 				{
 					name: 'about.md',
 					path: 'content/about.md',
 					title: 'about.md',
 					url: '',
-					published: false
+					published: false,
+					layout: ''
 				},
 				{
 					name: '_index.md',
 					path: 'content/coll1/_index.md',
 					title: '_index.md',
-					url: '/coll1/'
+					url: '/coll1/',
+					layout: ''
 				},
 				{
 					name: 'index.md',
 					path: 'content/help/index.md',
 					title: 'index.md',
 					url: '/help/',
-					output: false
+					output: false,
+					layout: ''
 				},
 				{
 					name: '_index.md',
 					path: 'content/posts/_index.md',
 					title: '_index.md',
-					url: '/posts/'
+					url: '/posts/',
+					layout: ''
 				}
 			];
 			const results = await buildDetails.getPages({});

@@ -37,6 +37,38 @@ describe('pathHelper', function () {
 		});
 	});
 
+	describe('getLayoutPaths', function () {
+		it('should get all layout files', async function () {
+			const paths = (await pathHelper.getLayoutPaths()).sort();
+			expect(paths).to.deep.equal(pathsByType.layoutPaths);
+		});
+	});
+
+	describe('getLayoutTree', function () {
+		before(function () {
+			delete pathHelper.cachedLayouts;
+		});
+
+		it('should create a layout tree using layout file structure', async function () {
+			const tree = await pathHelper.getLayoutTree();
+			const expected = {
+				'index': 'index',
+				'_defaults': {
+					'list': '_defaults/list'
+				},
+				'mytype': {
+					'list': 'mytype/list',
+					'mylayout': 'mytype/mylayout'
+				},
+				'posts': {
+					'mylayout': 'posts/mylayout',
+					'single': 'posts/single'
+				}
+			};
+			expect(tree).to.deep.equal(expected);
+		});
+	});
+
 	describe('getCollectionPaths', function () {
 		it('should get all collections', async function () {
 			const paths = await pathHelper.getCollectionPaths();
