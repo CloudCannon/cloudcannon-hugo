@@ -121,6 +121,9 @@ module.exports = {
 				const itemDetails = await helpers.getItemDetails(path);
 				Object.assign(collectionItem, itemDetails);
 
+				const layout = await this.getLayout(path, itemDetails);
+				collectionItem.layout = layout || '';
+
 				if (collectionItem.draft) {
 					delete collectionItem.draft;
 					collectionItem.published = false;

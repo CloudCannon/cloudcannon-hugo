@@ -4,6 +4,7 @@ const mock = require('mock-fs');
 
 const buildDetails = require('../../generators/buildDetails');
 const { cloudCannonMeta, markdownMeta } = require('../../helpers/metadata');
+const pathHelper = require('../../helpers/paths');
 
 const { collectionFiles, dataFiles, pages, testFileStructure } = require('../test-paths');
 
@@ -92,13 +93,15 @@ describe('buildDetails', function () {
 					{
 						collection: 'coll1',
 						path: 'content/coll1/item1.md',
-						url: '/coll1/item1/'
+						url: '/coll1/item1/',
+						layout: ''
 					},
 					{
 						collection: 'coll1',
 						output: false,
 						path: 'content/coll1/item2.md',
-						url: '/coll1/item2/'
+						url: '/coll1/item2/',
+						layout: ''
 					}
 				],
 				posts: [
@@ -106,7 +109,8 @@ describe('buildDetails', function () {
 						collection: 'posts',
 						published: false,
 						path: 'content/posts/post1.md',
-						url: '/posts/post1/'
+						url: '/posts/post1/',
+						layout: ''
 					}
 				]
 			};
@@ -120,6 +124,7 @@ describe('buildDetails', function () {
 
 	describe('getLayout', function () {
 		before(function () {
+			delete pathHelper.cachedLayouts
 			mock(testFileStructure);
 		});
 
