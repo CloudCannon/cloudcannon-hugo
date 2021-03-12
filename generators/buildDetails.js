@@ -37,7 +37,7 @@ module.exports = {
 		path = path.replace(rootDir, '');
 		const fileName = Path.basename(path);
 		let dir = Path.dirname(path);
-		if (fileName.search(/^(_?)index/g) >= 0) {
+		if (fileName.search(/^index/ig) >= 0) {
 			dir = Path.dirname(dir);
 		}
 		const leadingPathFilter = /.*\//g; // the unimportant part
@@ -110,6 +110,9 @@ module.exports = {
 		const collectionPaths = await pathHelper.getCollectionPaths();
 
 		await Promise.all(collectionPaths.map(async (path) => {
+			if (path.indexOf('_index.') >= 0) {
+				return Promise.resolve();
+			}
 			const collectionName = this.getCollectionName(path, content);
 			if (collectionName) {
 				const url = this.getPageUrl(path, urlsPerPath, content);

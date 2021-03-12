@@ -6,7 +6,12 @@ const buildDetails = require('../../generators/buildDetails');
 const { cloudCannonMeta, markdownMeta } = require('../../helpers/metadata');
 const pathHelper = require('../../helpers/paths');
 
-const { collectionFiles, dataFiles, pages, testFileStructure } = require('../test-paths');
+const {
+	collectionFiles,
+	dataFiles,
+	pages,
+	testFileStructure
+} = require('../test-paths');
 
 describe('buildDetails', function () {
 	describe('getMarkdownMeta', function () {
@@ -27,7 +32,7 @@ describe('buildDetails', function () {
 			{ input: ['content/authors/jane-doe.md'], expected: 'authors', context: 'input: author collection' },
 			{ input: ['data/staff/john.toml', 'data'], expected: 'staff', context: 'input: datafile' },
 			{ input: ['content/posts/test-post/index.md'], expected: 'posts', context: 'post in page bundle' },
-			{ input: ['nested/content/dir/_index.md', 'nested/content/dir'], expected: '', context: '_index page in nested content dir' }
+			{ input: ['nested/content/dir/_index.md'], expected: 'dir', context: '_index page in nested content dir' }
 		];
 
 		tests.forEach((test) => {
@@ -124,7 +129,7 @@ describe('buildDetails', function () {
 
 	describe('getLayout', function () {
 		before(function () {
-			delete pathHelper.cachedLayouts
+			delete pathHelper.cachedLayouts;
 			mock(testFileStructure);
 		});
 
@@ -135,9 +140,59 @@ describe('buildDetails', function () {
 				context: 'input: Home page'
 			},
 			{
+				input: ['content/_index.md', { type: 'mytype' }],
+				expected: 'mytype/list',
+				context: 'input: Home page with type set'
+			},
+			{
+				input: ['content/_index.md', { layout: 'mylayout' }],
+				expected: 'index',
+				context: 'input: Home page with layout set'
+			},
+			{
 				input: ['content/posts/post.md', {}],
 				expected: 'posts/single',
-				context: 'input: posts'
+				context: 'input: single post'
+			},
+			{
+				input: ['content/posts/item/index.md', {}],
+				expected: 'posts/single',
+				context: 'input: single leaf bundle post'
+			},
+			{
+				input: ['content/posts/post.md', { layout: 'mylayout' }],
+				expected: 'posts/mylayout',
+				context: 'input: single post with layout set'
+			},
+			{
+				input: ['content/posts/post.md', { type: 'invalidType' }],
+				expected: 'posts/single',
+				context: 'input: single post with a non-existent type set'
+			},
+			{
+				input: ['content/posts/_index.md', {}],
+				expected: '_default/list',
+				context: 'input: list page for posts'
+			},
+			{
+				input: ['content/mytype/_index.md', {}],
+				expected: 'mytype/list',
+				context: 'input: list page for mytype'
+			},
+			{
+				input: ['content/posts/_index.md', { type: 'mytype' }],
+				expected: 'mytype/list',
+				context: 'input: list page for posts with type mytype'
+			},
+			{
+				input: ['content/posts/_index.md', { layout: 'mylayout' }],
+				expected: 'posts/mylayout',
+				context: 'input: list page for posts with layout set'
+			},
+			{
+				input: ['content/posts/_index.md', { type: 'mytype', layout: 'mylayout' }],
+				expected: 'mytype/mylayout',
+				context: 'input: list page for posts with type and layout set'
 			}
 		];
 
@@ -150,6 +205,7 @@ describe('buildDetails', function () {
 
 		after(function () {
 			mock.restore();
+			delete pathHelper.cachedLayouts;
 		});
 	});
 
@@ -165,7 +221,7 @@ describe('buildDetails', function () {
 					path: 'content/_index.md',
 					title: '_index.md',
 					url: '/',
-					layout: 'index'
+					layout: ''
 				},
 				{
 					name: 'about.md',

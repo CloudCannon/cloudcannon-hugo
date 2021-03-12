@@ -37,7 +37,7 @@ const pathsByType = {
 		'content/collectionName/_index.md',
 		'content/posts/_index.md'],
 	layoutPaths: [
-		'layouts/_defaults/list.html',
+		'layouts/_default/list.html',
 		'layouts/index.html',
 		'layouts/mytype/list.html',
 		'layouts/mytype/mylayout.html',

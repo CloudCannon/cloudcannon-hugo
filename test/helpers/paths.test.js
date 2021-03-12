@@ -53,8 +53,8 @@ describe('pathHelper', function () {
 			const tree = await pathHelper.getLayoutTree();
 			const expected = {
 				'index': 'index',
-				'_defaults': {
-					'list': '_defaults/list'
+				'_default': {
+					'list': '_default/list'
 				},
 				'mytype': {
 					'list': 'mytype/list',
