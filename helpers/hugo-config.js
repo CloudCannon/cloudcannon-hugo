@@ -2,39 +2,6 @@ const Path = require('path');
 const globHelper = require('./globs');
 const helpers = require('./helpers');
 
-/**
- * Simple object check, returning false for arrays and null objects.
- * @param item the object
- * @returns {boolean}
- */
-const isObject = function (item) {
-	return (item && typeof item === 'object' && !Array.isArray(item));
-};
-
-/**
- * Deep merge objects.
- * Adapted from https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
- * @param target
- * @param ...sources
- */
-const mergeDeep = function (target, ...sources) {
-	if (!sources.length) return target;
-	const source = sources.shift();
-
-	if (isObject(target) && isObject(source)) {
-		Object.keys(source).forEach((key) => {
-			if (isObject(source[key])) {
-				if (!target[key]) Object.assign(target, { [key]: {} });
-				mergeDeep(target[key], source[key]);
-			} else {
-				Object.assign(target, { [key]: source[key] });
-			}
-		});
-	}
-
-	return mergeDeep(target, ...sources);
-};
-
 const configSort = function (fileArray) {
 	const extensionOrder = ['.toml', '.yaml', '.json'];
 
@@ -120,7 +87,7 @@ module.exports = {
 		const configContents = await this.getConfigContents(configFileList, buildArguments.config);
 		configContents.reverse(); // reversing because deep merge places priority on the second object
 
-		const configObject = mergeDeep({}, ...configContents);
+		const configObject = helpers.mergeDeep({}, ...configContents);
 
 		configObject.baseURL = buildArguments.baseURL || configObject.baseURL || '/';
 

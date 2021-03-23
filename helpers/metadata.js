@@ -10,7 +10,7 @@ module.exports = {
 
 	markdownMeta: {
 		"markdown": "goldmark",
-		"asciidocExt": {
+		"asciidocext": {
 			"attributes": {},
 			"backend": "html5",
 			"extensions": [],
@@ -23,7 +23,7 @@ module.exports = {
 			"verbose": false,
 			"workingFolderCurrent": false
 		},
-		"blackFriday": {
+		"blackfriday": {
 			"angledQuotes": false,
 			"extensions": null,
 			"extensionsMask": null,
@@ -75,7 +75,7 @@ module.exports = {
 			"style": "monokai",
 			"tabWidth": 4
 		},
-		"tableOfContents": {
+		"tableofcontents": {
 			"endLevel": 3,
 			"ordered": false,
 			"startLevel": 2

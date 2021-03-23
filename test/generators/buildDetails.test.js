@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const mock = require('mock-fs');
 
 const buildDetails = require('../../generators/buildDetails');
-const { cloudCannonMeta, markdownMeta } = require('../../helpers/metadata');
+const { cloudCannonMeta } = require('../../helpers/metadata');
 const pathHelper = require('../../helpers/paths');
 
 const {
@@ -17,13 +17,88 @@ describe('buildDetails', function () {
 	describe('getMarkdownMeta', function () {
 		it('should return default markdown metadata', function () {
 			const result = buildDetails.getMarkdownMetadata({});
-			expect(result).to.deep.equal(markdownMeta);
+			const expected = {
+				markdown: 'goldmark',
+				goldmark: {
+					extensions: {
+						definitionList: true,
+						footnote: true,
+						linkify: true,
+						strikethrough: true,
+						table: true,
+						taskList: true,
+						typographer: true
+					},
+					parser: {
+						attribute: true,
+						autoHeadingID: true,
+						autoHeadingIDType: 'github'
+					},
+					renderer: {
+						hardWraps: false,
+						unsafe: false,
+						xhtml: false
+					}
+				}
+			};
+			expect(result).to.deep.equal(expected);
+		});
+
+		it('should return default blackfriday metadata', function () {
+			const result = buildDetails.getMarkdownMetadata({ markup: { defaultMarkdownHandler: 'blackfriday' } });
+			const expected = {
+				markdown: 'blackfriday',
+				blackfriday: {
+					angledQuotes: false,
+					extensions: null,
+					extensionsMask: null,
+					footnoteAnchorPrefix: '',
+					footnoteReturnLinkContents: '',
+					fractions: true,
+					hrefTargetBlank: false,
+					latexDashes: true,
+					nofollowLinks: false,
+					noreferrerLinks: false,
+					plainIDAnchors: true,
+					skipHTML: false,
+					smartDashes: true,
+					smartypants: true,
+					smartypantsQuotesNBSP: false,
+					taskLists: true
+				}
+			};
+			expect(result).to.deep.equal(expected);
 		});
 
 		it('should return markup in config', function () {
-			const markup = { kramdown: {} };
-			const result = buildDetails.getMarkdownMetadata({ markup: markup });
-			expect(result).to.deep.equal(markup);
+			const markup = { markup: { goldmark: { renderer: { unsafe: true } } } };
+			const expected = {
+				markdown: 'goldmark',
+				goldmark: {
+					extensions: {
+						definitionList: true,
+						footnote: true,
+						linkify: true,
+						strikethrough: true,
+						table: true,
+						taskList: true,
+						typographer: true
+					},
+					parser: {
+						attribute: true,
+						autoHeadingID: true,
+						autoHeadingIDType: 'github'
+					},
+					renderer: {
+						hardWraps: false,
+						unsafe: true,
+						xhtml: false
+					}
+				}
+			};
+
+			const result = buildDetails.getMarkdownMetadata(markup);
+			expect(result).to.deep.equal(expected);
 		});
 	});
 

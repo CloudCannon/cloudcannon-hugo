@@ -12,10 +12,19 @@ const { cloudCannonMeta, markdownMeta } = require('../helpers/metadata');
 module.exports = {
 
 	getMarkdownMetadata: function (config) {
-		if (config.markup) {
-			return config.markup;
-		}
-		return markdownMeta;
+		const markup = config.markup || {};
+
+		const markdownHandler = markup.defaultMarkdownHandler || 'goldmark';
+		const defaultMeta = markdownMeta[markdownHandler] || {};
+
+		const markdownConfig = helpers.mergeDeep(defaultMeta, markup[markdownHandler]);
+
+		const meta = {
+			markdown: markdownHandler,
+			[markdownHandler]: markdownConfig
+		};
+
+		return meta;
 	},
 
 	getGeneratorDetails: function (config) {

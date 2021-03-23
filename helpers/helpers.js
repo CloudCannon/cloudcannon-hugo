@@ -24,7 +24,41 @@ const getValidOptionName = function (option) {
 	}
 };
 
+/**
+ * Simple object check, returning false for arrays and null objects.
+ * @param item the object
+ * @returns {boolean}
+ */
+const isObject = function (item) {
+	return (item && typeof item === 'object' && !Array.isArray(item));
+};
+
 module.exports = {
+
+	/**
+	 * Deep merge objects.
+	 * Adapted from https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
+	 * @param target
+	 * @param ...sources
+	 */
+	mergeDeep: function (target, ...sources) {
+		if (!sources.length) return target;
+		const source = sources.shift();
+
+		if (isObject(target) && isObject(source)) {
+			Object.keys(source).forEach((key) => {
+				if (isObject(source[key])) {
+					if (!target[key]) Object.assign(target, { [key]: {} });
+					this.mergeDeep(target[key], source[key]);
+				} else {
+					Object.assign(target, { [key]: source[key] });
+				}
+			});
+		}
+
+		return this.mergeDeep(target, ...sources);
+	},
+
 	exists: async function (path) {
 		try {
 			await fsProm.access(path);
