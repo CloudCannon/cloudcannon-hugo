@@ -11,7 +11,7 @@
     "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "bin": {
-    "cloudcannon-hugo": "./index.js"
+    "cloudcannon-hugo": "index.js"
   },
   "repository": {
     "type": "git",

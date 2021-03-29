@@ -19,17 +19,17 @@ describe('buildConfig', function () {
 
 			tests.forEach((test) => {
 				it(test.context || '', function () {
-					const result = buildConfig.getCollectionName(test.input);
+					const result = buildConfig.getCollectionName(test.input, 'content');
 					expect(result).to.equal(test.expected);
 				});
 			});
 		});
 		describe('archetypes', function () {
 			const tests = [
-				{ input: ['archetypes/archetypeName/index.md', 'archetypes'], expected: 'archetypeName', context: 'input: index file' },
-				{ input: ['archetypes/someFolder/archetype.md', 'archetypes'], expected: 'archetype', context: 'input: no index file' },
-				{ input: ['archetypes/archetypeName.md', 'archetypes'], expected: 'archetypeName', context: 'input: item in root archetype dir' },
-				{ input: ['archetypes/default.md', 'archetypes'], expected: undefined, context: 'default archetype' }
+				{ input: ['archetypes/archetypeName/index.md', 'content', 'archetypes'], expected: 'archetypeName', context: 'input: index file' },
+				{ input: ['archetypes/someFolder/archetype.md', 'content', 'archetypes'], expected: 'archetype', context: 'input: no index file' },
+				{ input: ['archetypes/archetypeName.md', 'content', 'archetypes'], expected: 'archetypeName', context: 'input: item in root archetype dir' },
+				{ input: ['archetypes/default.md', 'content', 'archetypes'], expected: undefined, context: 'default archetype' }
 			];
 			tests.forEach((test) => {
 				it(test.context || '', function () {

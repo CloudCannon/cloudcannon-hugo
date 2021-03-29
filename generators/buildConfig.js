@@ -15,7 +15,7 @@ function renameKey(object, key, newKey) {
 }
 
 module.exports = {
-	getCollectionName: function (path, archetypePath) {
+	getCollectionName: function (path, contentDir, archetypePath) {
 		if (path.indexOf(archetypePath) >= 0) {
 			if (path.indexOf('default.md') >= 0) {
 				return;
@@ -27,7 +27,9 @@ module.exports = {
 			return Path.basename(path, Path.extname(path)); // e.g. archetypes/type.md
 		}
 		if (path.indexOf('_index.md') >= 0) {
-			return Path.basename(Path.dirname(path));
+			path = path.replace(`${contentDir}/`, '');
+			const parts = path.split('/');
+			return parts[0];
 		}
 	},
 
@@ -38,7 +40,7 @@ module.exports = {
 		const collectionPaths = await pathHelper.getCollectionPaths();
 
 		await Promise.all(collectionPaths.map(async (collectionPath) => {
-			const collectionName = this.getCollectionName(collectionPath, paths.archetypes);
+			const collectionName = this.getCollectionName(collectionPath, contentDir, paths.archetypes);
 			if (collectionName) {
 				const path = `${contentDir}/${collectionName}`;
 				const collection = {
