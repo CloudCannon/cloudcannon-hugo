@@ -172,6 +172,12 @@ describe('buildDetails', function () {
 				coll1: [
 					{
 						collection: 'coll1',
+						path: 'content/coll1/_index.md',
+						url: '/coll1/',
+						layout: ''
+					},
+					{
+						collection: 'coll1',
 						path: 'content/coll1/item1.md',
 						url: '/coll1/item1/',
 						layout: ''
@@ -185,6 +191,12 @@ describe('buildDetails', function () {
 					}
 				],
 				posts: [
+					{
+						collection: 'posts',
+						path: 'content/posts/_index.md',
+						url: '/posts/',
+						layout: ''
+					},
 					{
 						collection: 'posts',
 						published: false,
