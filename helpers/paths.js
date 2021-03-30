@@ -70,7 +70,7 @@ module.exports = {
 	/**
 	 * top-level index files (e.g. /contact.md)
 	 * index.md files in top-level folders (e.g. /about/index.md)
-	 * _index.md files anywhere (e.g. /categories/authors/_index.md)
+	 * standalone _index.md files in top level folders (e.g. /contact/_index.md)
 	 */
 	getPagePaths: async function () {
 		const { content } = this.getPaths();
@@ -78,9 +78,9 @@ module.exports = {
 			`**/${content}/**/*`
 		]);
 
-		const topLevelIndexRegex = new RegExp(`${content}/[^/]*/index.md$`, 'i');
-		const listRegex = new RegExp(`${content}/.*/_index.md$`, 'i');
 		const topLevelRegex = new RegExp(`${content}/[^/]*.md$`, 'i');
+		const topLevelIndexRegex = new RegExp(`${content}/[^/]*/index.md$`, 'i');
+		const listRegex = new RegExp(`${content}/[^/]*/_index.md$`, 'i');
 
 		const pagePaths = contentFiles.filter((path) => {
 			if (topLevelIndexRegex.test(path) || topLevelRegex.test(path)) {
