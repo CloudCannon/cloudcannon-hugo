@@ -34,8 +34,8 @@ const pathsByType = {
 		'content/_index.md',
 		'content/about.md',
 		'content/about/index.md',
-		'content/collectionName/_index.md',
-		'content/posts/_index.md'],
+		'content/collectionName/_index.md'
+	],
 	layoutPaths: [
 		'layouts/_default/list.html',
 		'layouts/index.html',
@@ -175,6 +175,9 @@ const pages = {
 	content: {
 		'_index.md': '',
 		'about.md': '---\ndraft: true\n---\n',
+		contact: {
+			'_index.md': ''
+		},
 		posts: {
 			'_index.md': 'nice',
 			'post1.md': '---\ndraft: true\n---\n'

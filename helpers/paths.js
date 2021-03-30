@@ -1,3 +1,4 @@
+const Path = require('path');
 const globHelper = require('./globs');
 
 module.exports = {
@@ -73,14 +74,32 @@ module.exports = {
 	 */
 	getPagePaths: async function () {
 		const { content } = this.getPaths();
-		const indexFiles = await globHelper.getGlob([
-			`**/${content}/*/index.md`,
-			`**/${content}/**/_index.md`,
-			`**/${content}/*.md`
+		const contentFiles = await globHelper.getGlob([
+			`**/${content}/**/*`
 		]);
 
+		const topLevelIndexRegex = new RegExp(`${content}/[^/]*/index.md$`, 'i');
+		const listRegex = new RegExp(`${content}/.*/_index.md$`, 'i');
+		const topLevelRegex = new RegExp(`${content}/[^/]*.md$`, 'i');
+
+		const pagePaths = contentFiles.filter((path) => {
+			if (topLevelIndexRegex.test(path) || topLevelRegex.test(path)) {
+				return true;
+			}
+
+			if (listRegex.test(path)) {
+				const dirName = Path.dirname(path);
+				const matching = contentFiles.filter((item) => item.indexOf(dirName) >= 0);
+				if (matching.length > 1) {
+					return false;
+				}
+				return true;
+			}
+			return false;
+		});
+
 		// remove duplicates
-		return Array.from(new Set(indexFiles));
+		return Array.from(new Set(pagePaths));
 	},
 
 	getCollectionPaths: async function () {

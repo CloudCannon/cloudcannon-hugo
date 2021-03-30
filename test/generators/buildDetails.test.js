@@ -308,9 +308,9 @@ describe('buildDetails', function () {
 				},
 				{
 					name: '_index.md',
-					path: 'content/coll1/_index.md',
+					path: 'content/contact/_index.md',
 					title: '_index.md',
-					url: '/coll1/',
+					url: '/contact/',
 					layout: ''
 				},
 				{
@@ -319,13 +319,6 @@ describe('buildDetails', function () {
 					title: 'index.md',
 					url: '/help/',
 					output: false,
-					layout: ''
-				},
-				{
-					name: '_index.md',
-					path: 'content/posts/_index.md',
-					title: '_index.md',
-					url: '/posts/',
 					layout: ''
 				}
 			];
