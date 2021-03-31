@@ -42,7 +42,7 @@ module.exports = {
 		return generator;
 	},
 
-	getCollectionName: function (path, rootDir = '') {
+	getSectionName: function (path, rootDir = '') {
 		path = path.replace(rootDir, '');
 		const fileName = Path.basename(path);
 		let dir = Path.dirname(path);
@@ -53,6 +53,15 @@ module.exports = {
 		const leadingPath = dir.match(leadingPathFilter);
 
 		return leadingPath ? dir.replace(leadingPath[0], '') : '';
+	},
+
+	getCollectionName: function (path, rootDir = '') {
+		if (path.indexOf(rootDir) !== 0) {
+			return '';
+		}
+		path = path.replace(`${rootDir}/`, '');
+		const parts = path.split('/');
+		return parts.length > 1 ? parts[0] : '';
 	},
 
 	getPageUrl: function (path, hugoUrls = {}, contentDir) {
@@ -91,7 +100,7 @@ module.exports = {
 
 		await Promise.all(dataFiles.map(async (path) => {
 			const filename = Path.basename(path, Path.extname(path));
-			const collectionName = this.getCollectionName(path, dataDir);
+			const collectionName = this.getSectionName(path, dataDir);
 
 			if (allowedCollections && !allowedCollections.includes(collectionName || filename)) {
 				return;
@@ -165,7 +174,7 @@ module.exports = {
 		const isSingle = basename.indexOf('_index.md') < 0;
 
 		const { layout, type } = details;
-		const section = this.getCollectionName(path);
+		const section = this.getSectionName(path);
 
 		if (isHome) {
 			typeFolders.push(type, '/', '_default'); // '/' signifies to use root folder

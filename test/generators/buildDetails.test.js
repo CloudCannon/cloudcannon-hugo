@@ -104,10 +104,10 @@ describe('buildDetails', function () {
 
 	describe('getCollectionName()', function () {
 		const tests = [
-			{ input: ['content/authors/jane-doe.md'], expected: 'authors', context: 'input: author collection' },
+			{ input: ['content/authors/jane-doe.md', 'content'], expected: 'authors', context: 'input: author collection' },
 			{ input: ['data/staff/john.toml', 'data'], expected: 'staff', context: 'input: datafile' },
-			{ input: ['content/posts/test-post/index.md'], expected: 'posts', context: 'post in page bundle' },
-			{ input: ['nested/content/dir/_index.md'], expected: 'dir', context: '_index page in nested content dir' }
+			{ input: ['content/posts/test-post/index.md', 'content'], expected: 'posts', context: 'post in page bundle' },
+			{ input: ['nested/content/dir/_index.md', 'nested/content'], expected: 'dir', context: '_index page in nested content dir' }
 		];
 
 		tests.forEach((test) => {
