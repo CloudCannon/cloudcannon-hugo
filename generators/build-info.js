@@ -285,7 +285,7 @@ module.exports = {
 		const hugoParams = hugoConfig[paramsKey] ?? {};
 
 		return {
-			time: new Date(Date.now()).toUTCString(),
+			time: new Date().toISOString(),
 			cloudcannon: cloudCannonMeta,
 			generator: this.generateGenerator(hugoConfig),
 			source: '', // TODO
