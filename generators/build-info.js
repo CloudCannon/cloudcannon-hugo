@@ -109,8 +109,8 @@ module.exports = {
 		}
 	},
 
-	generateMarkdownMetadata: function (config) {
-		const markup = config.markup ?? {};
+	generateMarkdownMetadata: function (hugoConfig) {
+		const markup = hugoConfig.markup ?? {};
 		const markdownHandler = markup.defaultMarkdownHandler ?? 'goldmark';
 		const defaultMeta = markdownMeta[markdownHandler] ?? {};
 
@@ -120,18 +120,18 @@ module.exports = {
 		};
 	},
 
-	generateGenerator: function (config) {
+	generateGenerator: function (hugoConfig) {
 		const hugoVersion = helpers.runProcess('hugo', ['version']);
 
 		return {
 			name: 'hugo',
 			version: hugoVersion.match(/[0-9]+\.[0-9]+\.[0-9]+/g)?.[0] ?? '0.0.0',
-			metadata: this.generateMarkdownMetadata(config)
+			metadata: this.generateMarkdownMetadata(hugoConfig)
 		};
 	},
 
-	generateData: async function (hugoConfig) {
-		const dataConfig = hugoConfig?.cloudcannon?.data;
+	generateData: async function (hugoParams) {
+		const dataConfig = hugoParams?.cloudcannon?.data;
 		if (!dataConfig) {
 			return;
 		}
@@ -162,12 +162,13 @@ module.exports = {
 		return data;
 	},
 
-	generateCollectionsConfig: async function (config, paths) {
+	generateCollectionsConfig: async function (hugoConfig, hugoParams, paths) {
 		const collectionPaths = await pathHelper.getCollectionPaths();
 		const collections = {
 			data: {
 				path: paths.data,
-				output: false
+				output: false,
+				...hugoParams?.cloudcannon?.collections?.data
 			}
 		};
 
@@ -178,15 +179,16 @@ module.exports = {
 				paths.archetypes
 			);
 
-			if (collectionName) {
+			if (collectionName && !collections[collectionName]) {
 				const itemDetails = await helpers.getItemDetails(collectionPath);
 
 				collections[collectionName] = {
 					path: `${paths.content}/${collectionName}`,
-					output: !itemDetails.headless
+					output: !itemDetails.headless,
+					...hugoParams?.cloudcannon?.collections?.[collectionName]
 				};
 
-				const permalink = config.permalinks?.[collectionName];
+				const permalink = hugoConfig.permalinks?.[collectionName];
 				if (permalink) {
 					collections[collectionName].permalink = permalink;
 				}
@@ -288,18 +290,18 @@ module.exports = {
 			generator: this.generateGenerator(hugoConfig),
 			source: '', // TODO
 			'base-url': helpers.getUrlPathname(hugoConfig.baseURL),
-			'collections-config': await this.generateCollectionsConfig(hugoConfig, paths),
+			'collections-config': await this.generateCollectionsConfig(hugoConfig, hugoParams, paths),
 			_comments: hugoParams._comments ?? {},
 			_options: hugoParams._options ?? {},
 			_editor: hugoParams._editor ?? {},
-			_source_editor: hugoParams._sourceEditor ?? {},
-			_enabled_editors: hugoParams._enabledEditors,
-			_array_structures: hugoParams._arrayStructures ?? {},
-			_select_data: hugoParams._selectData ?? {},
+			_source_editor: hugoParams._source_editor ?? hugoParams._sourceEditor ?? {},
+			_enabled_editors: hugoParams._enabled_editors,
+			_array_structures: hugoParams._array_structures ?? hugoParams._arrayStructures ?? {},
+			_select_data: hugoParams._select_data ?? hugoParams._selectData ?? {},
 			paths: paths,
 			collections: await this.generateCollections(urlsPerPath),
 			pages: await this.generatePages(urlsPerPath),
-			data: await this.generateData(hugoConfig)
+			data: await this.generateData(hugoParams)
 		};
 	}
 };

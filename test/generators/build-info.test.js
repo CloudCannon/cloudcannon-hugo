@@ -212,11 +212,14 @@ describe('generateCollectionsConfig', function () {
 			posts: {
 				path: 'content/posts',
 				output: true,
-				permalink: '/blog/:title/'
+				permalink: '/blog/:title/',
+				_image_key: 'author_image',
+				_image_size: 'cover'
 			},
 			data: {
 				path: 'data',
-				output: false
+				output: false,
+				_image_key: 'thumbnail'
 			},
 			leaf: {
 				path: 'content/leaf',
@@ -228,7 +231,21 @@ describe('generateCollectionsConfig', function () {
 			}
 		};
 
-		const results = await buildInfo.generateCollectionsConfig({ permalinks: { posts: '/blog/:title/', fakeCollection: 'wackyLink' } }, { content: 'content', archetypes: 'archetypes', data: 'data' });
+		const hugoConfig = {
+			permalinks: { posts: '/blog/:title/', fakeCollection: 'wackyLink' },
+			pArams: {
+				cloudcannon: {
+					collections: {
+						data: { _image_key: 'thumbnail' },
+						posts: { _image_key: 'author_image', _image_size: 'cover' },
+						fakeCollection: 'wackyLink'
+					}
+				}
+			}
+		};
+
+		const paths = { content: 'content', archetypes: 'archetypes', data: 'data' };
+		const results = await buildInfo.generateCollectionsConfig(hugoConfig, hugoConfig.pArams, paths);
 		expect(results).to.deep.equal(expected);
 	});
 
@@ -450,7 +467,7 @@ describe('generateInfo', function () {
 
 	it('work with no cloudcannon specific config', async function () {
 		const expected = {
-			time: '',
+			time: 'TODO', // TODO
 			generator: EXPECTED_GENERATOR,
 			cloudcannon: cloudCannonMeta,
 			source: '', // don't think hugo has custom src / mabe get this from cloudcannon
@@ -460,9 +477,9 @@ describe('generateInfo', function () {
 			_options: {},
 			_editor: {},
 			_source_editor: {},
-			paths: pathHelper.getPaths(),
 			_array_structures: {},
 			_select_data: {},
+			paths: pathHelper.getPaths(),
 			collections: {},
 			pages: []
 		};
@@ -483,25 +500,25 @@ describe('generateInfo', function () {
 			_comments: { comment: 'comment' },
 			_options: { option: 'value' },
 			_editor: { default_path: '/about/' },
-			_sourceEditor: { theme: 'monokai', tab_size: 2, show_gutter: false },
-			_arrayStructures: { object: {} },
-			_selectData: { object: {} }
+			_source_editor: { theme: 'monokai', tab_size: 2, show_gutter: false },
+			_array_structures: { object: {} },
+			_select_data: { object: {} }
 		};
 
 		const expected = {
-			time: '',
+			time: 'TODO', // TODO
 			generator: EXPECTED_GENERATOR,
 			cloudcannon: cloudCannonMeta,
-			source: '', // don't think hugo has custom src / mabe get this from cloudcannon
+			source: '', // TODO
 			'base-url': '/',
 			'collections-config': { data: { path: 'data', output: false } },
 			_comments: cloudcannon._comments,
 			_options: cloudcannon._options,
 			_editor: { default_path: '/about/' },
 			_source_editor: { theme: 'monokai', tab_size: 2, show_gutter: false },
+			_array_structures: cloudcannon._array_structures,
+			_select_data: cloudcannon._select_data,
 			paths: pathHelper.getPaths(),
-			_array_structures: cloudcannon._arrayStructures,
-			_select_data: cloudcannon._selectData,
 			collections: {},
 			pages: []
 		};
@@ -527,7 +544,7 @@ describe('generateInfo', function () {
 
 		it('should return all data', async function () {
 			const result = await buildInfo.generateInfo({
-				cloudcannon: { data: true }
+				params: { cloudcannon: { data: true } }
 			});
 
 			expect(result.data).to.deep.equal(EXPECTED_DATA);
@@ -540,7 +557,7 @@ describe('generateInfo', function () {
 			};
 
 			const result = await buildInfo.generateInfo({
-				cloudcannon: { data: { nav: true, staff_members: true } }
+				params: { cloudcannon: { data: { nav: true, staff_members: true } } }
 			});
 
 			expect(result.data).to.deep.equal(expected);
