@@ -1,11 +1,7 @@
 #!/usr/bin/env node
-/* eslint-disable no-tabs */
-/* eslint-disable dot-notation */
-/* eslint-disable quote-props */
-const { promises: fsProm } = require('fs');
 
-const configGenerator = require('./generators/buildConfig');
-const detailsGenerator = require('./generators/buildDetails');
+const fs = require('fs').promises;
+const infoGenerator = require('./generators/build-info');
 const hugoHelper = require('./helpers/hugo-config');
 const pathHelper = require('./helpers/paths');
 
@@ -15,22 +11,15 @@ const pathHelper = require('./helpers/paths');
 	const hugoConfig = await hugoHelper.getHugoConfig(args);
 	pathHelper.generatePaths(hugoConfig);
 
-	const config = await configGenerator.generateConfig(hugoConfig);
-	const configData = JSON.stringify(config, null, 4);
-
-	const details = await detailsGenerator.generateDetails(hugoConfig);
-	const detailsData = JSON.stringify(details, null, 4);
+	const info = await infoGenerator.generateInfo(hugoConfig);
+	const infoData = JSON.stringify(info, null, 4);
 
 	const { publish } = pathHelper.getPaths();
 
 	console.log('writing...');
 	try {
-		await fsProm.mkdir(`${publish}/_cloudcannon`, { recursive: true });
-
-		await Promise.all([
-			fsProm.writeFile(`${publish}/_cloudcannon/config.json`, configData),
-			fsProm.writeFile(`${publish}/_cloudcannon/details.json`, detailsData)
-		]);
+		await fs.mkdir(`${publish}/_cloudcannon`, { recursive: true });
+		await fs.writeFile(`${publish}/_cloudcannon/info.json`, infoData);
 	} catch (writeError) {
 		console.error(`error writing to ${publish}/_cloudcannon/`);
 	}

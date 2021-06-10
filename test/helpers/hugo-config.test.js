@@ -1,9 +1,5 @@
-/* eslint-disable prefer-arrow-callback */
-/* eslint-disable quote-props */
-/* eslint-disable no-underscore-dangle */
 const { expect } = require('chai');
 const mock = require('mock-fs');
-
 const hugoHelper = require('../../helpers/hugo-config');
 const {
 	pathsByType, testFileStructure, configFiles, configOrder

@@ -1,8 +1,5 @@
-/* eslint-disable prefer-arrow-callback */
-/* eslint-disable quote-props */
 const { expect } = require('chai');
 const mock = require('mock-fs');
-
 const pathHelper = require('../../helpers/paths');
 const { pathsByType, testFileStructure } = require('../test-paths');
 
@@ -52,17 +49,17 @@ describe('pathHelper', function () {
 		it('should create a layout tree using layout file structure', async function () {
 			const tree = await pathHelper.getLayoutTree();
 			const expected = {
-				'index': 'index',
-				'_default': {
-					'list': '_default/list'
+				index: 'index',
+				_default: {
+					list: '_default/list'
 				},
-				'mytype': {
-					'list': 'mytype/list',
-					'mylayout': 'mytype/mylayout'
+				mytype: {
+					list: 'mytype/list',
+					mylayout: 'mytype/mylayout'
 				},
-				'posts': {
-					'mylayout': 'posts/mylayout',
-					'single': 'posts/single'
+				posts: {
+					mylayout: 'posts/mylayout',
+					single: 'posts/single'
 				}
 			};
 			expect(tree).to.deep.equal(expected);
@@ -80,12 +77,3 @@ describe('pathHelper', function () {
 		mock.restore();
 	});
 });
-
-/*
-tests.forEach((test) => {
-	it(test.context, async function () {
-		// run function
-		expect(test.input).to.equal(test.expected);
-	});
-});
-*/

@@ -1,5 +1,16 @@
 {
-    "extends": [
-        "cloudcannon"
-    ]
+	"extends": [
+		"cloudcannon"
+	],
+	"rules": {
+		"no-underscore-dangle": "off"
+	},
+	"overrides": [
+		{
+			"files": ["test/**/*.test.js"],
+			"rules": {
+				"prefer-arrow-callback": "off"
+			}
+		}
+	]
 }

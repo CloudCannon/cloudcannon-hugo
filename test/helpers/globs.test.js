@@ -1,5 +1,3 @@
-/* eslint-disable prefer-arrow-callback */
-/* eslint-disable quote-props */
 const { expect } = require('chai');
 const mock = require('mock-fs');
 
@@ -24,14 +22,14 @@ describe('globs', function () {
 	describe('getGlob()', function () {
 		before(function () {
 			mock({
-				'archetypes': {
+				archetypes: {
 					'default.md': 'content'
 				},
-				'content': {
-					'collectionName': {
+				content: {
+					collectionName: {
 						'index.md': 'content'
 					},
-					'emptyCollection': {}
+					emptyCollection: {}
 				},
 				'theme/exampleSite': {
 					'index.html': 'content'

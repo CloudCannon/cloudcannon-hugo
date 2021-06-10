@@ -1,7 +1,6 @@
 const cp = require('child_process');
-const { promises: fsProm } = require('fs');
+const fs = require('fs').promises;
 const Path = require('path');
-
 const toml = require('toml');
 const yaml = require('js-yaml');
 
@@ -42,13 +41,19 @@ module.exports = {
 	 * @param ...sources
 	 */
 	mergeDeep: function (target, ...sources) {
-		if (!sources.length) return target;
+		if (!sources.length) {
+			return target;
+		}
+
 		const source = sources.shift();
 
 		if (isObject(target) && isObject(source)) {
 			Object.keys(source).forEach((key) => {
 				if (isObject(source[key])) {
-					if (!target[key]) Object.assign(target, { [key]: {} });
+					if (!target[key]) {
+						Object.assign(target, { [key]: {} });
+					}
+
 					this.mergeDeep(target[key], source[key]);
 				} else {
 					Object.assign(target, { [key]: source[key] });
@@ -61,7 +66,7 @@ module.exports = {
 
 	exists: async function (path) {
 		try {
-			await fsProm.access(path);
+			await fs.access(path);
 			return true;
 		} catch (err) {
 			return false;
@@ -70,7 +75,7 @@ module.exports = {
 
 	getItemDetails: async function (path) {
 		try {
-			const data = await fsProm.readFile(path, 'utf-8');
+			const data = await fs.readFile(path, 'utf-8');
 			const frontMatterObject = this.parseFrontMatter(data);
 			return frontMatterObject || {};
 		} catch (parseError) {
@@ -80,24 +85,20 @@ module.exports = {
 
 	parseDataFile: async function (path) {
 		const type = Path.extname(path).toLowerCase();
+
 		try {
-			let parsedData;
-			const contents = await fsProm.readFile(path, 'utf-8');
+			const contents = await fs.readFile(path, 'utf-8');
 			switch (type) {
 			case '.yml':
 			case '.yaml':
-				parsedData = this.parseYaml(contents);
-				break;
+				return this.parseYaml(contents);
 			case '.toml':
-				parsedData = this.parseToml(contents);
-				break;
+				return this.parseToml(contents);
 			case '.json':
-				parsedData = JSON.parse(contents);
-				break;
+				return JSON.parse(contents);
 			default:
 				break;
 			}
-			return parsedData;
 		} catch (parseError) {
 			console.warn('Failed to read file:', path);
 		}
@@ -114,6 +115,7 @@ module.exports = {
 		const identifyingChar = normalised.charAt(0);
 		let start;
 		let end;
+
 		switch (identifyingChar) {
 		case '-':
 			start = normalised.search(/^---\s*\n/);
@@ -137,12 +139,13 @@ module.exports = {
 		default:
 			break;
 		}
+
 		return {};
 	},
 
 	parseYaml: function (data) {
 		try {
-			return yaml.safeLoad(data, { json: true });
+			return yaml.load(data, { json: true });
 		} catch (parseError) {
 			console.error(parseError);
 		}
@@ -171,12 +174,15 @@ module.exports = {
 			stdio: 'pipe',
 			encoding: 'utf-8'
 		});
-		return childProcess.output ? childProcess.output[1].toString().trim() : ''; // second item contains the actual response
+
+		// Second item contains the actual response
+		return childProcess.output?.[1]?.toString().trim() ?? '';
 	},
 
 	processArgs: function (args = []) {
 		const flagtest = /^(-.$)|(--\w*$)/i;
 		const argObject = {};
+
 		args.forEach((argument, index) => {
 			if (flagtest.test(argument)) {
 				const item = getValidOptionName(argument);
@@ -185,6 +191,7 @@ module.exports = {
 				}
 			}
 		});
+
 		return argObject;
 	}
 };

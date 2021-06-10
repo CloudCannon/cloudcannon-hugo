@@ -1,8 +1,5 @@
-/* eslint-disable prefer-arrow-callback */
-/* eslint-disable quote-props */
 const { expect } = require('chai');
 const mock = require('mock-fs');
-
 const helpers = require('../../helpers/helpers');
 const { testFileStructure } = require('../test-paths');
 
@@ -33,10 +30,8 @@ describe('helpers.js', function () {
 
 	describe('parseYaml', function () {
 		it('should parse correctly', function () {
-			const tomlString = `
-			key: "value"
-			`;
-			const parsedObject = helpers.parseYaml(tomlString);
+			const yamlString = 'key: value';
+			const parsedObject = helpers.parseYaml(yamlString);
 			const expectedObject = {
 				key: 'value'
 			};
@@ -44,10 +39,8 @@ describe('helpers.js', function () {
 		});
 
 		it('should not parse', function () {
-			const tomlString = `
-			,
-			`;
-			const parsedObject = helpers.parseYaml(tomlString);
+			const badYamlString = ',';
+			const parsedObject = helpers.parseYaml(badYamlString);
 			expect(parsedObject).to.deep.equal(undefined);
 		});
 	});
