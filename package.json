@@ -17,11 +17,23 @@
     "type": "git",
     "url": "git+https://github.com/CloudCannon/cloudcannon-hugo.git"
   },
-  "author": "Nathan Kennedy",
+  "contributors": [
+    "Nathan Kennedy",
+    "Ross Phillips"
+  ],
+  "author": {
+    "name": "CloudCannon",
+    "email": "support@cloudcannon.com"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/CloudCannon/cloudcannon-hugo/issues"
   },
+  "files": [
+    "/index.js",
+    "/generators",
+    "/helpers"
+  ],
   "homepage": "https://github.com/CloudCannon/cloudcannon-hugo#readme",
   "devDependencies": {
     "chai": "^4.2.0",
