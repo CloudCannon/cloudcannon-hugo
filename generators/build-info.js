@@ -187,11 +187,6 @@ module.exports = {
 					output: !itemDetails.headless,
 					...hugoParams?.cloudcannon?.collections?.[collectionName]
 				};
-
-				const permalink = hugoConfig.permalinks?.[collectionName];
-				if (permalink) {
-					collections[collectionName].permalink = permalink;
-				}
 			}
 		}));
 
@@ -293,6 +288,7 @@ module.exports = {
 			'collections-config': await this.generateCollectionsConfig(hugoConfig, hugoParams, paths),
 			_comments: hugoParams._comments ?? {},
 			_options: hugoParams._options ?? {},
+			_collection_groups: hugoParams._collection_groups,
 			_editor: hugoParams._editor ?? {},
 			_source_editor: hugoParams._source_editor ?? hugoParams._sourceEditor ?? {},
 			_enabled_editors: hugoParams._enabled_editors,

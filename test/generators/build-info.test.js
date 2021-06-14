@@ -212,7 +212,6 @@ describe('generateCollectionsConfig', function () {
 			posts: {
 				path: 'content/posts',
 				output: true,
-				permalink: '/blog/:title/',
 				_image_key: 'author_image',
 				_image_size: 'cover'
 			},
@@ -232,7 +231,6 @@ describe('generateCollectionsConfig', function () {
 		};
 
 		const hugoConfig = {
-			permalinks: { posts: '/blog/:title/', fakeCollection: 'wackyLink' },
 			pArams: {
 				cloudcannon: {
 					collections: {
