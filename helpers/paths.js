@@ -1,23 +1,26 @@
-const Path = require('path');
-const globHelper = require('./globs');
+const { dirname, join } = require('path');
+const { getGlob } = require('./globs');
 
 module.exports = {
 	getPaths: function (config = {}) {
 		if (!this.cachedPaths) {
+			const staticDir = config.staticDir || 'static';
+			const contentDir = config.contentDir || 'content';
+
 			this.cachedPaths = {
 				archetypes: config.archetypeDir || 'archetypes',
 				assets: config.assetDir || 'assets',
-				content: config.contentDir || 'content',
-				pages: config.contentDir || 'content',
+				content: contentDir,
+				pages: contentDir,
 				data: config.dataDir || 'data',
 				layouts: config.layoutDir || 'layouts',
 				publish: config.publishDir || 'public',
-				static: config.staticDir || 'static',
-				uploads: config.uploadsDir || `${config.staticDir || 'static'}/uploads`,
-				themes: config.themesDir || 'themes',
+				static: staticDir,
+				uploads: join(staticDir, config.uploads_dir || config.uploadsDir || 'uploads'),
 				config: config.configDir || ''
 			};
 		}
+
 		return this.cachedPaths;
 	},
 
@@ -29,12 +32,12 @@ module.exports = {
 		const { archetypes } = this.getPaths();
 		const archetypeGlob = `**/${archetypes}/**/**.md`;
 
-		return globHelper.getGlob(archetypeGlob);
+		return getGlob(archetypeGlob);
 	},
 
 	getDataPaths: async function () {
 		const { data } = this.getPaths();
-		return globHelper.getGlob(`${data}/**`);
+		return getGlob(`${data}/**`);
 	},
 
 	getLayoutTree: async function () {
@@ -64,7 +67,7 @@ module.exports = {
 
 	getLayoutPaths: async function () {
 		const { layouts } = this.getPaths();
-		return globHelper.getGlob(`${layouts}/**`);
+		return getGlob(`${layouts}/**`);
 	},
 
 	/**
@@ -74,7 +77,7 @@ module.exports = {
 	 */
 	getPagePaths: async function () {
 		const { content } = this.getPaths();
-		const contentFiles = await globHelper.getGlob([
+		const contentFiles = await getGlob([
 			`**/${content}/**/*`
 		]);
 
@@ -88,7 +91,7 @@ module.exports = {
 			}
 
 			if (listRegex.test(path)) {
-				const dirName = Path.dirname(path);
+				const dirName = dirname(path);
 				const matching = contentFiles.filter((item) => item.indexOf(dirName) >= 0);
 				if (matching.length > 1) {
 					return false;
@@ -108,7 +111,7 @@ module.exports = {
 		const contentGlob = `**/${content}/*/**`;
 
 		// TODO cache this
-		const collectionPaths = await globHelper.getGlob([archetypeGlob, contentGlob],
+		const collectionPaths = await getGlob([archetypeGlob, contentGlob],
 			{ ignore: [`**/${archetypes}/default.md`, `**/${content}/**/index.md`, `**/${content}/*.md`] });
 
 		// remove empty strings and duplicates
