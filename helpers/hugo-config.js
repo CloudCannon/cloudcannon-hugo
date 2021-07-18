@@ -1,5 +1,5 @@
-const Path = require('path');
-const globHelper = require('./globs');
+const { join, extname, basename } = require('path');
+const { getGlob } = require('./globs');
 const helpers = require('./helpers');
 
 const configSort = function (fileArray) {
@@ -10,8 +10,8 @@ const configSort = function (fileArray) {
 		if (a.match(configRegex)) return extensionOrder.length + 1; // always less important
 		if (b.match(configRegex)) return -1 - extensionOrder.length;
 
-		const aExt = Path.extname(a);
-		const bExt = Path.extname(b);
+		const aExt = extname(a);
+		const bExt = extname(b);
 		return extensionOrder.indexOf(aExt) - extensionOrder.indexOf(bExt);
 	});
 
@@ -23,30 +23,30 @@ module.exports = {
 	_configSort: configSort,
 
 	getConfigPaths: async function (buildArguments = {}) {
+		const sourceDir = buildArguments.source || '';
 		const environment = buildArguments.environment || 'production'; // or just use root
 		const configDir = buildArguments.configDir || 'config';
-		// ^ maybe default to 'development' if the site is specifically a staging branch
 
-		const configEnvDir = `${configDir}/${environment}/`;
-		const configDefaultDir = `${configDir}/_default/`;
+		const configEnvDir = join(sourceDir, configDir, environment);
+		const configDefaultDir = join(sourceDir, configDir, '_default/');
 
 		let configFileList = [];
 		if (await helpers.exists(configEnvDir)) {
-			const files = await globHelper.getGlob(`${configEnvDir}/**.**`);
+			const files = await getGlob(`${configEnvDir}/**.**`);
 			configFileList = configFileList.concat(configSort(files));
 		}
 
 		if (await helpers.exists(configDefaultDir)) {
-			const files = await globHelper.getGlob(`${configDefaultDir}/**.**`);
+			const files = await getGlob(`${configDefaultDir}/**.**`);
 			configFileList = configFileList.concat(configSort(files));
 		}
 
-		if (await helpers.exists('config.toml')) {
-			configFileList.push('config.toml');
-		} else if (await helpers.exists('config.yaml')) {
-			configFileList.push('config.yaml');
-		} else if (await helpers.exists('config.json')) {
-			configFileList.push('config.json');
+		if (await helpers.exists(join(sourceDir, 'config.toml'))) {
+			configFileList.push(join(sourceDir, 'config.toml'));
+		} else if (await helpers.exists(join(sourceDir, 'config.yaml'))) {
+			configFileList.push(join(sourceDir, 'config.yaml'));
+		} else if (await helpers.exists(join(sourceDir, 'config.json'))) {
+			configFileList.push(join(sourceDir, 'config.json'));
 		}
 
 		let passedConfigFiles = buildArguments.config || '';
@@ -68,7 +68,7 @@ module.exports = {
 				return;
 			}
 
-			const filename = Path.basename(configPath, Path.extname(configPath));
+			const filename = basename(configPath, extname(configPath));
 			if (filename !== 'config' && passedConfigFiles.indexOf(configPath) < 0) {
 				return { [filename]: parsedData };
 			}

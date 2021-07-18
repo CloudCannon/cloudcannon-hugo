@@ -3,5 +3,3 @@
 [![codecov](https://codecov.io/gh/CloudCannon/cloudcannon-hugo/branch/master/graph/badge.svg?token=HZJBYKA8ZF)](https://codecov.io/gh/CloudCannon/cloudcannon-hugo)
 
 Generates the files necessary for a hugo site to integrate with CloudCannon CMS.
-
-Tested on Hugo 0.7.x

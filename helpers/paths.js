@@ -8,6 +8,7 @@ module.exports = {
 			const contentDir = config.contentDir || 'content';
 
 			this.cachedPaths = {
+				source: config.source || '',
 				archetypes: config.archetypeDir || 'archetypes',
 				assets: config.assetDir || 'assets',
 				content: contentDir,
@@ -29,27 +30,27 @@ module.exports = {
 	},
 
 	getDefaultsPaths: async function () {
-		const { archetypes } = this.getPaths();
-		const archetypeGlob = `**/${archetypes}/**/**.md`;
+		const { source, archetypes } = this.getPaths();
+		const archetypeGlob = join(source, archetypes, '**/**.md');
 
 		return getGlob(archetypeGlob);
 	},
 
 	getDataPaths: async function () {
-		const { data } = this.getPaths();
-		return getGlob(`${data}/**`);
+		const { source, data } = this.getPaths();
+		return getGlob(join(source, data, '**'));
 	},
 
 	getLayoutTree: async function () {
 		if (!this.cachedLayouts) {
 			const tree = {};
-			const { layouts } = this.getPaths();
+			const { source, layouts } = this.getPaths();
 
 			const layoutPaths = await this.getLayoutPaths();
 
 			layoutPaths.forEach((layoutPath) => {
 				layoutPath = layoutPath.replace(/\..+$/i, '');
-				const relLayoutPath = layoutPath.replace(`${layouts}/`, '');
+				const relLayoutPath = layoutPath.replace(join(source, layouts, '/'), '');
 				const parts = relLayoutPath.split('/');
 				if (parts.length === 2) {
 					if (!tree[parts[0]]) {
@@ -66,8 +67,8 @@ module.exports = {
 	},
 
 	getLayoutPaths: async function () {
-		const { layouts } = this.getPaths();
-		return getGlob(`${layouts}/**`);
+		const { source, layouts } = this.getPaths();
+		return getGlob(join(source, layouts, '**'));
 	},
 
 	/**
@@ -76,9 +77,9 @@ module.exports = {
 	 * standalone _index.md files in top level folders (e.g. /contact/_index.md)
 	 */
 	getPagePaths: async function () {
-		const { content } = this.getPaths();
+		const { source, content } = this.getPaths();
 		const contentFiles = await getGlob([
-			`**/${content}/**/*`
+			join(source, content, '**/*')
 		]);
 
 		const topLevelRegex = new RegExp(`${content}/[^/]*.md$`, 'i');
@@ -106,11 +107,10 @@ module.exports = {
 	},
 
 	getCollectionPaths: async function () {
-		const { archetypes, content } = this.getPaths();
-		const archetypeGlob = `**/${archetypes}/**/*.md`;
-		const contentGlob = `**/${content}/*/**`;
+		const { source, archetypes, content } = this.getPaths();
+		const archetypeGlob = join(source, archetypes, '**/*.md');
+		const contentGlob = join(source, content, '*/**');
 
-		// TODO cache this
 		const collectionPaths = await getGlob([archetypeGlob, contentGlob],
 			{ ignore: [`**/${archetypes}/default.md`, `**/${content}/**/index.md`, `**/${content}/*.md`] });
 

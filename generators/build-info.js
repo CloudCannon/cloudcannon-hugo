@@ -283,7 +283,7 @@ module.exports = {
 			time: new Date().toISOString(),
 			cloudcannon: cloudCannonMeta,
 			generator: this.generateGenerator(hugoConfig),
-			source: '', // TODO
+			source: paths.source || '',
 			'base-url': helpers.getUrlPathname(hugoConfig.baseURL),
 			'collections-config': await this.generateCollectionsConfig(hugoConfig, hugoParams, paths),
 			_comments: hugoParams._comments ?? {},

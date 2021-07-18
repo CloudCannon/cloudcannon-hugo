@@ -66,6 +66,30 @@ describe('hugo-config', function () {
 				mock.restore();
 			});
 		});
+		context('Config files within a source directory', function () {
+			before(function () {
+				mock({ 'src/dir': { 'config.toml': '' } });
+			});
+			it('should get all configPaths', async function () {
+				const configPaths = await hugoHelper.getConfigPaths({ source: 'src/dir' });
+				expect(configPaths).to.deep.equal(['src/dir/config.toml']);
+			});
+			after(function () {
+				mock.restore();
+			});
+		});
+		context('Config files within a source directory and config directory', function () {
+			before(function () {
+				mock({ 'src/dir/config/_default': { 'config.toml': '' } });
+			});
+			it('should get all configPaths', async function () {
+				const configPaths = await hugoHelper.getConfigPaths({ source: 'src/dir', configDir: 'config' });
+				expect(configPaths).to.deep.equal(['src/dir/config/_default/config.toml']);
+			});
+			after(function () {
+				mock.restore();
+			});
+		});
 	});
 
 	describe('getConfigContents', function () {
