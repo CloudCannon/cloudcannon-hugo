@@ -12,7 +12,7 @@ const {
 
 const EXPECTED_GENERATOR = {
 	name: 'hugo',
-	version: '0.84.2',
+	version: '0.0.0', // This will probably fail locally
 	metadata: {
 		markdown: 'goldmark',
 		goldmark: {
