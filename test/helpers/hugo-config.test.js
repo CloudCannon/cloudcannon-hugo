@@ -252,7 +252,8 @@ describe('hugo-config', function () {
 
 			it('should return buildArg contentDir', async function () {
 				const expected = {
-					contentDir: 'buildArgContentDir'
+					contentDir: 'buildArgContentDir',
+					baseURL: '/'
 				};
 				const obj = await hugoHelper.getHugoConfig(['--contentDir', 'buildArgContentDir']);
 				expect(obj).to.deep.equal(expected);
@@ -270,7 +271,8 @@ describe('hugo-config', function () {
 
 			it('should return buildArg baseURL', async function () {
 				const expected = {
-					layoutDir: 'buildArgLayoutDir'
+					layoutDir: 'buildArgLayoutDir',
+					baseURL: '/'
 				};
 				const obj = await hugoHelper.getHugoConfig(['--layoutDir', 'buildArgLayoutDir']);
 				expect(obj).to.deep.equal(expected);
@@ -284,7 +286,8 @@ describe('hugo-config', function () {
 		context('source supplied as buildArg', function () {
 			it('should return source', async function () {
 				const expected = {
-					source: 'sourceDir'
+					source: 'sourceDir',
+					baseURL: '/'
 				};
 				const obj = await hugoHelper.getHugoConfig(['--source', 'sourceDir']);
 				expect(obj).to.deep.equal(expected);
@@ -292,9 +295,10 @@ describe('hugo-config', function () {
 		});
 
 		context('configDir supplied as buildArg', function () {
-			it('should return source', async function () {
+			it('should return configDir', async function () {
 				const expected = {
-					configDir: 'configDir'
+					configDir: 'configDir',
+					baseURL: '/'
 				};
 				const obj = await hugoHelper.getHugoConfig(['--configDir', 'configDir']);
 				expect(obj).to.deep.equal(expected);
