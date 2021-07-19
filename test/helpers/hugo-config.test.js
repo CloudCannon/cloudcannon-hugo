@@ -245,6 +245,62 @@ describe('hugo-config', function () {
 			});
 		});
 
+		context('contentDir supplied in both buildArgs and config', function () {
+			before(function () {
+				mock({ 'config.toml': 'contentDir = "configContentDir"' });
+			});
+
+			it('should return buildArg contentDir', async function () {
+				const expected = {
+					contentDir: 'buildArgContentDir'
+				};
+				const obj = await hugoHelper.getHugoConfig(['--contentDir', 'buildArgContentDir']);
+				expect(obj).to.deep.equal(expected);
+			});
+
+			after(function () {
+				mock.restore();
+			});
+		});
+
+		context('layoutDir supplied in both buildArgs and config', function () {
+			before(function () {
+				mock({ 'config.toml': 'layoutDir = "configLayoutDir"' });
+			});
+
+			it('should return buildArg baseURL', async function () {
+				const expected = {
+					layoutDir: 'buildArgLayoutDir'
+				};
+				const obj = await hugoHelper.getHugoConfig(['--layoutDir', 'buildArgLayoutDir']);
+				expect(obj).to.deep.equal(expected);
+			});
+
+			after(function () {
+				mock.restore();
+			});
+		});
+
+		context('source supplied as buildArg', function () {
+			it('should return source', async function () {
+				const expected = {
+					source: 'sourceDir'
+				};
+				const obj = await hugoHelper.getHugoConfig(['--source', 'sourceDir']);
+				expect(obj).to.deep.equal(expected);
+			});
+		});
+
+		context('configDir supplied as buildArg', function () {
+			it('should return source', async function () {
+				const expected = {
+					configDir: 'configDir'
+				};
+				const obj = await hugoHelper.getHugoConfig(['--configDir', 'configDir']);
+				expect(obj).to.deep.equal(expected);
+			});
+		});
+
 		it('should return object with only baseurl', async function () {
 			const expected = {
 				baseURL: '/'

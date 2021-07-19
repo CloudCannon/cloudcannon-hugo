@@ -26,6 +26,7 @@ module.exports = {
 	},
 
 	generatePaths: function (config) {
+		delete this.cachedPaths;
 		this.getPaths(config);
 	},
 
@@ -86,7 +87,7 @@ module.exports = {
 		const topLevelIndexRegex = new RegExp(`${content}/[^/]*/index.md$`, 'i');
 		const listRegex = new RegExp(`${content}/[^/]*/_index.md$`, 'i');
 
-		const pagePaths = contentFiles.filter((path) => {
+		let pagePaths = contentFiles.filter((path) => {
 			if (topLevelIndexRegex.test(path) || topLevelRegex.test(path)) {
 				return true;
 			}
@@ -102,6 +103,9 @@ module.exports = {
 			return false;
 		});
 
+		if (source) {
+			pagePaths = pagePaths.map((path) => path.replace(`${source}/`, ''));
+		}
 		// remove duplicates
 		return Array.from(new Set(pagePaths));
 	},
@@ -111,8 +115,12 @@ module.exports = {
 		const archetypeGlob = join(source, archetypes, '**/*.md');
 		const contentGlob = join(source, content, '*/**');
 
-		const collectionPaths = await getGlob([archetypeGlob, contentGlob],
+		let collectionPaths = await getGlob([archetypeGlob, contentGlob],
 			{ ignore: [`**/${archetypes}/default.md`, `**/${content}/**/index.md`, `**/${content}/*.md`] });
+
+		if (source) {
+			collectionPaths = collectionPaths.map((item) => item.replace(`${source}/`, ''));
+		}
 
 		// remove empty strings and duplicates
 		return Array.from(new Set(collectionPaths.filter((item) => item)));

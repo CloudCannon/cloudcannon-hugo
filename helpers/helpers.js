@@ -15,7 +15,9 @@ const getValidOptionName = function (option) {
 		'--config': 'config',
 		'--configDir': 'configDir',
 		'--contentDir': 'contentDir',
-		'-c': 'contentDir'
+		'-c': 'contentDir',
+		'-l': 'layoutDir',
+		'--layoutDir': 'layoutDir'
 	};
 
 	if (relevantOptions[option]) {

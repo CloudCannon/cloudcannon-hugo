@@ -90,6 +90,10 @@ module.exports = {
 		const configObject = helpers.mergeDeep({}, ...configContents);
 
 		configObject.baseURL = buildArguments.baseURL || configObject.baseURL || '/';
+		if (buildArguments.source) configObject.source = buildArguments.source;
+		if (buildArguments.configDir) configObject.configDir = buildArguments.configDir;
+		if (buildArguments.contentDir) configObject.contentDir = buildArguments.contentDir;
+		if (buildArguments.layoutDir) configObject.layoutDir = buildArguments.layoutDir;
 
 		return configObject;
 	}

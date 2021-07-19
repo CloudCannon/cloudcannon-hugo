@@ -62,7 +62,8 @@ module.exports = {
 	},
 
 	getHugoUrls: function () {
-		const fileCsv = helpers.runProcess('hugo', ['list', 'all']);
+		const { source } = pathHelper.getPaths();
+		const fileCsv = helpers.runProcess('hugo', ['list', 'all', '--source', source]);
 		const fileList = csvParse(fileCsv, { columns: true, skipEmptyLines: true });
 
 		return fileList.reduce((memo, file) => {
