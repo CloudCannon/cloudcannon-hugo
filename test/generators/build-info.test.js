@@ -231,19 +231,17 @@ describe('generateCollectionsConfig', function () {
 		};
 
 		const hugoConfig = {
-			pArams: {
-				cloudcannon: {
-					collections: {
-						data: { _image_key: 'thumbnail' },
-						posts: { _image_key: 'author_image', _image_size: 'cover' },
-						fakeCollection: 'wackyLink'
-					}
+			cloudcannon: {
+				collections: {
+					data: { _image_key: 'thumbnail' },
+					posts: { _image_key: 'author_image', _image_size: 'cover' },
+					fakeCollection: 'wackyLink'
 				}
 			}
 		};
 
 		const paths = { content: 'content', archetypes: 'archetypes', data: 'data' };
-		const results = await buildInfo.generateCollectionsConfig(hugoConfig, hugoConfig.pArams, paths);
+		const results = await buildInfo.generateCollectionsConfig(hugoConfig, paths);
 		expect(results).to.deep.equal(expected);
 	});
 
@@ -523,7 +521,7 @@ describe('generateInfo', function () {
 
 		const result = await buildInfo.generateInfo({
 			baseURL: '/',
-			params: cloudcannon
+			cloudcannon: cloudcannon
 		});
 
 		[...new Set([...Object.keys(expected), ...Object.keys(result)])].forEach((key) => {
@@ -541,9 +539,7 @@ describe('generateInfo', function () {
 		});
 
 		it('should return all data', async function () {
-			const result = await buildInfo.generateInfo({
-				params: { cloudcannon: { data: true } }
-			});
+			const result = await buildInfo.generateInfo({ cloudcannon: { data: true } });
 
 			expect(result.data).to.deep.equal(EXPECTED_DATA);
 		});
@@ -555,7 +551,7 @@ describe('generateInfo', function () {
 			};
 
 			const result = await buildInfo.generateInfo({
-				params: { cloudcannon: { data: { nav: true, staff_members: true } } }
+				cloudcannon: { data: { nav: true, staff_members: true } }
 			});
 
 			expect(result.data).to.deep.equal(expected);

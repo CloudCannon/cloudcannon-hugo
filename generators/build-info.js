@@ -131,8 +131,8 @@ module.exports = {
 		};
 	},
 
-	generateData: async function (hugoParams) {
-		const dataConfig = hugoParams?.cloudcannon?.data;
+	generateData: async function (hugoConfig) {
+		const dataConfig = hugoConfig?.cloudcannon?.data;
 		if (!dataConfig) {
 			return;
 		}
@@ -163,13 +163,13 @@ module.exports = {
 		return data;
 	},
 
-	generateCollectionsConfig: async function (hugoConfig, hugoParams, paths) {
+	generateCollectionsConfig: async function (hugoConfig, paths) {
 		const collectionPaths = await pathHelper.getCollectionPaths();
 		const collections = {
 			data: {
 				path: paths.data,
 				output: false,
-				...hugoParams?.cloudcannon?.collections?.data
+				...hugoConfig?.cloudcannon?.collections?.data
 			}
 		};
 
@@ -186,7 +186,7 @@ module.exports = {
 				collections[collectionName] = {
 					path: `${paths.content}/${collectionName}`,
 					output: !itemDetails.headless,
-					...hugoParams?.cloudcannon?.collections?.[collectionName]
+					...hugoConfig?.cloudcannon?.collections?.[collectionName]
 				};
 			}
 		}));
@@ -286,19 +286,28 @@ module.exports = {
 			generator: this.generateGenerator(hugoConfig),
 			source: paths.source || '',
 			'base-url': helpers.getUrlPathname(hugoConfig.baseURL),
-			'collections-config': await this.generateCollectionsConfig(hugoConfig, hugoParams, paths),
-			_comments: hugoParams._comments ?? {},
-			_options: hugoParams._options ?? {},
-			_collection_groups: hugoParams._collection_groups,
-			_editor: hugoParams._editor ?? {},
-			_source_editor: hugoParams._source_editor ?? hugoParams._sourceEditor ?? {},
-			_enabled_editors: hugoParams._enabled_editors,
-			_array_structures: hugoParams._array_structures ?? hugoParams._arrayStructures ?? {},
-			_select_data: hugoParams._select_data ?? hugoParams._selectData ?? {},
+			'collections-config': await this.generateCollectionsConfig(hugoConfig, paths),
+			_comments: hugoConfig._comments ?? hugoParams._comments ?? {},
+			_options: hugoConfig._options ?? hugoParams._options ?? {},
+			_collection_groups: hugoConfig._collection_groups ?? hugoParams._collection_groups,
+			_editor: hugoConfig._editor ?? hugoParams._editor ?? {},
+			_source_editor: hugoConfig._source_editor
+				?? hugoParams._source_editor
+				?? hugoParams._sourceEditor
+				?? {},
+			_enabled_editors: hugoConfig._enabled_editors ?? hugoParams._enabled_editors,
+			_array_structures: hugoConfig._array_structures
+				?? hugoParams._array_structures
+				?? hugoParams._arrayStructures
+				?? {},
+			_select_data: hugoConfig._select_data
+				?? hugoParams._select_data
+				?? hugoParams._selectData
+				?? {},
 			paths: paths,
 			collections: await this.generateCollections(urlsPerPath),
 			pages: await this.generatePages(urlsPerPath),
-			data: await this.generateData(hugoParams)
+			data: await this.generateData(hugoConfig)
 		};
 	}
 };
