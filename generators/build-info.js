@@ -191,6 +191,19 @@ module.exports = {
 			}
 		}));
 
+		const cloudcannonCollections = hugoConfig?.cloudcannon?.collections;
+		if (cloudcannonCollections) {
+			Object.keys(cloudcannonCollections).forEach((collection) => {
+				if (cloudcannonCollections[collection].path) {
+					collections[collection] = {
+						path: cloudcannonCollections[collection].path,
+						output: false,
+						...cloudcannonCollections[collection]
+					};
+				}
+			});
+		}
+
 		return collections;
 	},
 

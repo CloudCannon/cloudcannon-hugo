@@ -227,6 +227,10 @@ describe('generateCollectionsConfig', function () {
 			type: {
 				path: 'content/type',
 				output: false
+			},
+			staff_members: {
+				path: 'data/staff_members',
+				output: false
 			}
 		};
 
@@ -235,7 +239,8 @@ describe('generateCollectionsConfig', function () {
 				collections: {
 					data: { _image_key: 'thumbnail' },
 					posts: { _image_key: 'author_image', _image_size: 'cover' },
-					fakeCollection: 'wackyLink'
+					fakeCollection: 'wackyLink',
+					staff_members: { path: 'data/staff_members' }
 				}
 			}
 		};
@@ -508,12 +513,7 @@ describe('generateInfo', function () {
 			source: '', // TODO
 			'base-url': '/',
 			'collections-config': { data: { path: 'data', output: false } },
-			_comments: cloudcannon._comments,
-			_options: cloudcannon._options,
-			_editor: { default_path: '/about/' },
-			_source_editor: { theme: 'monokai', tab_size: 2, show_gutter: false },
-			_array_structures: cloudcannon._array_structures,
-			_select_data: cloudcannon._select_data,
+			...cloudcannon,
 			paths: pathHelper.getPaths(),
 			collections: {},
 			pages: []
@@ -521,7 +521,7 @@ describe('generateInfo', function () {
 
 		const result = await buildInfo.generateInfo({
 			baseURL: '/',
-			cloudcannon: cloudcannon
+			...cloudcannon
 		});
 
 		[...new Set([...Object.keys(expected), ...Object.keys(result)])].forEach((key) => {
