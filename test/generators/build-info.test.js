@@ -200,7 +200,11 @@ describe('getLayout', function () {
 
 describe('generateCollectionsConfig', function () {
 	before(function () {
-		mock(collectionFiles);
+		const fileStructure = {
+			...collectionFiles,
+			'data/staff_members': { 'anna.yml': '' }
+		};
+		mock(fileStructure);
 	});
 
 	it('should return all collections', async function () {
@@ -230,7 +234,7 @@ describe('generateCollectionsConfig', function () {
 			},
 			staff_members: {
 				path: 'data/staff_members',
-				output: false
+				output: true
 			}
 		};
 

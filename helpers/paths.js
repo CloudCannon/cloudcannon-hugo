@@ -110,12 +110,14 @@ module.exports = {
 		return Array.from(new Set(pagePaths));
 	},
 
-	getCollectionPaths: async function () {
+	getCollectionPaths: async function (extraCollectionPaths = []) {
 		const { source, archetypes, content } = this.getPaths();
 		const archetypeGlob = join(source, archetypes, '**/*.md');
 		const contentGlob = join(source, content, '*/**');
+		const globPatterns = [archetypeGlob, contentGlob];
+		extraCollectionPaths.forEach((extraPath) => globPatterns.push(join(source, extraPath, '*.*')));
 
-		let collectionPaths = await getGlob([archetypeGlob, contentGlob],
+		let collectionPaths = await getGlob(globPatterns,
 			{ ignore: [`**/${archetypes}/default.md`, `**/${content}/**/index.md`, `**/${content}/*.md`] });
 
 		if (source) {

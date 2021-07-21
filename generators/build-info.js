@@ -164,7 +164,15 @@ module.exports = {
 	},
 
 	generateCollectionsConfig: async function (hugoConfig, paths) {
-		const collectionPaths = await pathHelper.getCollectionPaths();
+		const cloudcannonCollections = hugoConfig?.cloudcannon?.collections || {};
+		const definedCollections = {};
+		Object.keys(cloudcannonCollections).forEach((collectionName) => {
+			if (cloudcannonCollections[collectionName].path) {
+				definedCollections[cloudcannonCollections[collectionName].path] = collectionName;
+			}
+		});
+
+		const collectionPaths = await pathHelper.getCollectionPaths(Object.keys(definedCollections));
 		const collections = {
 			data: {
 				path: paths.data,
@@ -174,11 +182,12 @@ module.exports = {
 		};
 
 		await Promise.all(collectionPaths.map(async (collectionPath) => {
-			const collectionName = this.getCollectionNameConfig(
-				collectionPath,
-				paths.content,
-				paths.archetypes
-			);
+			const collectionName = definedCollections[Path.dirname(collectionPath)]
+				|| this.getCollectionNameConfig(
+					collectionPath,
+					paths.content,
+					paths.archetypes
+				);
 
 			if (collectionName && !collections[collectionName]) {
 				const itemDetails = await helpers.getItemDetails(collectionPath);
@@ -190,19 +199,6 @@ module.exports = {
 				};
 			}
 		}));
-
-		const cloudcannonCollections = hugoConfig?.cloudcannon?.collections;
-		if (cloudcannonCollections) {
-			Object.keys(cloudcannonCollections).forEach((collection) => {
-				if (cloudcannonCollections[collection].path) {
-					collections[collection] = {
-						path: cloudcannonCollections[collection].path,
-						output: false,
-						...cloudcannonCollections[collection]
-					};
-				}
-			});
-		}
 
 		return collections;
 	},
