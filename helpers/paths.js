@@ -112,9 +112,10 @@ module.exports = {
 
 	getCollectionPaths: async function (extraCollectionPaths = []) {
 		const { source, archetypes, content } = this.getPaths();
-		const archetypeGlob = join(source, archetypes, '**/*.md');
+		const mdArchetypeGlob = join(source, archetypes, '**/*.md');
+		const htmlArchetypeGlob = join(source, archetypes, '**/*.html');
 		const contentGlob = join(source, content, '*/**');
-		const globPatterns = [archetypeGlob, contentGlob];
+		const globPatterns = [mdArchetypeGlob, htmlArchetypeGlob, contentGlob];
 		extraCollectionPaths.forEach((extraPath) => globPatterns.push(join(source, extraPath, '*.*')));
 
 		let collectionPaths = await getGlob(globPatterns,

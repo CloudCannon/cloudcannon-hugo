@@ -4,6 +4,7 @@ const pathsByType = {
 		'archetypes/notes.md'],
 	collectionPaths: [
 		'archetypes/notes.md',
+		'archetypes/web_pages.html',
 		'content/authors/jane-doe.md',
 		'content/authors/john-smith.md',
 		'content/collectionName/_index.md',
