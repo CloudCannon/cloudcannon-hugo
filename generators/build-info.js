@@ -41,9 +41,7 @@ module.exports = {
 			return Path.basename(path, Path.extname(path)); // e.g. archetypes/type.md
 		}
 
-		if (path.indexOf('_index.md') >= 0) {
-			return path.replace(`${contentDir}/`, '').split('/')[0];
-		}
+		return path.replace(`${contentDir}/`, '').split('/')[0];
 	},
 
 	getPageUrl: function (path, hugoUrls = {}, contentDir) {
@@ -189,9 +187,10 @@ module.exports = {
 					paths.archetypes
 				);
 
-			if (collectionName && !collections[collectionName]) {
-				const itemDetails = await helpers.getItemDetails(collectionPath);
+			if (collectionName && (collectionPath.endsWith('_index.md') || !collections[collectionName])) {
+				collections[collectionName] = {};
 
+				const itemDetails = await helpers.getItemDetails(collectionPath);
 				collections[collectionName] = {
 					path: `${paths.content}/${collectionName}`,
 					output: !itemDetails.headless,
