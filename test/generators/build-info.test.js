@@ -493,7 +493,7 @@ describe('generateInfo', function () {
 		const result = await buildInfo.generateInfo({ baseURL: '/' });
 
 		[...new Set([...Object.keys(expected), ...Object.keys(result)])].forEach((key) => {
-			if (key === 'time') {
+			if (key === 'time' || key === 'generator') { // TODO mock these instead
 				return;
 			}
 
@@ -530,7 +530,7 @@ describe('generateInfo', function () {
 		});
 
 		[...new Set([...Object.keys(expected), ...Object.keys(result)])].forEach((key) => {
-			if (key === 'time') {
+			if (key === 'time' || key === 'generator') { // TODO mock these instead
 				return;
 			}
 
