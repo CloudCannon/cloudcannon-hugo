@@ -304,6 +304,7 @@ module.exports = {
 				?? hugoParams._sourceEditor
 				?? {},
 			_enabled_editors: hugoConfig._enabled_editors ?? hugoParams._enabled_editors,
+			_instance_values: hugoConfig._instance_values ?? hugoParams._instance_values,
 			_array_structures: hugoConfig._array_structures
 				?? hugoParams._array_structures
 				?? hugoParams._arrayStructures
