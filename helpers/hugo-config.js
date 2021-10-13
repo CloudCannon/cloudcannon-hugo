@@ -41,19 +41,17 @@ module.exports = {
 			configFileList = configFileList.concat(configSort(files));
 		}
 
-		if (await helpers.exists(join(sourceDir, 'config.toml'))) {
-			configFileList.push(join(sourceDir, 'config.toml'));
-		} else if (await helpers.exists(join(sourceDir, 'config.yaml'))) {
-			configFileList.push(join(sourceDir, 'config.yaml'));
-		} else if (await helpers.exists(join(sourceDir, 'config.json'))) {
-			configFileList.push(join(sourceDir, 'config.json'));
-		}
-
 		let passedConfigFiles = buildArguments.config || '';
 
 		if (passedConfigFiles) {
 			passedConfigFiles = passedConfigFiles.trim().split(',');
 			configFileList = configFileList.concat(passedConfigFiles.reverse());
+		} else if (await helpers.exists(join(sourceDir, 'config.toml'))) {
+			configFileList.push(join(sourceDir, 'config.toml'));
+		} else if (await helpers.exists(join(sourceDir, 'config.yaml'))) {
+			configFileList.push(join(sourceDir, 'config.yaml'));
+		} else if (await helpers.exists(join(sourceDir, 'config.json'))) {
+			configFileList.push(join(sourceDir, 'config.json'));
 		}
 
 		return configFileList;

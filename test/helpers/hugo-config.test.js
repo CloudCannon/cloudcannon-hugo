@@ -20,8 +20,16 @@ describe('hugo-config', function () {
 				mock(testFileStructure);
 			});
 			it('should get all configPaths', async function () {
-				const expected = pathsByType.configPathsProduction.concat(pathsByType.configPaths);
-				expected.push('extraconfig.json');
+				const expected = [
+					'config/production/params.toml',
+					'config/production/config.toml',
+					'config/_default/languages.toml',
+					'config/_default/menus.en.toml',
+					'config/_default/menus.zh.toml',
+					'config/_default/params.toml',
+					'config/_default/config.toml',
+					'extraconfig.json'
+				];
 
 				const configPaths = await hugoHelper.getConfigPaths({ config: 'extraconfig.json' });
 				expect(configPaths).to.deep.equal(expected);
@@ -219,7 +227,7 @@ describe('hugo-config', function () {
 					}
 				};
 
-				const obj = await hugoHelper.getHugoConfig(['--config', 'extraconfig.toml,directory/moreconfig.json']);
+				const obj = await hugoHelper.getHugoConfig(['--config', 'extraconfig.toml,directory/moreconfig.json,config.toml']);
 				expect(obj).to.deep.equal(expected);
 			});
 			after(function () {
