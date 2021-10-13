@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const mock = require('mock-fs');
 
-const globHelper = require('../../helpers/globs');
+const globHelper = require('../../src/helpers/globs');
 
 describe('globs', function () {
 	describe('getGlobString()', function () {

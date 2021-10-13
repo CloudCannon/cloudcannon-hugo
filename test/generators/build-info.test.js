@@ -1,8 +1,8 @@
 const { expect } = require('chai');
 const mock = require('mock-fs');
-const buildInfo = require('../../generators/build-info');
-const { cloudCannonMeta } = require('../../helpers/metadata');
-const pathHelper = require('../../helpers/paths');
+const buildInfo = require('../../src/generators/build-info');
+const { cloudCannonMeta } = require('../../src/helpers/metadata');
+const pathHelper = require('../../src/helpers/paths');
 const {
 	collectionFiles,
 	dataFiles,

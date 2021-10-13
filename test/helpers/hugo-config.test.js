@@ -1,8 +1,8 @@
 const { expect } = require('chai');
 const mock = require('mock-fs');
-const hugoHelper = require('../../helpers/hugo-config');
+const hugoHelper = require('../../src/helpers/hugo-config');
 const {
-	pathsByType, testFileStructure, configFiles, configOrder
+	testFileStructure, configFiles, configOrder
 } = require('../test-paths');
 
 describe('hugo-config', function () {

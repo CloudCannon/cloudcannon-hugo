@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const mock = require('mock-fs');
-const pathHelper = require('../../helpers/paths');
+const pathHelper = require('../../src/helpers/paths');
 const { pathsByType, testFileStructure } = require('../test-paths');
 
 describe('pathHelper', function () {
