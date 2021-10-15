@@ -5,7 +5,6 @@ before_install:
   - npm install -g nyc
   - npm install -g codecov
   - npm install -g istanbul
-  - sudo snap install hugo
 script:
   - npm run test
   - npm run report-coverage

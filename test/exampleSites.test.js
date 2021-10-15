@@ -15,7 +15,7 @@ const runProcess = function (wd, command, args) {
 	});
 };
 
-describe('exampleSite', function () {
+describe.skip('exampleSite', function () {
 	before(function () {
 		const pathToPackage = Path.relative('exampleSite/', '../');
 		const wd = Path.join(process.cwd(), 'test/exampleSite/');
