@@ -235,7 +235,7 @@ describe('generateCollectionsConfig', function () {
 			},
 			staff_members: {
 				path: 'data/staff_members',
-				output: true
+				output: false
 			}
 		};
 

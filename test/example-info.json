@@ -19,10 +19,24 @@
         "case-studies": {
             "path": "content/case-studies",
             "output": true
+        },
+        "staff_members": {
+            "path": "data/staff_members",
+            "output": false
         }
     },
-    "_comments": {},
-    "_options": {},
+    "_comments": {
+        "color": "The background colour used in the plan name and call to action.",
+        "new_window": "Open link in new window"
+    },
+    "_options": {
+        "type": {
+            "hidden": true
+        },
+        "full_width": {
+            "hidden": true
+        }
+    },
     "_editor": {},
     "_source_editor": {},
     "_array_structures": {},
@@ -109,6 +123,18 @@
                 "layout": "posts/single"
             }
         ]
+    },
+    "data": {
+        "cities": {
+            "dunedin": {
+                "name": "Dunedin",
+                "country": "New Zealand"
+            },
+            "sanfrancisco": {
+                "name": "San Francisco",
+                "country": "United States of America"
+            }
+        }
     },
     "pages": [
         {

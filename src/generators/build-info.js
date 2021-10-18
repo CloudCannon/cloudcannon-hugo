@@ -190,10 +190,16 @@ module.exports = {
 			if (collectionName && (collectionPath.endsWith('_index.md') || !collections[collectionName])) {
 				collections[collectionName] = {};
 
-				const itemDetails = await helpers.getItemDetails(collectionPath);
+				let isOutput = true;
+				if (collectionPath.startsWith(paths.data)) {
+					isOutput = false;
+				} else {
+					const itemDetails = await helpers.getItemDetails(collectionPath);
+					isOutput = !itemDetails.headless;
+				}
 				collections[collectionName] = {
 					path: `${paths.content}/${collectionName}`,
-					output: !itemDetails.headless,
+					output: isOutput,
 					...hugoConfig?.cloudcannon?.collections?.[collectionName]
 				};
 			}

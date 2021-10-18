@@ -1,7 +1,12 @@
-const { expect } = require('chai');
 const cp = require('child_process');
 const Path = require('path');
 const fs = require('fs');
+
+const chai = require('chai');
+const deepEqualInAnyOrder = require('deep-equal-in-any-order');
+
+chai.use(deepEqualInAnyOrder);
+const { expect } = chai;
 
 let ccInfo;
 const expectedRaw = fs.readFileSync(Path.join(process.cwd(), 'test/example-info.json'));
@@ -15,11 +20,12 @@ const runProcess = function (wd, command, args) {
 	});
 };
 
-describe.skip('exampleSite', function () {
+describe('exampleSite', function () {
+	this.timeout(5000); // sometimes takes longer than 2000ms (default)
 	before(function () {
 		const pathToPackage = Path.relative('exampleSite/', '../');
 		const wd = Path.join(process.cwd(), 'test/exampleSite/');
-		runProcess(wd, 'npx', [pathToPackage]);
+		runProcess(wd, 'npx', [pathToPackage, '--config', 'cloudcannon.toml,config.toml']);
 
 		const rawInfo = fs.readFileSync('test/exampleSite/public/_cloudcannon/info.json');
 		ccInfo = JSON.parse(rawInfo);
@@ -27,7 +33,7 @@ describe.skip('exampleSite', function () {
 
 	Object.keys(ccInfoExpected).forEach(function (key) {
 		it(`${key} in info.json should match expected output`, function () {
-			expect(ccInfo[key]).to.eql(ccInfoExpected[key]);
+			expect(ccInfo[key]).to.deep.equalInAnyOrder(ccInfoExpected[key]);
 		});
 	});
 });
