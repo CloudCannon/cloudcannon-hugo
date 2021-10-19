@@ -34,6 +34,24 @@ const isObject = function (item) {
 	return (item && typeof item === 'object' && !Array.isArray(item));
 };
 
+// Attempts to parse JSON from a string that may have content after it
+const unstrictJsonParse = function (data) {
+	let parseData = data;
+	let lastBracketIndex = parseData.lastIndexOf('}');
+
+	while (parseData) {
+		try {
+			const parsed = parseData ? JSON.parse(parseData) : parseData;
+			return parsed;
+		} catch {
+			lastBracketIndex = parseData.lastIndexOf('}', parseData.length - 2);
+			parseData = parseData.substring(0, lastBracketIndex + 1); // Add one to include the bracket
+		}
+	}
+
+	return {};
+};
+
 module.exports = {
 
 	/**
@@ -140,8 +158,7 @@ module.exports = {
 			}
 			break;
 		case '{':
-			console.warn('JSON Frontmatter not yet supported');
-			break;
+			return unstrictJsonParse(data);
 		default:
 			break;
 		}

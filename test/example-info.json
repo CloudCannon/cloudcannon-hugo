@@ -10,7 +10,8 @@
         },
         "emptyMarkdownCollection": {
             "path": "content/emptyMarkdownCollection",
-            "output": true
+            "output": true,
+            "_enabled_editors": ["data"]
         },
         "posts": {
             "path": "content/posts",
@@ -174,6 +175,11 @@
             "sanfrancisco": {
                 "name": "San Francisco",
                 "country": "United States of America"
+            },
+            "_defaults": {
+                "name": "",
+                "country": "",
+                "optional": true
             }
         }
     },

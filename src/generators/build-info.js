@@ -4,6 +4,7 @@ const chalk = require('chalk');
 const helpers = require('../helpers/helpers');
 const pathHelper = require('../helpers/paths');
 const { cloudCannonMeta, markdownMeta } = require('../helpers/metadata');
+const { log } = require('../helpers/logger');
 
 module.exports = {
 	getSectionName: function (path, rootDir = '') {
@@ -159,6 +160,18 @@ module.exports = {
 			}
 		}));
 
+		const collectionNames = Object.keys(data);
+		const numCollections = collectionNames.length;
+		if (numCollections) {
+			log(`💾 processed ${numCollections} data sets:`);
+			collectionNames.forEach((name) => {
+				const numItems = Object.keys(data[name]).length;
+				log(`   ${chalk.bold(name)} with ${numItems} files`);
+			});
+		} else {
+			log('💾 processed no data sets');
+		}
+
 		return data;
 	},
 
@@ -263,13 +276,13 @@ module.exports = {
 		const collectionNames = Object.keys(collections);
 		const numCollections = collectionNames.length;
 		if (numCollections) {
-			console.log(`📁 processed ${numCollections} collections:`);
+			log(`📁 processed ${numCollections} collections:`);
 			collectionNames.forEach((name) => {
 				const numItems = Object.keys(collections[name]).length;
-				console.log(`   ${chalk.bold(name)} with ${numItems} files`);
+				log(`   ${chalk.bold(name)} with ${numItems} files`);
 			});
 		} else {
-			console.log('📁 processed no collections');
+			log('📁 processed no collections');
 		}
 
 		return {

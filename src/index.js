@@ -6,11 +6,12 @@ const chalk = require('chalk');
 const infoGenerator = require('./generators/build-info');
 const hugoHelper = require('./helpers/hugo-config');
 const pathHelper = require('./helpers/paths');
+const { log } = require('./helpers/logger');
 
 (async function main() {
 	const args = process.argv;
 
-	console.log(`⭐️ Starting ${chalk.blue('cloudcannon-hugo')}`);
+	log(`⭐️ Starting ${chalk.blue('cloudcannon-hugo')}`);
 
 	const hugoConfig = await hugoHelper.getHugoConfig(args);
 	pathHelper.generatePaths(hugoConfig);
@@ -21,11 +22,11 @@ const pathHelper = require('./helpers/paths');
 	const { source, publish } = pathHelper.getPaths();
 	const outputDir = join(source, publish, '_cloudcannon');
 
-	console.log('writing...');
 	try {
 		await fs.mkdir(`${outputDir}`, { recursive: true });
 		await fs.writeFile(`${outputDir}/info.json`, infoData);
+		log(`🏁 Generated ${chalk.bold('_cloudcannon/info.json')} ${chalk.green('successfully')}`);
 	} catch (writeError) {
-		console.error(`error writing to ${outputDir}/`);
+		log(`error writing to ${outputDir}/`, 'error');
 	}
 }());

@@ -15,3 +15,6 @@ cities = true
 [cloudcannon.collections]
 [cloudcannon.collections.staff_members]
 path = "data/staff_members"
+
+[cloudcannon.collections.emptyMarkdownCollection]
+_enabled_editors = ["data"]
