@@ -7,6 +7,7 @@ hidden = true
 [_comments]
 color = "The background colour used in the plan name and call to action."
 new_window = "Open link in new window"
+twitter = "Twitter handle (not url)"
 
 [cloudcannon.data]
 cities = true

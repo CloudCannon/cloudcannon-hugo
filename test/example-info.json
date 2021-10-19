@@ -27,7 +27,8 @@
     },
     "_comments": {
         "color": "The background colour used in the plan name and call to action.",
-        "new_window": "Open link in new window"
+        "new_window": "Open link in new window",
+        "twitter": "Twitter handle (not url)"
     },
     "_options": {
         "type": {
@@ -107,7 +108,7 @@
                 "categories": [
                     "marketing"
                 ],
-                "author_staff_member": "robin",
+                "author_staff_member": "betty",
                 "layout": "posts/single"
             },
             {
@@ -119,8 +120,48 @@
                 "categories": [
                     "sales"
                 ],
-                "author_staff_member": "james",
+                "author_staff_member": "anna",
                 "layout": "posts/single"
+            }
+        ],
+        "emptyHTMLCollection": [],
+        "emptyMarkdownCollection": [],
+        "staff_members": [
+            {
+                "url": "",
+                "path": "data/staff_members/anna.yml",
+                "collection": "staff_members",
+                "name": "Anna Thompson",
+                "position": "Marketing",
+                "image_path": "https://source.unsplash.com/collection/139386/601x601?a=.png",
+                "twitter": "CloudCannonApp",
+                "blurb": "Anna likes long walks on the beach and buffet breakfast.",
+                "output": false
+            },
+            {
+                "url": "",
+                "path": "data/staff_members/charles.yml",
+                "collection": "staff_members",
+                "name": "Charles Freeman",
+                "position": "Sales",
+                "image_path": "https://source.unsplash.com/collection/139386/603x603?a=.png",
+                "twitter": "CloudCannonApp",
+                "blurb": "Charles loves going to bike rides and spending time with his family.",
+                "_comments": {
+                    "twitter": "Update your twitter handle charles!"
+                },
+                "output": false
+            },
+            {
+                "url": "",
+                "path": "data/staff_members/betty.yml",
+                "collection": "staff_members",
+                "name": "Betty Jefferson",
+                "position": "Developer",
+                "image_path": "https://source.unsplash.com/collection/139386/602x602?a=.png",
+                "twitter": "CloudCannonApp",
+                "blurb": "Betty is a bookworm who will typically have four books on the go.",
+                "output": false
             }
         ]
     },

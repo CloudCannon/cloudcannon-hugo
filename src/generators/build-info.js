@@ -1,5 +1,6 @@
 const csvParse = require('csv-parse/lib/sync');
 const Path = require('path');
+const chalk = require('chalk');
 const helpers = require('../helpers/helpers');
 const pathHelper = require('../helpers/paths');
 const { cloudCannonMeta, markdownMeta } = require('../helpers/metadata');
@@ -161,8 +162,56 @@ module.exports = {
 		return data;
 	},
 
-	generateCollectionsConfig: async function (hugoConfig, paths) {
-		const cloudcannonCollections = hugoConfig?.cloudcannon?.collections || {};
+	generateCollectionItem: async function (itemPath, itemDetails, collectionName, urlsPerPath) {
+		const { archetypes, content } = pathHelper.getPaths();
+		const isArchetype = itemPath.indexOf(archetypes) >= 0;
+
+		let item;
+		if (!isArchetype) {
+			const url = this.getPageUrl(itemPath, urlsPerPath, content);
+			const layout = await this.getLayout(itemPath, itemDetails);
+
+			item = {
+				url: url || '',
+				path: itemPath,
+				collection: collectionName,
+				...itemDetails
+			};
+
+			if (item.headless || (!url && itemPath.indexOf('index') < 0)) {
+				item.output = false;
+			}
+
+			if (layout && item.url) {
+				item.layout = layout;
+			}
+
+			if (item.draft) {
+				item.published = false;
+			}
+		}
+		return item;
+	},
+
+	generateCollectionConfigItem: async function (itemPath, itemDetails, collectionName, config) {
+		const { data, content } = pathHelper.getPaths();
+		let isOutput = true;
+		if (itemPath.startsWith(data)) {
+			isOutput = false;
+		} else {
+			isOutput = !itemDetails.headless;
+		}
+		return {
+			path: `${content}/${collectionName}`,
+			output: isOutput,
+			...config?.cloudcannon?.collections?.[collectionName]
+		};
+	},
+
+	generateCollectionsInfo: async function (config, urlsPerPath) {
+		const paths = pathHelper.getPaths();
+		const cloudcannonCollections = config?.cloudcannon?.collections || {};
+
 		const definedCollections = {};
 		Object.keys(cloudcannonCollections).forEach((collectionName) => {
 			if (cloudcannonCollections[collectionName].path) {
@@ -170,84 +219,63 @@ module.exports = {
 			}
 		});
 
-		const collectionPaths = await pathHelper.getCollectionPaths(Object.keys(definedCollections));
-		const collections = {
+		const collectionItemPaths = await pathHelper
+			.getCollectionPaths(Object.keys(definedCollections));
+
+		const collections = {};
+		const collectionsConfig = {
 			data: {
 				path: paths.data,
 				output: false,
-				...hugoConfig?.cloudcannon?.collections?.data
+				...config?.cloudcannon?.collections?.data
 			}
 		};
 
-		await Promise.all(collectionPaths.map(async (collectionPath) => {
-			const collectionName = definedCollections[Path.dirname(collectionPath)]
+		await Promise.all(collectionItemPaths.map(async (itemPath) => {
+			const collectionName = definedCollections[Path.dirname(itemPath)]
 				|| this.getCollectionNameConfig(
-					collectionPath,
+					itemPath,
 					paths.content,
 					paths.archetypes
 				);
 
-			if (collectionName && (collectionPath.endsWith('_index.md') || !collections[collectionName])) {
-				collections[collectionName] = {};
+			const itemDetails = await helpers.getItemDetails(itemPath);
 
-				let isOutput = true;
-				if (collectionPath.startsWith(paths.data)) {
-					isOutput = false;
-				} else {
-					const itemDetails = await helpers.getItemDetails(collectionPath);
-					isOutput = !itemDetails.headless;
-				}
-				collections[collectionName] = {
-					path: `${paths.content}/${collectionName}`,
-					output: isOutput,
-					...hugoConfig?.cloudcannon?.collections?.[collectionName]
-				};
+			if (collectionName && (itemPath.endsWith('_index.md') || !collectionsConfig[collectionName])) {
+				const collectionConfigItem = await this.generateCollectionConfigItem(
+					itemPath, itemDetails, collectionName, config
+				);
+				collectionsConfig[collectionName] = collectionConfigItem;
 			}
-		}));
 
-		return collections;
-	},
-
-	generateCollections: async function (urlsPerPath) {
-		const collections = {};
-		const { content } = pathHelper.getPaths();
-		const collectionPaths = await pathHelper.getCollectionPaths();
-
-		await Promise.all(collectionPaths.map(async (path) => {
-			const collectionName = this.getCollectionName(path, content);
 			if (collectionName) {
-				const url = this.getPageUrl(path, urlsPerPath, content);
-				const itemDetails = await helpers.getItemDetails(path);
-				const layout = await this.getLayout(path, itemDetails);
-
-				const item = {
-					url: url || '',
-					path: path,
-					collection: collectionName,
-					...itemDetails
-				};
-
-				if (layout) {
-					item.layout = layout;
-				}
-
-				if (item.draft) {
-					item.published = false;
-				}
-
-				if (item.headless || (!url && path.indexOf('index') < 0)) {
-					item.output = false;
-				}
-
+				const collectionItem = await this.generateCollectionItem(
+					itemPath, itemDetails, collectionName, urlsPerPath
+				);
 				if (collections[collectionName]) {
-					collections[collectionName].push(item);
+					collections[collectionName].push(collectionItem);
 				} else {
-					collections[collectionName] = [item];
+					collections[collectionName] = collectionItem ? [collectionItem] : [];
 				}
 			}
 		}));
 
-		return collections;
+		const collectionNames = Object.keys(collections);
+		const numCollections = collectionNames.length;
+		if (numCollections) {
+			console.log(`📁 processed ${numCollections} collections:`);
+			collectionNames.forEach((name) => {
+				const numItems = Object.keys(collections[name]).length;
+				console.log(`   ${chalk.bold(name)} with ${numItems} files`);
+			});
+		} else {
+			console.log('📁 processed no collections');
+		}
+
+		return {
+			collectionsConfig: collectionsConfig,
+			collections: collections
+		};
 	},
 
 	generatePages: async function (urlsPerPath) {
@@ -294,13 +322,18 @@ module.exports = {
 		const paramsKey = Object.keys(hugoConfig).find((key) => key.toLowerCase() === 'params');
 		const hugoParams = hugoConfig[paramsKey] ?? {};
 
+		const {
+			collections,
+			collectionsConfig
+		} = await this.generateCollectionsInfo(hugoConfig, urlsPerPath);
+
 		return {
 			time: new Date().toISOString(),
 			cloudcannon: cloudCannonMeta,
 			generator: this.generateGenerator(hugoConfig),
 			source: paths.source || '',
 			'base-url': helpers.getUrlPathname(hugoConfig.baseURL),
-			'collections-config': await this.generateCollectionsConfig(hugoConfig, paths),
+			'collections-config': collectionsConfig,
 			_comments: hugoConfig._comments ?? hugoParams._comments ?? {},
 			_options: hugoConfig._options ?? hugoParams._options ?? {},
 			_collection_groups: hugoConfig._collection_groups ?? hugoParams._collection_groups,
@@ -320,7 +353,7 @@ module.exports = {
 				?? hugoParams._selectData
 				?? {},
 			paths: paths,
-			collections: await this.generateCollections(urlsPerPath),
+			collections: collections,
 			pages: await this.generatePages(urlsPerPath),
 			data: await this.generateData(hugoConfig)
 		};

@@ -2,12 +2,15 @@
 
 const fs = require('fs').promises;
 const { join } = require('path');
+const chalk = require('chalk');
 const infoGenerator = require('./generators/build-info');
 const hugoHelper = require('./helpers/hugo-config');
 const pathHelper = require('./helpers/paths');
 
 (async function main() {
 	const args = process.argv;
+
+	console.log(`⭐️ Starting ${chalk.blue('cloudcannon-hugo')}`);
 
 	const hugoConfig = await hugoHelper.getHugoConfig(args);
 	pathHelper.generatePaths(hugoConfig);

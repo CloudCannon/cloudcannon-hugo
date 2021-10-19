@@ -199,67 +199,6 @@ describe('getLayout', function () {
 	});
 });
 
-describe('generateCollectionsConfig', function () {
-	before(function () {
-		const fileStructure = {
-			...collectionFiles,
-			'data/staff_members': { 'anna.yml': '' }
-		};
-		mock(fileStructure);
-	});
-
-	it('should return all collections', async function () {
-		const expected = {
-			coll1: {
-				path: 'content/coll1',
-				output: true
-			},
-			posts: {
-				path: 'content/posts',
-				output: true,
-				_image_key: 'author_image',
-				_image_size: 'cover'
-			},
-			data: {
-				path: 'data',
-				output: false,
-				_image_key: 'thumbnail'
-			},
-			leaf: {
-				path: 'content/leaf',
-				output: true
-			},
-			type: {
-				path: 'content/type',
-				output: false
-			},
-			staff_members: {
-				path: 'data/staff_members',
-				output: false
-			}
-		};
-
-		const hugoConfig = {
-			cloudcannon: {
-				collections: {
-					data: { _image_key: 'thumbnail' },
-					posts: { _image_key: 'author_image', _image_size: 'cover' },
-					fakeCollection: 'wackyLink',
-					staff_members: { path: 'data/staff_members' }
-				}
-			}
-		};
-
-		const paths = { content: 'content', archetypes: 'archetypes', data: 'data' };
-		const results = await buildInfo.generateCollectionsConfig(hugoConfig, paths);
-		expect(results).to.deep.equal(expected);
-	});
-
-	after(function () {
-		mock.restore();
-	});
-});
-
 describe('generateMarkdownMetadata', function () {
 	it('should return default markdown metadata', function () {
 		const result = buildInfo.generateMarkdownMetadata({});
@@ -365,9 +304,13 @@ describe('generateData', function () {
 	});
 });
 
-describe('generateCollections', function () {
+describe('generateCollectionsInfo', function () {
 	before(function () {
-		mock(collectionFiles);
+		const fileStructure = {
+			...collectionFiles,
+			'data/staff_members': { 'anna.yml': '' }
+		};
+		mock(fileStructure);
 	});
 
 	it('should retrieve collections', async function () {
@@ -377,8 +320,21 @@ describe('generateCollections', function () {
 			'content/posts/post1.md': '/posts/post1/'
 		};
 
-		const results = await buildInfo.generateCollections(urlsPerPath);
-		const expected = {
+		const hugoConfig = {
+			cloudcannon: {
+				collections: {
+					data: { _image_key: 'thumbnail' },
+					posts: { _image_key: 'author_image', _image_size: 'cover' },
+					fakeCollection: 'wackyLink',
+					staff_members: { path: 'data/staff_members' }
+				}
+			}
+		};
+
+		const {
+			collections, collectionsConfig
+		} = await buildInfo.generateCollectionsInfo(hugoConfig, urlsPerPath);
+		const expectedCollections = {
 			coll1: [
 				{
 					collection: 'coll1',
@@ -411,10 +367,51 @@ describe('generateCollections', function () {
 					path: 'content/posts/post1.md',
 					url: '/posts/post1/'
 				}
-			]
+			],
+			staff_members: [
+				{
+					collection: 'staff_members',
+					output: false,
+					path: 'data/staff_members/anna.yml',
+					url: ''
+				}
+			],
+			leaf: [],
+			type: []
 		};
 
-		expect(results).to.deep.equal(expected);
+		const expectedCollectionsConfig = {
+			coll1: {
+				path: 'content/coll1',
+				output: true
+			},
+			posts: {
+				path: 'content/posts',
+				output: true,
+				_image_key: 'author_image',
+				_image_size: 'cover'
+			},
+			data: {
+				path: 'data',
+				output: false,
+				_image_key: 'thumbnail'
+			},
+			leaf: {
+				path: 'content/leaf',
+				output: true
+			},
+			type: {
+				path: 'content/type',
+				output: false
+			},
+			staff_members: {
+				path: 'data/staff_members',
+				output: false
+			}
+		};
+
+		expect(collections).to.deep.equal(expectedCollections);
+		expect(collectionsConfig).to.deep.equal(expectedCollectionsConfig);
 	});
 
 	after(function () {

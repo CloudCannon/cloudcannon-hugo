@@ -77,8 +77,12 @@ module.exports = {
 
 	getItemDetails: async function (path) {
 		try {
+			let frontMatterObject = await this.parseDataFile(path);
+			if (frontMatterObject) {
+				return frontMatterObject;
+			}
 			const data = await fs.readFile(path, 'utf-8');
-			const frontMatterObject = this.parseFrontMatter(data);
+			frontMatterObject = this.parseFrontMatter(data);
 			return frontMatterObject || {};
 		} catch (parseError) {
 			return {};

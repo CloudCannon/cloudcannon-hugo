@@ -79,7 +79,7 @@ module.exports = {
 		const buildArguments = helpers.processArgs(args);
 		const configFileList = await this.getConfigPaths(buildArguments);
 
-		console.log('using config files:');
+		console.log('⚙️ using config files:');
 		console.log(configFileList);
 
 		const configContents = await this.getConfigContents(configFileList, buildArguments.config);
