@@ -252,16 +252,16 @@ module.exports = {
 					paths.archetypes
 				);
 
-			const itemDetails = await helpers.getItemDetails(itemPath);
+			if (collectionName) {
+				const itemDetails = await helpers.getItemDetails(itemPath);
 
-			if (collectionName && (itemPath.endsWith('_index.md') || !collectionsConfig[collectionName])) {
 				const collectionConfigItem = await this.generateCollectionConfigItem(
 					itemPath, itemDetails, collectionName, config
 				);
+				collectionConfigItem.output = collectionConfigItem.output
+					|| (collectionsConfig[collectionName]?.output ?? false); // true if any output: true;
 				collectionsConfig[collectionName] = collectionConfigItem;
-			}
 
-			if (collectionName) {
 				const collectionItem = await this.generateCollectionItem(
 					itemPath, itemDetails, collectionName, urlsPerPath
 				);
