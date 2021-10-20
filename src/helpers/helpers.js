@@ -84,6 +84,11 @@ module.exports = {
 		return this.mergeDeep(target, ...sources);
 	},
 
+	pluralize: function (amount, str) {
+		const amountStr = amount === 0 ? 'no' : amount;
+		return `${amountStr} ${str}${amount === 1 ? '' : 's'}`;
+	},
+
 	exists: async function (path) {
 		try {
 			await fs.access(path);

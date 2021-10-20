@@ -162,15 +162,15 @@ module.exports = {
 
 		const collectionNames = Object.keys(data);
 		const numCollections = collectionNames.length;
-		if (numCollections) {
-			log(`💾 processed ${numCollections} data sets:`);
-			collectionNames.forEach((name) => {
-				const numItems = Object.keys(data[name]).length;
-				log(`   ${chalk.bold(name)} with ${numItems} files`);
-			});
-		} else {
-			log('💾 processed no data sets');
-		}
+
+		let logString = helpers.pluralize(numCollections, 'data set');
+		logString = numCollections ? `${logString}:` : logString;
+
+		log(`💾 processed ${logString}`);
+		collectionNames.forEach((name) => {
+			const numItems = Object.keys(data[name]).length;
+			log(`   ${chalk.bold(name)} with ${numItems} files`);
+		});
 
 		return data;
 	},
@@ -275,15 +275,15 @@ module.exports = {
 
 		const collectionNames = Object.keys(collections);
 		const numCollections = collectionNames.length;
-		if (numCollections) {
-			log(`📁 processed ${numCollections} collections:`);
-			collectionNames.forEach((name) => {
-				const numItems = Object.keys(collections[name]).length;
-				log(`   ${chalk.bold(name)} with ${numItems} files`);
-			});
-		} else {
-			log('📁 processed no collections');
-		}
+
+		let logString = helpers.pluralize(numCollections, 'collection');
+		logString = numCollections ? `${logString}:` : logString;
+
+		log(`📁 processed ${logString}`);
+		collectionNames.forEach((name) => {
+			const numItems = Object.keys(collections[name]).length;
+			log(`   ${chalk.bold(name)} with ${numItems} files`);
+		});
 
 		return {
 			collectionsConfig: collectionsConfig,
