@@ -16,5 +16,9 @@ cities = true
 [cloudcannon.collections.staff_members]
 path = "data/staff_members"
 
+
+[cloudcannon.collections.pages._comments]
+draft = "Tick if page is a draft"
+
 [cloudcannon.collections.emptyMarkdownCollection]
 _enabled_editors = ["data"]

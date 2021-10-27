@@ -21,15 +21,6 @@ module.exports = {
 		return leadingPath ? dir.replace(leadingPath[0], '') : '';
 	},
 
-	getCollectionName: function (path, rootDir = '') {
-		if (path.indexOf(rootDir) !== 0) {
-			return '';
-		}
-
-		const parts = path.replace(`${rootDir}/`, '').split('/');
-		return parts.length > 1 ? parts[0] : '';
-	},
-
 	getCollectionNameConfig: function (path, contentDir, archetypePath) {
 		if (path.indexOf(archetypePath) >= 0) {
 			if (path.indexOf('default.md') >= 0) {
@@ -217,7 +208,7 @@ module.exports = {
 		return {
 			path: `${content}/${collectionName}`,
 			output: isOutput,
-			...config?.cloudcannon?.collections?.[collectionName]
+			...config[collectionName]
 		};
 	},
 
@@ -234,13 +225,14 @@ module.exports = {
 
 		const collectionItemPaths = await pathHelper
 			.getCollectionPaths(Object.keys(definedCollections));
+		const pagePaths = await pathHelper.getPagePaths();
 
 		const collections = {};
 		const collectionsConfig = {
 			data: {
 				path: paths.data,
 				output: false,
-				...config?.cloudcannon?.collections?.data
+				...cloudcannonCollections.data
 			}
 		};
 
@@ -256,7 +248,7 @@ module.exports = {
 				const itemDetails = await helpers.getItemDetails(itemPath);
 
 				const collectionConfigItem = await this.generateCollectionConfigItem(
-					itemPath, itemDetails, collectionName, config
+					itemPath, itemDetails, collectionName, cloudcannonCollections
 				);
 				collectionConfigItem.output = collectionConfigItem.output
 					|| (collectionsConfig[collectionName]?.output ?? false); // true if any output: true;
@@ -272,6 +264,25 @@ module.exports = {
 				}
 			}
 		}));
+
+		if (!collectionsConfig.pages && pagePaths.length) {
+			collectionsConfig.pages = {
+				path: paths.content,
+				output: true,
+				filter: 'strict',
+				...cloudcannonCollections.pages
+			};
+			collections.pages = [];
+
+			await Promise.all(pagePaths.map(async (itemPath) => {
+				const itemDetails = await helpers.getItemDetails(itemPath);
+
+				const collectionItem = await this.generateCollectionItem(
+					itemPath, itemDetails, 'pages', urlsPerPath
+				);
+				collections.pages.push(collectionItem);
+			}));
+		}
 
 		const collectionNames = Object.keys(collections);
 		const numCollections = collectionNames.length;
@@ -367,7 +378,6 @@ module.exports = {
 				?? {},
 			paths: paths,
 			collections: collections,
-			pages: await this.generatePages(urlsPerPath),
 			data: await this.generateData(hugoConfig)
 		};
 	}

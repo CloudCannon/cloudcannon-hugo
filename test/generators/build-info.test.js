@@ -87,22 +87,6 @@ describe('getCollectionNameConfig', function () {
 	});
 });
 
-describe('getCollectionName', function () {
-	const tests = [
-		{ input: ['content/authors/jane-doe.md', 'content'], expected: 'authors', context: 'input: author collection' },
-		{ input: ['data/staff/john.toml', 'data'], expected: 'staff', context: 'input: datafile' },
-		{ input: ['content/posts/test-post/index.md', 'content'], expected: 'posts', context: 'post in page bundle' },
-		{ input: ['nested/content/dir/_index.md', 'nested/content'], expected: 'dir', context: '_index page in nested content dir' }
-	];
-
-	tests.forEach((test) => {
-		it(test.context || '', function () {
-			const result = buildInfo.getCollectionName(...test.input);
-			expect(result).to.equal(test.expected);
-		});
-	});
-});
-
 describe('getPageUrl', function () {
 	const tests = [
 		{ input: ['content/authors/_index.md', {}, 'content'], expected: '/authors/', context: 'input: _index file' },
@@ -483,8 +467,7 @@ describe('generateInfo', function () {
 			_array_structures: {},
 			_select_data: {},
 			paths: pathHelper.getPaths(),
-			collections: {},
-			pages: []
+			collections: {}
 		};
 
 		const result = await buildInfo.generateInfo({ baseURL: '/' });
@@ -517,8 +500,7 @@ describe('generateInfo', function () {
 			'collections-config': { data: { path: 'data', output: false } },
 			...cloudcannon,
 			paths: pathHelper.getPaths(),
-			collections: {},
-			pages: []
+			collections: {}
 		};
 
 		const result = await buildInfo.generateInfo({
