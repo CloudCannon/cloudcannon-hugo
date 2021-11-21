@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const mock = require('mock-fs');
 const buildInfo = require('../../src/generators/build-info');
-const { cloudCannonMeta } = require('../../src/helpers/metadata');
+const { version, cloudCannonMeta } = require('../../src/helpers/metadata');
 const pathHelper = require('../../src/helpers/paths');
 const {
 	collectionFiles,
@@ -455,6 +455,7 @@ describe('generateInfo', function () {
 	it('work with no cloudcannon specific config', async function () {
 		const expected = {
 			time: 'TODO', // TODO
+			version: version,
 			generator: EXPECTED_GENERATOR,
 			cloudcannon: cloudCannonMeta,
 			source: '', // don't think hugo has custom src / mabe get this from cloudcannon
@@ -492,7 +493,8 @@ describe('generateInfo', function () {
 		};
 
 		const expected = {
-			time: 'TODO', // TODO
+			time: 'TODO', // TODO,
+			version: version,
 			generator: EXPECTED_GENERATOR,
 			cloudcannon: cloudCannonMeta,
 			source: '', // TODO

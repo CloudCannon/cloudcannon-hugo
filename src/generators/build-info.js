@@ -3,7 +3,7 @@ const Path = require('path');
 const chalk = require('chalk');
 const helpers = require('../helpers/helpers');
 const pathHelper = require('../helpers/paths');
-const { cloudCannonMeta, markdownMeta } = require('../helpers/metadata');
+const { version, cloudCannonMeta, markdownMeta } = require('../helpers/metadata');
 const { log } = require('../helpers/logger');
 
 module.exports = {
@@ -353,6 +353,7 @@ module.exports = {
 
 		return {
 			time: new Date().toISOString(),
+			version: version,
 			cloudcannon: cloudCannonMeta,
 			generator: this.generateGenerator(hugoConfig),
 			source: paths.source || '',
