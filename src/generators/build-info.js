@@ -361,6 +361,7 @@ module.exports = {
 			'collections-config': collectionsConfig,
 			_comments: hugoConfig._comments ?? hugoParams._comments ?? {},
 			_options: hugoConfig._options ?? hugoParams._options ?? {},
+			_inputs: hugoConfig._inputs,
 			_collection_groups: hugoConfig._collection_groups ?? hugoParams._collection_groups,
 			_editor: hugoConfig._editor ?? hugoParams._editor ?? {},
 			_source_editor: hugoConfig._source_editor
@@ -369,6 +370,7 @@ module.exports = {
 				?? {},
 			_enabled_editors: hugoConfig._enabled_editors ?? hugoParams._enabled_editors,
 			_instance_values: hugoConfig._instance_values ?? hugoParams._instance_values,
+			_structures: hugoConfig._structures,
 			_array_structures: hugoConfig._array_structures
 				?? hugoParams._array_structures
 				?? hugoParams._arrayStructures

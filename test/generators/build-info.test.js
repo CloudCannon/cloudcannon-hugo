@@ -486,8 +486,10 @@ describe('generateInfo', function () {
 		const cloudcannon = {
 			_comments: { comment: 'comment' },
 			_options: { option: 'value' },
+			_inputs: {},
 			_editor: { default_path: '/about/' },
 			_source_editor: { theme: 'monokai', tab_size: 2, show_gutter: false },
+			_structures: {},
 			_array_structures: { object: {} },
 			_select_data: { object: {} }
 		};
