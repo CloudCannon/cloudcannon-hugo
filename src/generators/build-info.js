@@ -362,6 +362,7 @@ module.exports = {
 			_comments: hugoConfig._comments ?? hugoParams._comments ?? {},
 			_options: hugoConfig._options ?? hugoParams._options ?? {},
 			_inputs: hugoConfig._inputs,
+			_editables: hugoConfig._editables,
 			_collection_groups: hugoConfig._collection_groups ?? hugoParams._collection_groups,
 			_editor: hugoConfig._editor ?? hugoParams._editor ?? {},
 			_source_editor: hugoConfig._source_editor

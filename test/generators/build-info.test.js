@@ -487,6 +487,7 @@ describe('generateInfo', function () {
 			_comments: { comment: 'comment' },
 			_options: { option: 'value' },
 			_inputs: {},
+			_editables: {},
 			_editor: { default_path: '/about/' },
 			_source_editor: { theme: 'monokai', tab_size: 2, show_gutter: false },
 			_structures: {},
