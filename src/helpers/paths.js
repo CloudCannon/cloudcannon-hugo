@@ -15,7 +15,7 @@ module.exports = {
 				pages: contentDir,
 				data: config.dataDir || 'data',
 				layouts: config.layoutDir || 'layouts',
-				publish: config.publishDir || 'public',
+				publish: config.destination || config.publishDir || 'public',
 				static: staticDir,
 				uploads: join(staticDir, config.uploads_dir || config.uploadsDir || 'uploads'),
 				config: config.configDir || ''

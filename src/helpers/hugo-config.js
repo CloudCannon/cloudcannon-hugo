@@ -89,6 +89,7 @@ module.exports = {
 
 		configObject.baseURL = buildArguments.baseURL || configObject.baseURL || '/';
 		if (buildArguments.source) configObject.source = buildArguments.source;
+		if (buildArguments.destination) configObject.destination = buildArguments.destination;
 		if (buildArguments.configDir) configObject.configDir = buildArguments.configDir;
 		if (buildArguments.contentDir) configObject.contentDir = buildArguments.contentDir;
 		if (buildArguments.layoutDir) configObject.layoutDir = buildArguments.layoutDir;

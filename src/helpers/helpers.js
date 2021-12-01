@@ -17,7 +17,9 @@ const getValidOptionName = function (option) {
 		'--contentDir': 'contentDir',
 		'-c': 'contentDir',
 		'-l': 'layoutDir',
-		'--layoutDir': 'layoutDir'
+		'--layoutDir': 'layoutDir',
+		'-d': 'destination',
+		'--destination': 'destination'
 	};
 
 	if (relevantOptions[option]) {

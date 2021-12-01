@@ -302,6 +302,17 @@ describe('hugo-config', function () {
 			});
 		});
 
+		context('destination supplied as buildArg', function () {
+			it('should return destination', async function () {
+				const expected = {
+					destination: 'destinationDir',
+					baseURL: '/'
+				};
+				const obj = await hugoHelper.getHugoConfig(['--destination', 'destinationDir']);
+				expect(obj).to.deep.equal(expected);
+			});
+		});
+
 		context('configDir supplied as buildArg', function () {
 			it('should return configDir', async function () {
 				const expected = {
