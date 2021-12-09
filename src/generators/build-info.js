@@ -1,4 +1,4 @@
-const csvParse = require('csv-parse/lib/sync');
+const Papa = require('papaparse');
 const Path = require('path');
 const chalk = require('chalk');
 const helpers = require('../helpers/helpers');
@@ -53,11 +53,14 @@ module.exports = {
 	},
 
 	getHugoUrls: function () {
+		log('⏳ processing permalinks...');
 		const { source } = pathHelper.getPaths();
-		const fileCsv = helpers.runProcess('hugo', ['list', 'all', '--source', source]);
-		const fileList = csvParse(fileCsv, { columns: true, skipEmptyLines: true });
+		let cmdArgs = ['list', 'all'];
+		cmdArgs = cmdArgs.concat(source ? ['--source', source] : []);
+		const fileCsv = helpers.runProcess('hugo', cmdArgs);
+		const fileList = Papa.parse(fileCsv, { header: true });
 
-		return fileList.reduce((memo, file) => {
+		return fileList.data.reduce((memo, file) => {
 			memo[file.path] = helpers.getUrlPathname(file.permalink);
 			return memo;
 		}, {});
@@ -236,34 +239,45 @@ module.exports = {
 			}
 		};
 
-		await Promise.all(collectionItemPaths.map(async (itemPath) => {
-			const collectionName = definedCollections[Path.dirname(itemPath)]
-				|| this.getCollectionNameConfig(
-					itemPath,
-					paths.content,
-					paths.archetypes
-				);
+		const partitionSize = 10;
+		// Run these in partitions to prevent memory issues
 
-			if (collectionName) {
-				const itemDetails = await helpers.getItemDetails(itemPath);
+		const numPartitions = Math.ceil(collectionItemPaths.length / partitionSize);
+		log('⏳ processing collection items...');
 
-				const collectionConfigItem = await this.generateCollectionConfigItem(
-					itemPath, itemDetails, collectionName, cloudcannonCollections
-				);
-				collectionConfigItem.output = collectionConfigItem.output
-					|| (collectionsConfig[collectionName]?.output ?? false); // true if any output: true;
-				collectionsConfig[collectionName] = collectionConfigItem;
+		/* eslint-disable no-await-in-loop */
+		for (let i = 0; i < numPartitions; i += 1) {
+			const slice = collectionItemPaths.slice(i * partitionSize, ((i + 1) * partitionSize));
 
-				const collectionItem = await this.generateCollectionItem(
-					itemPath, itemDetails, collectionName, urlsPerPath
-				);
-				if (collections[collectionName]) {
-					collections[collectionName].push(collectionItem);
-				} else {
-					collections[collectionName] = collectionItem ? [collectionItem] : [];
+			await Promise.all(slice.map(async (itemPath) => {
+				const collectionName = definedCollections[Path.dirname(itemPath)]
+					|| this.getCollectionNameConfig(
+						itemPath,
+						paths.content,
+						paths.archetypes
+					);
+
+				if (collectionName) {
+					const itemDetails = await helpers.getItemDetails(itemPath);
+
+					const collectionConfigItem = await this.generateCollectionConfigItem(
+						itemPath, itemDetails, collectionName, cloudcannonCollections
+					);
+					collectionConfigItem.output = collectionConfigItem.output
+						|| (collectionsConfig[collectionName]?.output ?? false); // true if any output: true;
+					collectionsConfig[collectionName] = collectionConfigItem;
+
+					const collectionItem = await this.generateCollectionItem(
+						itemPath, itemDetails, collectionName, urlsPerPath
+					);
+					if (collections[collectionName]) {
+						collections[collectionName].push(collectionItem);
+					} else {
+						collections[collectionName] = collectionItem ? [collectionItem] : [];
+					}
 				}
-			}
-		}));
+			}));
+		}
 
 		if (!collectionsConfig.pages && pagePaths.length) {
 			collectionsConfig.pages = {
@@ -274,15 +288,21 @@ module.exports = {
 			};
 			collections.pages = [];
 
-			await Promise.all(pagePaths.map(async (itemPath) => {
-				const itemDetails = await helpers.getItemDetails(itemPath);
+			const numPartitionsPages = Math.ceil(pagePaths.length / partitionSize);
 
-				const collectionItem = await this.generateCollectionItem(
-					itemPath, itemDetails, 'pages', urlsPerPath
-				);
-				collections.pages.push(collectionItem);
-			}));
+			for (let i = 0; i < numPartitionsPages; i += 1) {
+				const slice = pagePaths.slice(i * partitionSize, ((i + 1) * partitionSize));
+				await Promise.all(slice.map(async (itemPath) => {
+					const itemDetails = await helpers.getItemDetails(itemPath);
+
+					const collectionItem = await this.generateCollectionItem(
+						itemPath, itemDetails, 'pages', urlsPerPath
+					);
+					collections.pages.push(collectionItem);
+				}));
+			}
 		}
+		/* eslint-enable no-await-in-loop */
 
 		const collectionNames = Object.keys(collections);
 		const numCollections = collectionNames.length;

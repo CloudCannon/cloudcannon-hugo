@@ -36,7 +36,7 @@ async function getGlob(globPattern, options = {}) {
 	try {
 		return await globPromise(globPattern, options);
 	} catch (globErr) {
-		console.err(globErr);
+		console.error(globErr);
 	}
 }
 
