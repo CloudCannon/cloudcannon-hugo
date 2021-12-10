@@ -134,7 +134,7 @@
                     "content",
                     "source"
                 ],
-                "layout": "_default/single"
+                "layout": "pricing/single"
             }
         ],
         "case-studies": [

@@ -25,6 +25,13 @@ module.exports = {
 		return this.cachedPaths;
 	},
 
+	getSupportedLanguages: function (config = {}) {
+		if (!this.cachedLanguages) {
+			this.cachedLanguages = config?.languages ? Object.keys(config.languages) : [];
+		}
+		return this.cachedLanguages;
+	},
+
 	generatePaths: function (config) {
 		delete this.cachedPaths;
 		this.getPaths(config);

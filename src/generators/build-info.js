@@ -21,6 +21,27 @@ module.exports = {
 		return leadingPath ? dir.replace(leadingPath[0], '') : '';
 	},
 
+	getTopSectionName: function (path, options = {}) {
+		const rootDir = options.rootDir || '';
+		const supportedLanguages = pathHelper.getSupportedLanguages() || [];
+
+		path = path.replace(rootDir, '')
+			.replace(/^\//i, '');
+
+		if (options.removeLangaugeCodes) {
+			for (let i = 0; i < supportedLanguages.length; i += 1) {
+				const languageCode = supportedLanguages[i];
+				if (path.startsWith(languageCode)) {
+					path = path.replace(languageCode, '');
+					break;
+				}
+			}
+		}
+
+		const leadingPath = path.split('/');
+		return leadingPath?.[0] ? leadingPath[0].replace(/\//g, '') : '';
+	},
+
 	getCollectionNameConfig: function (path, contentDir, archetypePath) {
 		if (path.indexOf(archetypePath) >= 0) {
 			if (path.indexOf('default.md') >= 0) {
@@ -74,7 +95,10 @@ module.exports = {
 		const basename = Path.basename(path);
 		const isSingle = basename.indexOf('_index.md') < 0;
 		const { layout, type } = details;
-		const section = this.getSectionName(path);
+		const section = this.getTopSectionName(path, {
+			rootDir: content,
+			removeLangaugeCodes: true
+		});
 
 		if (isHome) {
 			typeFolders.push(type, '/', '_default'); // '/' signifies to use root folder
@@ -365,6 +389,8 @@ module.exports = {
 		// params key is case insensitive
 		const paramsKey = Object.keys(hugoConfig).find((key) => key.toLowerCase() === 'params');
 		const hugoParams = hugoConfig[paramsKey] ?? {};
+
+		pathHelper.getSupportedLanguages(hugoConfig);
 
 		const {
 			collections,
