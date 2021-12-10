@@ -32,7 +32,8 @@ module.exports = {
 			for (let i = 0; i < supportedLanguages.length; i += 1) {
 				const languageCode = supportedLanguages[i];
 				if (path.startsWith(languageCode)) {
-					path = path.replace(languageCode, '');
+					path = path.replace(languageCode, '')
+						.replace(/^\//i, '');
 					break;
 				}
 			}
