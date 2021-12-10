@@ -105,6 +105,7 @@ describe('getLayout', function () {
 	before(function () {
 		delete pathHelper.cachedLayouts;
 		mock(testFileStructure);
+		pathHelper.getSupportedLanguages({ languages: { en: {} } });
 	});
 
 	const tests = [
@@ -132,6 +133,11 @@ describe('getLayout', function () {
 			input: ['content/posts/item/index.md', {}],
 			expected: 'posts/single',
 			context: 'input: single leaf bundle post'
+		},
+		{
+			input: ['content/en/posts/item/index.md', {}],
+			expected: 'posts/single',
+			context: 'input: single leaf bundle post in a language code'
 		},
 		{
 			input: ['content/posts/post.md', { layout: 'mylayout' }],
