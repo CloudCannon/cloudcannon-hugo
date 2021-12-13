@@ -227,7 +227,8 @@ describe('hugo-config', function () {
 					}
 				};
 
-				const obj = await hugoHelper.getHugoConfig(['--config', 'extraconfig.toml,directory/moreconfig.json,config.toml']);
+				const flags = { config: 'extraconfig.toml,directory/moreconfig.json,config.toml' };
+				const obj = await hugoHelper.getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 			after(function () {
@@ -244,7 +245,9 @@ describe('hugo-config', function () {
 				const expected = {
 					baseURL: 'http://build-arg.org/'
 				};
-				const obj = await hugoHelper.getHugoConfig(['--baseURL', 'http://build-arg.org/']);
+
+				const flags = { baseUrl: 'http://build-arg.org/' };
+				const obj = await hugoHelper.getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 
@@ -263,7 +266,9 @@ describe('hugo-config', function () {
 					contentDir: 'buildArgContentDir',
 					baseURL: '/'
 				};
-				const obj = await hugoHelper.getHugoConfig(['--contentDir', 'buildArgContentDir']);
+
+				const flags = { contentDir: 'buildArgContentDir' };
+				const obj = await hugoHelper.getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 
@@ -282,7 +287,9 @@ describe('hugo-config', function () {
 					layoutDir: 'buildArgLayoutDir',
 					baseURL: '/'
 				};
-				const obj = await hugoHelper.getHugoConfig(['--layoutDir', 'buildArgLayoutDir']);
+
+				const flags = { layoutDir: 'buildArgLayoutDir' };
+				const obj = await hugoHelper.getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 
@@ -297,7 +304,9 @@ describe('hugo-config', function () {
 					source: 'sourceDir',
 					baseURL: '/'
 				};
-				const obj = await hugoHelper.getHugoConfig(['--source', 'sourceDir']);
+
+				const flags = { source: 'sourceDir' };
+				const obj = await hugoHelper.getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 		});
@@ -308,7 +317,9 @@ describe('hugo-config', function () {
 					destination: 'destinationDir',
 					baseURL: '/'
 				};
-				const obj = await hugoHelper.getHugoConfig(['--destination', 'destinationDir']);
+
+				const flags = { destination: 'destinationDir' };
+				const obj = await hugoHelper.getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 		});
@@ -319,7 +330,9 @@ describe('hugo-config', function () {
 					configDir: 'configDir',
 					baseURL: '/'
 				};
-				const obj = await hugoHelper.getHugoConfig(['--configDir', 'configDir']);
+
+				const flags = { configDir: 'configDir' };
+				const obj = await hugoHelper.getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 		});

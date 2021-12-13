@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const helpers = require('../helpers/helpers');
 const { parseDataFile } = require('../parsers/parser');
 const pathHelper = require('../helpers/paths');
-const { version, cloudCannonMeta, markdownMeta } = require('../helpers/metadata');
+const { version, markdownMeta } = require('../helpers/metadata');
 const { log } = require('../helpers/logger');
 
 module.exports = {
@@ -384,7 +384,7 @@ module.exports = {
 		return pages;
 	},
 
-	generateInfo: async function (hugoConfig) {
+	generateInfo: async function (hugoConfig, options) {
 		const urlsPerPath = this.getHugoUrls();
 		const paths = pathHelper.getPaths();
 
@@ -402,7 +402,10 @@ module.exports = {
 		return {
 			time: new Date().toISOString(),
 			version: version,
-			cloudcannon: cloudCannonMeta,
+			cloudcannon: {
+				name: 'cloudcannon-hugo',
+				version: options?.version || '0.0.0'
+			},
 			generator: this.generateGenerator(hugoConfig),
 			source: paths.source || '',
 			'base-url': helpers.getUrlPathname(hugoConfig.baseURL),

@@ -2,29 +2,6 @@ const cp = require('child_process');
 const fs = require('fs').promises;
 const { parseDataFile, parseFrontMatter } = require('../parsers/parser');
 
-const getValidOptionName = function (option) {
-	const relevantOptions = {
-		'--environment': 'environment',
-		'-e': 'environment',
-		'--source': 'source',
-		'-s': 'source',
-		'--baseURL': 'baseURL',
-		'-b': 'baseURL',
-		'--config': 'config',
-		'--configDir': 'configDir',
-		'--contentDir': 'contentDir',
-		'-c': 'contentDir',
-		'-l': 'layoutDir',
-		'--layoutDir': 'layoutDir',
-		'-d': 'destination',
-		'--destination': 'destination'
-	};
-
-	if (relevantOptions[option]) {
-		return relevantOptions[option];
-	}
-};
-
 /**
  * Simple object check, returning false for arrays and null objects.
  * @param item the object
@@ -111,21 +88,5 @@ module.exports = {
 
 		// Second item contains the actual response
 		return childProcess.output?.[1]?.toString().trim() ?? '';
-	},
-
-	processArgs: function (args = []) {
-		const flagtest = /^(-.$)|(--\w*$)/i;
-		const argObject = {};
-
-		args.forEach((argument, index) => {
-			if (flagtest.test(argument)) {
-				const item = getValidOptionName(argument);
-				if (item) {
-					argObject[item] = args[index + 1];
-				}
-			}
-		});
-
-		return argObject;
 	}
 };

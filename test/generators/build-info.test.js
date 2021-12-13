@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const mock = require('mock-fs');
 const buildInfo = require('../../src/generators/build-info');
-const { version, cloudCannonMeta } = require('../../src/helpers/metadata');
+const { version } = require('../../src/helpers/metadata');
 const pathHelper = require('../../src/helpers/paths');
 const {
 	collectionFiles,
@@ -463,7 +463,10 @@ describe('generateInfo', function () {
 			time: 'TODO', // TODO
 			version: version,
 			generator: EXPECTED_GENERATOR,
-			cloudcannon: cloudCannonMeta,
+			cloudcannon: {
+				name: 'cloudcannon-hugo',
+				version: '0.0.0'
+			},
 			source: '', // don't think hugo has custom src / mabe get this from cloudcannon
 			'base-url': '/',
 			'collections-config': { data: { path: 'data', output: false } },
@@ -505,7 +508,10 @@ describe('generateInfo', function () {
 			time: 'TODO', // TODO,
 			version: version,
 			generator: EXPECTED_GENERATOR,
-			cloudcannon: cloudCannonMeta,
+			cloudcannon: {
+				name: 'cloudcannon-hugo',
+				version: '0.0.1'
+			},
 			source: '', // TODO
 			'base-url': '/',
 			'collections-config': { data: { path: 'data', output: false } },
@@ -517,7 +523,7 @@ describe('generateInfo', function () {
 		const result = await buildInfo.generateInfo({
 			baseURL: '/',
 			...cloudcannon
-		});
+		}, { version: '0.0.1' });
 
 		[...new Set([...Object.keys(expected), ...Object.keys(result)])].forEach((key) => {
 			if (key === 'time' || key === 'generator') { // TODO mock these instead

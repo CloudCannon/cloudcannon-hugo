@@ -57,15 +57,6 @@ describe('helpers.js', function () {
 		});
 	});
 
-	describe('processArgs', function () {
-		it('should return relevant build options', async function () {
-			const argArray = ['--environment', 'production', '--theme', 'theme1,theme2', '--quiet', '-s', 'src', '--verbose'];
-			const expectedObject = { source: 'src', environment: 'production' };
-			const argObject = helpers.processArgs(argArray);
-			expect(argObject).to.deep.equal(expectedObject);
-		});
-	});
-
 	after(function () {
 		mock.restore();
 	});

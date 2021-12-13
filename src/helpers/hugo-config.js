@@ -23,10 +23,10 @@ module.exports = {
 	// 'Private' functions
 	_configSort: configSort,
 
-	getConfigPaths: async function (buildArguments = {}) {
-		const sourceDir = buildArguments.source || '';
-		const environment = buildArguments.environment || 'production'; // or just use root
-		const configDir = buildArguments.configDir || 'config';
+	getConfigPaths: async function (flags = {}) {
+		const sourceDir = flags.source || '';
+		const environment = flags.environment || 'production'; // or just use root
+		const configDir = flags.configDir || 'config';
 
 		const configEnvDir = join(sourceDir, configDir, environment);
 		const configDefaultDir = join(sourceDir, configDir, '_default/');
@@ -42,7 +42,7 @@ module.exports = {
 			configFileList = configFileList.concat(configSort(files));
 		}
 
-		let passedConfigFiles = buildArguments.config || '';
+		let passedConfigFiles = flags.config || '';
 
 		if (passedConfigFiles) {
 			passedConfigFiles = passedConfigFiles.trim().split(',');
@@ -76,24 +76,23 @@ module.exports = {
 		return contentList.filter((item) => item); // remove empties
 	},
 
-	getHugoConfig: async function (args) {
-		const buildArguments = helpers.processArgs(args);
-		const configFileList = await this.getConfigPaths(buildArguments);
+	getHugoConfig: async function (flags = {}) {
+		const configFileList = await this.getConfigPaths(flags);
 
 		console.log('⚙️ using config files:');
 		console.log(configFileList);
 
-		const configContents = await this.getConfigContents(configFileList, buildArguments.config);
+		const configContents = await this.getConfigContents(configFileList, flags.config);
 		configContents.reverse(); // reversing because deep merge places priority on the second object
 
 		const configObject = helpers.mergeDeep({}, ...configContents);
 
-		configObject.baseURL = buildArguments.baseURL || configObject.baseURL || '/';
-		if (buildArguments.source) configObject.source = buildArguments.source;
-		if (buildArguments.destination) configObject.destination = buildArguments.destination;
-		if (buildArguments.configDir) configObject.configDir = buildArguments.configDir;
-		if (buildArguments.contentDir) configObject.contentDir = buildArguments.contentDir;
-		if (buildArguments.layoutDir) configObject.layoutDir = buildArguments.layoutDir;
+		configObject.baseURL = flags.baseUrl || configObject.baseURL || '/';
+		if (flags.source) configObject.source = flags.source;
+		if (flags.destination) configObject.destination = flags.destination;
+		if (flags.configDir) configObject.configDir = flags.configDir;
+		if (flags.contentDir) configObject.contentDir = flags.contentDir;
+		if (flags.layoutDir) configObject.layoutDir = flags.layoutDir;
 
 		return configObject;
 	}

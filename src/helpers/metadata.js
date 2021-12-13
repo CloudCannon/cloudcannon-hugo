@@ -1,12 +1,5 @@
-require('pkginfo')(module, 'name', 'version');
-
 module.exports = {
 	version: '0.0.2',
-
-	cloudCannonMeta: {
-		name: module.exports.name,
-		version: module.exports.version
-	},
 
 	markdownMeta: {
 		markdown: 'goldmark',
