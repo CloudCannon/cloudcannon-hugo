@@ -172,30 +172,6 @@ const collectionFiles = {
 	}
 };
 
-const pages = {
-	content: {
-		'_index.md': '',
-		'about.md': '---\ndraft: true\n---\n',
-		contact: {
-			'_index.md': ''
-		},
-		posts: {
-			'_index.md': 'nice',
-			'post1.md': '---\ndraft: true\n---\n'
-		},
-		coll1: {
-			'_index.md': '',
-			item1: {
-				'index.md': ''
-			},
-			'item2.md': '+++\nheadless = true\n+++\n'
-		},
-		help: {
-			'index.md': '+++\nheadless = true\n+++\n'
-		}
-	}
-};
-
 const dataFiles = {
 	data: {
 		'footer.json':
@@ -242,6 +218,5 @@ module.exports = {
 	configFiles: configFiles,
 	configOrder: configOrder,
 	collectionFiles: collectionFiles,
-	dataFiles: dataFiles,
-	pages: pages
+	dataFiles: dataFiles
 };
