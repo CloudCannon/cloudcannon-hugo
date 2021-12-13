@@ -27,6 +27,7 @@ module.exports = {
 		if (!enabled) {
 			return;
 		}
+
 		levels[level](text);
 	}
 };

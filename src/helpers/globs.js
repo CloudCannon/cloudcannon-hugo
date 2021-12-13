@@ -1,5 +1,6 @@
 const { promisify } = require('util');
 const glob = require('glob');
+const { log } = require('./logger');
 
 const globPromise = promisify(glob);
 
@@ -36,7 +37,7 @@ async function getGlob(globPattern, options = {}) {
 	try {
 		return await globPromise(globPattern, options);
 	} catch (globErr) {
-		console.error(globErr);
+		log(globErr, 'error');
 	}
 }
 

@@ -3,6 +3,7 @@ const { extname } = require('path');
 const { parseToml } = require('./toml');
 const { parseYaml } = require('./yaml');
 const { parseJsonUnstrict } = require('./json');
+const { log } = require('../helpers/logger');
 
 async function parseDataFile(path) {
 	const type = extname(path).toLowerCase();
@@ -21,7 +22,7 @@ async function parseDataFile(path) {
 			break;
 		}
 	} catch (parseError) {
-		console.warn('Failed to read file:', path);
+		log(`Failed to read file: ${path}`, 'warn');
 	}
 }
 

@@ -2,6 +2,7 @@ const { join, extname, basename } = require('path');
 const { getGlob } = require('./globs');
 const helpers = require('./helpers');
 const { parseDataFile } = require('../parsers/parser');
+const { log } = require('./logger');
 
 const configSort = function (fileArray) {
 	const extensionOrder = ['.toml', '.yaml', '.json'];
@@ -79,8 +80,8 @@ module.exports = {
 	getHugoConfig: async function (flags = {}) {
 		const configFileList = await this.getConfigPaths(flags);
 
-		console.log('⚙️ using config files:');
-		console.log(configFileList);
+		log('⚙️ using config files:');
+		log(configFileList);
 
 		const configContents = await this.getConfigContents(configFileList, flags.config);
 		configContents.reverse(); // reversing because deep merge places priority on the second object
