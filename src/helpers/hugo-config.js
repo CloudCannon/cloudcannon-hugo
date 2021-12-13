@@ -1,6 +1,7 @@
 const { join, extname, basename } = require('path');
 const { getGlob } = require('./globs');
 const helpers = require('./helpers');
+const { parseDataFile } = require('../parsers/parser');
 
 const configSort = function (fileArray) {
 	const extensionOrder = ['.toml', '.yaml', '.json'];
@@ -61,7 +62,7 @@ module.exports = {
 		const contentList = await Promise.all(configFileList.map(async (configPath) => {
 			configPath = configPath.replace('//', '/');
 
-			const parsedData = await helpers.parseDataFile(configPath);
+			const parsedData = await parseDataFile(configPath);
 			if (!parsedData) {
 				return;
 			}

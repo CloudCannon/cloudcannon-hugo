@@ -2,6 +2,7 @@ const Papa = require('papaparse');
 const Path = require('path');
 const chalk = require('chalk');
 const helpers = require('../helpers/helpers');
+const { parseDataFile } = require('../parsers/parser');
 const pathHelper = require('../helpers/paths');
 const { version, cloudCannonMeta, markdownMeta } = require('../helpers/metadata');
 const { log } = require('../helpers/logger');
@@ -169,7 +170,7 @@ module.exports = {
 				return;
 			}
 
-			const contents = await helpers.parseDataFile(path) ?? {};
+			const contents = await parseDataFile(path) ?? {};
 
 			if (collectionName) {
 				data[collectionName] = data[collectionName] ?? {};

@@ -4,13 +4,14 @@
   "description": "Generates the files necessary for a hugo site to integrate with CloudCannon CMS",
   "main": "src/index.js",
   "scripts": {
-    "lint-code": "eslint index.js",
-    "lint": "npm run lint-autofix && npm run lint-code",
+    "lint": "eslint src",
     "start": "node src/index.js",
     "test": "nyc mocha --recursive --ignore */exampleSites.test.js",
     "test-example": "nyc mocha */exampleSites.test.js",
     "test-complete": "nyc mocha --recursive",
-    "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "release:latest": "npx np",
+    "release:next": "npx np prerelease --tag=next"
   },
   "bin": {
     "cloudcannon-hugo": "src/index.js"
@@ -38,10 +39,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "deep-equal-in-any-order": "^1.1.15",
-    "eslint": "^7.11.0",
-    "eslint-config-cloudcannon": "^1.0.0-rc5",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-mocha": "^8.0.0",
+    "eslint": "^8.4.1",
     "mocha": "^8.2.1",
     "mock-fs": "^4.13.0",
     "nyc": "^15.1.0"
