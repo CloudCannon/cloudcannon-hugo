@@ -6,6 +6,7 @@ const { parseDataFile } = require('../parsers/parser');
 const pathHelper = require('../helpers/paths');
 const { version, markdownMeta } = require('../helpers/metadata');
 const { log } = require('../helpers/logger');
+const { getGenerator } = require('./generator');
 
 module.exports = {
 	getSectionName: function (path, rootDir = '') {
@@ -128,27 +129,6 @@ module.exports = {
 				}
 			}
 		}
-	},
-
-	generateMarkdownMetadata: function (hugoConfig) {
-		const markup = hugoConfig.markup ?? {};
-		const markdownHandler = markup.defaultMarkdownHandler ?? 'goldmark';
-		const defaultMeta = markdownMeta[markdownHandler] ?? {};
-
-		return {
-			markdown: markdownHandler,
-			[markdownHandler]: helpers.mergeDeep(defaultMeta, markup[markdownHandler])
-		};
-	},
-
-	generateGenerator: function (hugoConfig) {
-		const hugoVersion = helpers.runProcess('hugo', ['version']);
-
-		return {
-			name: 'hugo',
-			version: hugoVersion.match(/[0-9]+\.[0-9]+\.[0-9]+/g)?.[0] ?? '0.0.0',
-			metadata: this.generateMarkdownMetadata(hugoConfig)
-		};
 	},
 
 	generateData: async function (hugoConfig) {
@@ -406,7 +386,7 @@ module.exports = {
 				name: 'cloudcannon-hugo',
 				version: options?.version || '0.0.0'
 			},
-			generator: this.generateGenerator(hugoConfig),
+			generator: getGenerator(hugoConfig),
 			source: paths.source || '',
 			'base-url': helpers.getUrlPathname(hugoConfig.baseURL),
 			'collections-config': collectionsConfig,
