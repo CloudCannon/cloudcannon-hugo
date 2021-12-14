@@ -5,6 +5,20 @@ const { parseYaml } = require('./yaml');
 const { parseJsonUnstrict } = require('./json');
 const { log } = require('../helpers/logger');
 
+async function parseFile(path) {
+	try {
+		let frontMatterObject = await parseDataFile(path);
+		if (frontMatterObject) {
+			return frontMatterObject;
+		}
+		const data = await fs.readFile(path, 'utf-8');
+		frontMatterObject = parseFrontMatter(data);
+		return frontMatterObject || {};
+	} catch (parseError) {
+		return {};
+	}
+}
+
 async function parseDataFile(path) {
 	const type = extname(path).toLowerCase();
 
@@ -66,6 +80,7 @@ function parseFrontMatter(data) {
 }
 
 module.exports = {
+	parseFile,
 	parseDataFile,
 	parseFrontMatter
 };

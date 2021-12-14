@@ -6,7 +6,7 @@ const fs = require('fs').promises;
 const { join } = require('path');
 const chalk = require('chalk');
 const { getInfo } = require('./generators/info');
-const hugoHelper = require('./helpers/hugo-config');
+const { getHugoConfig } = require('./helpers/hugo-config');
 const pathHelper = require('./helpers/paths');
 
 const cli = meow(`
@@ -85,7 +85,7 @@ if (cli.flags.quiet) {
 async function main({ flags, pkg }) {
 	log(`⭐️ Starting ${chalk.blue('cloudcannon-hugo')}`);
 
-	const hugoConfig = await hugoHelper.getHugoConfig(flags);
+	const hugoConfig = await getHugoConfig(flags);
 	pathHelper.generatePaths(hugoConfig);
 
 	const info = await getInfo(hugoConfig, pkg);

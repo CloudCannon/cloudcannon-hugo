@@ -1,4 +1,4 @@
-const helpers = require('../helpers/helpers');
+const { mergeDeep, runProcess } = require('../helpers/helpers');
 const { markdownMeta } = require('../helpers/metadata');
 
 function getGeneratorMetadata(hugoConfig) {
@@ -8,12 +8,12 @@ function getGeneratorMetadata(hugoConfig) {
 
 	return {
 		markdown: markdownHandler,
-		[markdownHandler]: helpers.mergeDeep(defaultMeta, markup[markdownHandler])
+		[markdownHandler]: mergeDeep(defaultMeta, markup[markdownHandler])
 	};
 }
 
 function getGenerator(hugoConfig) {
-	const hugoVersion = helpers.runProcess('hugo', ['version']);
+	const hugoVersion = runProcess('hugo', ['version']);
 
 	return {
 		name: 'hugo',

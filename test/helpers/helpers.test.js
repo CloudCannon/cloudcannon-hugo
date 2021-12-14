@@ -20,14 +20,6 @@ describe('helpers.js', function () {
 		});
 	});
 
-	describe('getItemDetails', function () {
-		it('should return empty when path is empty', async function () {
-			const details = await helpers.getItemDetails('fakePath');
-			const expected = {};
-			expect(details).to.deep.equal(expected);
-		});
-	});
-
 	describe('getUrlPathname', function () {
 		const tests = [
 			{ context: 'should error with an invalid url', input: [], expected: '/' }

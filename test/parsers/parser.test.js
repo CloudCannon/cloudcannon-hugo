@@ -1,5 +1,13 @@
 const { expect } = require('chai');
-const { parseFrontMatter } = require('../../src/parsers/parser');
+const { parseFile, parseFrontMatter } = require('../../src/parsers/parser');
+
+describe('parseFile', function () {
+	it('should return empty when path is empty', async function () {
+		const details = await parseFile('fakePath');
+		const expected = {};
+		expect(details).to.deep.equal(expected);
+	});
+});
 
 describe('parser.js', function () {
 	describe('parseFrontMatter', function () {

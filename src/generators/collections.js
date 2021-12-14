@@ -3,6 +3,7 @@ const chalk = require('chalk');
 const helpers = require('../helpers/helpers');
 const pathHelper = require('../helpers/paths');
 const { log } = require('../helpers/logger');
+const { parseFile } = require('../parsers/parser');
 
 function getTopSectionName(path, options = {}) {
 	const rootDir = options.rootDir || '';
@@ -185,7 +186,7 @@ async function generateCollectionsInfo(config, urlsPerPath) {
 				);
 
 			if (collectionName) {
-				const itemDetails = await helpers.getItemDetails(itemPath);
+				const itemDetails = await parseFile(itemPath);
 
 				const collectionConfigItem = await generateCollectionConfigItem(
 					itemPath, itemDetails, collectionName, cloudcannonCollections
@@ -220,7 +221,7 @@ async function generateCollectionsInfo(config, urlsPerPath) {
 		for (let i = 0; i < numPartitionsPages; i += 1) {
 			const slice = pagePaths.slice(i * partitionSize, ((i + 1) * partitionSize));
 			await Promise.all(slice.map(async (itemPath) => {
-				const itemDetails = await helpers.getItemDetails(itemPath);
+				const itemDetails = await parseFile(itemPath);
 
 				const collectionItem = await generateCollectionItem(
 					itemPath, itemDetails, 'pages', urlsPerPath

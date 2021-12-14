@@ -1,15 +1,18 @@
 const { expect } = require('chai');
 const mock = require('mock-fs');
-const hugoHelper = require('../../src/helpers/hugo-config');
+const { testFileStructure, configFiles, configOrder } = require('../test-paths');
 const {
-	testFileStructure, configFiles, configOrder
-} = require('../test-paths');
+	configSort,
+	getConfigPaths,
+	getConfigContents,
+	getHugoConfig
+} = require('../../src/helpers/hugo-config');
 
 describe('hugo-config', function () {
 	describe('configSort', function () {
 		it('should sort based on extension name', function () {
 			const testArray = ['config.toml', 'a.json', 'b.toml', 'c.yaml'];
-			const sorted = hugoHelper._configSort(testArray);
+			const sorted = configSort(testArray);
 			expect(sorted).to.deep.equal(['b.toml', 'c.yaml', 'a.json', 'config.toml']);
 		});
 	});
@@ -31,7 +34,7 @@ describe('hugo-config', function () {
 					'extraconfig.json'
 				];
 
-				const configPaths = await hugoHelper.getConfigPaths({ config: 'extraconfig.json' });
+				const configPaths = await getConfigPaths({ config: 'extraconfig.json' });
 				expect(configPaths).to.deep.equal(expected);
 			});
 			after(function () {
@@ -43,7 +46,7 @@ describe('hugo-config', function () {
 				mock({ 'config.yaml': '', 'config.json': '' });
 			});
 			it('should get just config.yaml', async function () {
-				const configPaths = await hugoHelper.getConfigPaths();
+				const configPaths = await getConfigPaths();
 				expect(configPaths).to.deep.equal(['config.yaml']);
 			});
 			after(function () {
@@ -55,7 +58,7 @@ describe('hugo-config', function () {
 				mock({ 'config.json': '' });
 			});
 			it('should get all configPaths', async function () {
-				const configPaths = await hugoHelper.getConfigPaths();
+				const configPaths = await getConfigPaths();
 				expect(configPaths).to.deep.equal(['config.json']);
 			});
 			after(function () {
@@ -67,7 +70,7 @@ describe('hugo-config', function () {
 				mock({ 'notconfig.md': '' });
 			});
 			it('should get all configPaths', async function () {
-				const configPaths = await hugoHelper.getConfigPaths();
+				const configPaths = await getConfigPaths();
 				expect(configPaths).to.deep.equal([]);
 			});
 			after(function () {
@@ -79,7 +82,7 @@ describe('hugo-config', function () {
 				mock({ 'src/dir': { 'config.toml': '' } });
 			});
 			it('should get all configPaths', async function () {
-				const configPaths = await hugoHelper.getConfigPaths({ source: 'src/dir' });
+				const configPaths = await getConfigPaths({ source: 'src/dir' });
 				expect(configPaths).to.deep.equal(['src/dir/config.toml']);
 			});
 			after(function () {
@@ -91,7 +94,7 @@ describe('hugo-config', function () {
 				mock({ 'src/dir/config/_default': { 'config.toml': '' } });
 			});
 			it('should get all configPaths', async function () {
-				const configPaths = await hugoHelper.getConfigPaths({ source: 'src/dir', configDir: 'config' });
+				const configPaths = await getConfigPaths({ source: 'src/dir', configDir: 'config' });
 				expect(configPaths).to.deep.equal(['src/dir/config/_default/config.toml']);
 			});
 			after(function () {
@@ -106,7 +109,7 @@ describe('hugo-config', function () {
 		});
 
 		it('should return empty array with no config files', async function () {
-			const result = await hugoHelper.getConfigContents([]);
+			const result = await getConfigContents([]);
 			expect(result).to.deep.equal([]);
 		});
 
@@ -196,7 +199,7 @@ describe('hugo-config', function () {
 					}
 				}
 			];
-			const result = await hugoHelper.getConfigContents(configOrder, 'extraconfig.toml,directory/moreconfig.json');
+			const result = await getConfigContents(configOrder, 'extraconfig.toml,directory/moreconfig.json');
 			expect(result).to.deep.equal(expected);
 		});
 
@@ -228,7 +231,7 @@ describe('hugo-config', function () {
 				};
 
 				const flags = { config: 'extraconfig.toml,directory/moreconfig.json,config.toml' };
-				const obj = await hugoHelper.getHugoConfig(flags);
+				const obj = await getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 			after(function () {
@@ -247,7 +250,7 @@ describe('hugo-config', function () {
 				};
 
 				const flags = { baseUrl: 'http://build-arg.org/' };
-				const obj = await hugoHelper.getHugoConfig(flags);
+				const obj = await getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 
@@ -268,7 +271,7 @@ describe('hugo-config', function () {
 				};
 
 				const flags = { contentDir: 'buildArgContentDir' };
-				const obj = await hugoHelper.getHugoConfig(flags);
+				const obj = await getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 
@@ -289,7 +292,7 @@ describe('hugo-config', function () {
 				};
 
 				const flags = { layoutDir: 'buildArgLayoutDir' };
-				const obj = await hugoHelper.getHugoConfig(flags);
+				const obj = await getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 
@@ -306,7 +309,7 @@ describe('hugo-config', function () {
 				};
 
 				const flags = { source: 'sourceDir' };
-				const obj = await hugoHelper.getHugoConfig(flags);
+				const obj = await getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 		});
@@ -319,7 +322,7 @@ describe('hugo-config', function () {
 				};
 
 				const flags = { destination: 'destinationDir' };
-				const obj = await hugoHelper.getHugoConfig(flags);
+				const obj = await getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 		});
@@ -332,7 +335,7 @@ describe('hugo-config', function () {
 				};
 
 				const flags = { configDir: 'configDir' };
-				const obj = await hugoHelper.getHugoConfig(flags);
+				const obj = await getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
 		});
@@ -342,7 +345,7 @@ describe('hugo-config', function () {
 				baseURL: '/'
 			};
 
-			const obj = await hugoHelper.getHugoConfig();
+			const obj = await getHugoConfig();
 			expect(obj).to.deep.equal(expected);
 		});
 	});
