@@ -5,7 +5,7 @@ const { log, toggleLogging } = require('./helpers/logger');
 const fs = require('fs').promises;
 const { join } = require('path');
 const chalk = require('chalk');
-const { generateInfo } = require('./generators/info');
+const { getInfo } = require('./generators/info');
 const hugoHelper = require('./helpers/hugo-config');
 const pathHelper = require('./helpers/paths');
 
@@ -88,7 +88,7 @@ async function main({ flags, pkg }) {
 	const hugoConfig = await hugoHelper.getHugoConfig(flags);
 	pathHelper.generatePaths(hugoConfig);
 
-	const info = await generateInfo(hugoConfig, pkg);
+	const info = await getInfo(hugoConfig, pkg);
 	const infoData = JSON.stringify(info, null, 4);
 
 	const { source, publish } = pathHelper.getPaths();

@@ -250,11 +250,8 @@ async function generateCollectionsInfo(config, urlsPerPath) {
 }
 
 module.exports = {
-	getTopSectionName,
 	getCollectionNameConfig,
 	getPageUrl,
 	getLayout,
-	generateCollectionItem,
-	generateCollectionsInfo,
-	generateCollectionConfigItem
+	generateCollectionsInfo
 };

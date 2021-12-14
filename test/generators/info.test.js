@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const mock = require('mock-fs');
-const buildInfo = require('../../src/generators/info');
+const { getInfo } = require('../../src/generators/info');
 const { version } = require('../../src/helpers/metadata');
 const pathHelper = require('../../src/helpers/paths');
 const { dataFiles } = require('../test-paths');
@@ -49,22 +49,7 @@ const EXPECTED_DATA = {
 	}
 };
 
-describe('generateData', function () {
-	before(function () {
-		mock(dataFiles);
-	});
-
-	it('should work', async function () {
-		const dataObjects = await buildInfo.generateData({ cloudcannon: { data: true } });
-		expect(dataObjects).to.deep.equal(EXPECTED_DATA);
-	});
-
-	after(function () {
-		mock.restore();
-	});
-});
-
-describe('generateInfo', function () {
+describe('getInfo', function () {
 	this.timeout(10000); // sometimes takes longer than 2000ms (default)
 
 	it('work with no cloudcannon specific config', async function () {
@@ -89,7 +74,7 @@ describe('generateInfo', function () {
 			collections: {}
 		};
 
-		const result = await buildInfo.generateInfo({ baseURL: '/' });
+		const result = await getInfo({ baseURL: '/' });
 
 		[...new Set([...Object.keys(expected), ...Object.keys(result)])].forEach((key) => {
 			if (key === 'time' || key === 'generator') { // TODO mock these instead
@@ -129,7 +114,7 @@ describe('generateInfo', function () {
 			collections: {}
 		};
 
-		const result = await buildInfo.generateInfo({
+		const result = await getInfo({
 			baseURL: '/',
 			...cloudcannon
 		}, { version: '0.0.1' });
@@ -149,7 +134,7 @@ describe('generateInfo', function () {
 		});
 
 		it('should return all data', async function () {
-			const result = await buildInfo.generateInfo({ cloudcannon: { data: true } });
+			const result = await getInfo({ cloudcannon: { data: true } });
 
 			expect(result.data).to.deep.equal(EXPECTED_DATA);
 		});
@@ -160,7 +145,7 @@ describe('generateInfo', function () {
 				staff_members: EXPECTED_DATA.staff_members
 			};
 
-			const result = await buildInfo.generateInfo({
+			const result = await getInfo({
 				cloudcannon: { data: { nav: true, staff_members: true } }
 			});
 
