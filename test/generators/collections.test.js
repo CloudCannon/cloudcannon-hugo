@@ -63,7 +63,7 @@ describe('collections generator', function () {
 
 	describe('getLayout', function () {
 		before(function () {
-			delete pathHelper.cachedLayouts;
+			pathHelper.clearCachedLayouts();
 			mock(testFileStructure);
 			pathHelper.getSupportedLanguages({ languages: { en: {} } });
 		});
@@ -135,7 +135,7 @@ describe('collections generator', function () {
 
 		after(function () {
 			mock.restore();
-			delete pathHelper.cachedLayouts;
+			pathHelper.clearCachedLayouts();
 		});
 	});
 

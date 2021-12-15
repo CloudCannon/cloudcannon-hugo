@@ -28,42 +28,46 @@ function mergeDeep(target, ...sources) {
 	return mergeDeep(target, ...sources);
 }
 
+function pluralize(amount, str, options = {}) {
+	const amountStr = amount === 0 ? 'no' : amount;
+	const plural = amount === 1 ? '' : 's';
+	const suffix = amount > 0 ? options.nonZeroSuffix || '' : '';
+	return `${amountStr} ${str}${plural}${suffix}`;
+}
+
+async function exists(path) {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (err) {
+		return false;
+	}
+}
+
+function getUrlPathname(url = '/') {
+	try {
+		return new URL(url).pathname;
+	} catch (urlError) {
+		return url;
+	}
+}
+
+function runProcess(command, args) {
+	const childProcess = cp.spawnSync(command, args, {
+		cwd: process.cwd(),
+		env: process.env,
+		stdio: 'pipe',
+		encoding: 'utf-8'
+	});
+
+	// Second item contains the actual response
+	return childProcess.output?.[1]?.toString().trim() ?? '';
+}
+
 module.exports = {
 	mergeDeep,
-
-	pluralize: function (amount, str, options = {}) {
-		const amountStr = amount === 0 ? 'no' : amount;
-		const plural = amount === 1 ? '' : 's';
-		const suffix = amount > 0 ? options.nonZeroSuffix || '' : '';
-		return `${amountStr} ${str}${plural}${suffix}`;
-	},
-
-	exists: async function (path) {
-		try {
-			await fs.access(path);
-			return true;
-		} catch (err) {
-			return false;
-		}
-	},
-
-	getUrlPathname: function (url = '/') {
-		try {
-			return new URL(url).pathname;
-		} catch (urlError) {
-			return url;
-		}
-	},
-
-	runProcess: function (command, args) {
-		const childProcess = cp.spawnSync(command, args, {
-			cwd: process.cwd(),
-			env: process.env,
-			stdio: 'pipe',
-			encoding: 'utf-8'
-		});
-
-		// Second item contains the actual response
-		return childProcess.output?.[1]?.toString().trim() ?? '';
-	}
+	pluralize,
+	exists,
+	getUrlPathname,
+	runProcess
 };

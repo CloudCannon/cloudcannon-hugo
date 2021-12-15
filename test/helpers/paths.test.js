@@ -43,7 +43,7 @@ describe('pathHelper', function () {
 
 	describe('getLayoutTree', function () {
 		before(function () {
-			delete pathHelper.cachedLayouts;
+			pathHelper.clearCachedLayouts();
 		});
 
 		it('should create a layout tree using layout file structure', async function () {
