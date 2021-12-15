@@ -1,7 +1,7 @@
-const { expect } = require('chai');
-const mock = require('mock-fs');
-const { getData } = require('../../src/generators/data');
-const { dataFiles } = require('../test-paths');
+import { expect } from 'chai';
+import mock from 'mock-fs';
+import { getData } from '../../src/generators/data.js';
+import { dataFiles } from '../test-paths.js';
 
 const EXPECTED_DATA = {
 	footer: [

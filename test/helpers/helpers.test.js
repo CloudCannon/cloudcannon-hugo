@@ -1,7 +1,7 @@
-const { expect } = require('chai');
-const mock = require('mock-fs');
-const helpers = require('../../src/helpers/helpers');
-const { testFileStructure } = require('../test-paths');
+import { expect } from 'chai';
+import mock from 'mock-fs';
+import { exists, getUrlPathname, runProcess } from '../../src/helpers/helpers.js';
+import { testFileStructure } from '../test-paths.js';
 
 describe('helpers.js', function () {
 	before(function () {
@@ -10,12 +10,12 @@ describe('helpers.js', function () {
 
 	describe('exists', function () {
 		it('should return true with existing path', async function () {
-			const doesExist = await helpers.exists('archetypes/default.md');
+			const doesExist = await exists('archetypes/default.md');
 			expect(doesExist).to.equal(true);
 		});
 
 		it('should return false with nonexistant path', async function () {
-			const doesExist = await helpers.exists('nonExistantPath');
+			const doesExist = await exists('nonExistantPath');
 			expect(doesExist).to.equal(false);
 		});
 	});
@@ -26,7 +26,7 @@ describe('helpers.js', function () {
 		];
 		tests.forEach((test) => {
 			it(test.context, function () {
-				const result = helpers.getUrlPathname(...test.input);
+				const result = getUrlPathname(...test.input);
 				expect(result).to.equal(test.expected);
 			});
 		});
@@ -34,17 +34,17 @@ describe('helpers.js', function () {
 
 	describe('runProcess', function () {
 		it('should echo', function () {
-			const result = helpers.runProcess('echo', ['hello']);
+			const result = runProcess('echo', ['hello']);
 			expect(result).to.equal('hello');
 		});
 
 		it('should return empty', function () {
-			const result = helpers.runProcess('echo');
+			const result = runProcess('echo');
 			expect(result).to.equal('');
 		});
 
 		it('should return empty string with unknown command', function () {
-			const result = helpers.runProcess('fakeCommand');
+			const result = runProcess('fakeCommand');
 			expect(result).to.equal('');
 		});
 	});

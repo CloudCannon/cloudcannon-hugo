@@ -1,27 +1,27 @@
-const Papa = require('papaparse');
-const helpers = require('../helpers/helpers');
-const pathHelper = require('../helpers/paths');
-const { version } = require('../helpers/metadata');
-const { log } = require('../helpers/logger');
-const { getGenerator } = require('./generator');
-const { getData } = require('./data');
-const { getCollectionsAndConfig } = require('./collections');
+import Papa from 'papaparse';
+import { runProcess, getUrlPathname } from '../helpers/helpers.js';
+import pathHelper from '../helpers/paths.js';
+import { version } from '../helpers/metadata.js';
+import log from '../helpers/logger.js';
+import { getGenerator } from './generator.js';
+import { getData } from './data.js';
+import { getCollectionsAndConfig } from './collections.js';
 
 function getHugoUrls() {
 	log('⏳ Processing permalinks...');
 	const { source } = pathHelper.getPaths();
 	let cmdArgs = ['list', 'all'];
 	cmdArgs = cmdArgs.concat(source ? ['--source', source] : []);
-	const fileCsv = helpers.runProcess('hugo', cmdArgs);
+	const fileCsv = runProcess('hugo', cmdArgs);
 	const fileList = Papa.parse(fileCsv, { header: true });
 
 	return fileList.data.reduce((memo, file) => {
-		memo[file.path] = helpers.getUrlPathname(file.permalink);
+		memo[file.path] = getUrlPathname(file.permalink);
 		return memo;
 	}, {});
 }
 
-async function getInfo(hugoConfig, options) {
+export async function getInfo(hugoConfig, options) {
 	const urlsPerPath = getHugoUrls();
 	const paths = pathHelper.getPaths();
 
@@ -45,7 +45,7 @@ async function getInfo(hugoConfig, options) {
 		},
 		generator: getGenerator(hugoConfig),
 		source: paths.source || '',
-		'base-url': helpers.getUrlPathname(hugoConfig.baseURL),
+		'base-url': getUrlPathname(hugoConfig.baseURL),
 		'collections-config': collectionsConfig,
 		_comments: hugoConfig._comments ?? hugoParams._comments ?? {},
 		_options: hugoConfig._options ?? hugoParams._options ?? {},
@@ -73,7 +73,3 @@ async function getInfo(hugoConfig, options) {
 		data: await getData(hugoConfig)
 	};
 }
-
-module.exports = {
-	getInfo
-};

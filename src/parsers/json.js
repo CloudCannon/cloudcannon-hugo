@@ -1,5 +1,5 @@
 // Attempts to parse JSON from a string that may have content after it
-function parseJsonUnstrict(data) {
+export function parseJsonUnstrict(data) {
 	let parseData = data;
 	let lastBracketIndex = parseData.lastIndexOf('}');
 
@@ -14,7 +14,3 @@ function parseJsonUnstrict(data) {
 
 	return {};
 }
-
-module.exports = {
-	parseJsonUnstrict
-};

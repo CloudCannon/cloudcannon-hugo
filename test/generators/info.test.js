@@ -1,9 +1,9 @@
-const { expect } = require('chai');
-const mock = require('mock-fs');
-const { getInfo } = require('../../src/generators/info');
-const { version } = require('../../src/helpers/metadata');
-const pathHelper = require('../../src/helpers/paths');
-const { dataFiles } = require('../test-paths');
+import { expect } from 'chai';
+import mock from 'mock-fs';
+import { getInfo } from '../../src/generators/info.js';
+import { version } from '../../src/helpers/metadata.js';
+import pathHelper from '../../src/helpers/paths.js';
+import { dataFiles } from '../test-paths.js';
 
 const EXPECTED_GENERATOR = {
 	name: 'hugo',

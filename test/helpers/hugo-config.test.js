@@ -1,12 +1,12 @@
-const { expect } = require('chai');
-const mock = require('mock-fs');
-const { testFileStructure, configFiles, configOrder } = require('../test-paths');
-const {
+import { expect } from 'chai';
+import mock from 'mock-fs';
+import { testFileStructure, configFiles, configOrder } from '../test-paths.js';
+import {
 	configSort,
 	getConfigPaths,
 	getConfigContents,
 	getHugoConfig
-} = require('../../src/helpers/hugo-config');
+} from '../../src/helpers/hugo-config.js';
 
 describe('hugo-config', function () {
 	describe('configSort', function () {

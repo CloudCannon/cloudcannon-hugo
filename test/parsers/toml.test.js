@@ -1,5 +1,5 @@
-const { expect } = require('chai');
-const { parseToml } = require('../../src/parsers/toml');
+import { expect } from 'chai';
+import { parseToml } from '../../src/parsers/toml.js';
 
 describe('toml.js', function () {
 	describe('parseToml', function () {

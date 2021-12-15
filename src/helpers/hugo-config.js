@@ -1,9 +1,9 @@
-const { join, extname, basename } = require('path');
-const chalk = require('chalk');
-const { getGlob } = require('./globs');
-const { exists, mergeDeep, pluralize } = require('./helpers');
-const { parseDataFile } = require('../parsers/parser');
-const { log } = require('./logger');
+import { join, extname, basename } from 'path';
+import chalk from 'chalk';
+import { getGlob } from './globs.js';
+import { exists, mergeDeep, pluralize } from './helpers.js';
+import { parseDataFile } from '../parsers/parser.js';
+import log from './logger.js';
 
 const EXTENSION_ORDER = [
 	'.toml',
@@ -11,7 +11,7 @@ const EXTENSION_ORDER = [
 	'.json'
 ];
 
-function configSort(fileArray) {
+export function configSort(fileArray) {
 	return fileArray.sort((a, b) => {
 		const configRegex = /config\.(toml|yaml|json)$/i;
 
@@ -26,7 +26,7 @@ function configSort(fileArray) {
 	});
 }
 
-async function getConfigPaths(flags = {}) {
+export async function getConfigPaths(flags = {}) {
 	const sourceDir = flags.source || '';
 	const environment = flags.environment || 'production'; // or just use root
 
@@ -61,7 +61,7 @@ async function getConfigPaths(flags = {}) {
 	return configFileList;
 }
 
-async function getConfigContents(configFileList, passedConfigFiles = '') {
+export async function getConfigContents(configFileList, passedConfigFiles = '') {
 	const contentList = await Promise.all(configFileList.map(async (configPath) => {
 		configPath = configPath.replace('//', '/');
 
@@ -81,7 +81,7 @@ async function getConfigContents(configFileList, passedConfigFiles = '') {
 	return contentList.filter((item) => item); // remove empties
 }
 
-async function getHugoConfig(flags = {}) {
+export async function getHugoConfig(flags = {}) {
 	const configFileList = await getConfigPaths(flags);
 
 	log(`🔧 Found ${pluralize(configFileList.length, 'Hugo config file', { nonZeroSuffix: ':' })}`);
@@ -116,10 +116,3 @@ async function getHugoConfig(flags = {}) {
 
 	return configObject;
 }
-
-module.exports = {
-	configSort,
-	getConfigPaths,
-	getConfigContents,
-	getHugoConfig
-};

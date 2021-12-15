@@ -1,13 +1,13 @@
-const { expect } = require('chai');
-const mock = require('mock-fs');
-const {
+import { expect } from 'chai';
+import mock from 'mock-fs';
+import {
 	getCollectionKey,
 	getPageUrl,
 	getLayout,
 	getCollectionsAndConfig
-} = require('../../src/generators/collections');
-const pathHelper = require('../../src/helpers/paths');
-const { collectionFiles, testFileStructure } = require('../test-paths');
+} from '../../src/generators/collections.js';
+import pathHelper from '../../src/helpers/paths.js';
+import { collectionFiles, testFileStructure } from '../test-paths.js';
 
 describe('collections generator', function () {
 	describe('getCollectionKey contentDirectory', function () {

@@ -1,9 +1,9 @@
-const { basename, dirname, extname } = require('path');
-const chalk = require('chalk');
-const { pluralize } = require('../helpers/helpers');
-const { parseDataFile } = require('../parsers/parser');
-const pathHelper = require('../helpers/paths');
-const { log } = require('../helpers/logger');
+import { basename, dirname, extname } from 'path';
+import chalk from 'chalk';
+import { pluralize } from '../helpers/helpers.js';
+import { parseDataFile } from '../parsers/parser.js';
+import pathHelper from '../helpers/paths.js';
+import log from '../helpers/logger.js';
 
 function getSectionName(path, rootDir = '') {
 	path = path.replace(rootDir, '');
@@ -19,7 +19,7 @@ function getSectionName(path, rootDir = '') {
 	return leadingPath ? dir.replace(leadingPath[0], '') : '';
 }
 
-async function getData(hugoConfig) {
+export async function getData(hugoConfig) {
 	const dataConfig = hugoConfig?.cloudcannon?.data;
 	let data;
 
@@ -59,7 +59,3 @@ async function getData(hugoConfig) {
 
 	return data;
 }
-
-module.exports = {
-	getData
-};

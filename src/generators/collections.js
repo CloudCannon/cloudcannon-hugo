@@ -1,9 +1,9 @@
-const { basename, dirname, extname } = require('path');
-const chalk = require('chalk');
-const { pluralize } = require('../helpers/helpers');
-const pathHelper = require('../helpers/paths');
-const { log } = require('../helpers/logger');
-const { parseFile } = require('../parsers/parser');
+import { basename, dirname, extname } from 'path';
+import chalk from 'chalk';
+import { pluralize } from '../helpers/helpers.js';
+import pathHelper from '../helpers/paths.js';
+import log from '../helpers/logger.js';
+import { parseFile } from '../parsers/parser.js';
 
 function getTopSectionName(path, options = {}) {
 	const rootDir = options.rootDir || '';
@@ -25,7 +25,7 @@ function getTopSectionName(path, options = {}) {
 	return leadingPath?.[0] ? leadingPath[0].replace(/\//g, '') : '';
 }
 
-function getCollectionKey(path, contentDir, archetypePath) {
+export function getCollectionKey(path, contentDir, archetypePath) {
 	if (path.indexOf(archetypePath) >= 0) {
 		if (path.indexOf('default.md') >= 0) {
 			return;
@@ -41,7 +41,7 @@ function getCollectionKey(path, contentDir, archetypePath) {
 	return path.replace(`${contentDir}/`, '').split('/')[0];
 }
 
-function getPageUrl(path, hugoUrls = {}, contentDir) {
+export function getPageUrl(path, hugoUrls = {}, contentDir) {
 	if (hugoUrls[path]) {
 		return hugoUrls[path];
 	}
@@ -56,7 +56,7 @@ function getPageUrl(path, hugoUrls = {}, contentDir) {
 	return '';
 }
 
-async function getLayout(path, details) {
+export async function getLayout(path, details) {
 	const typeFolders = [];
 	const layoutFiles = [];
 	const { content } = pathHelper.getPaths();
@@ -140,7 +140,7 @@ async function processCollectionConfig(itemPath, itemDetails, collectionKey, clo
 	};
 }
 
-async function getCollectionsAndConfig(hugoConfig, urlsPerPath) {
+export async function getCollectionsAndConfig(hugoConfig, urlsPerPath) {
 	const paths = pathHelper.getPaths();
 	const cloudcannonCollections = hugoConfig?.cloudcannon?.collections || {};
 	const definedCollections = {};
@@ -251,10 +251,3 @@ async function getCollectionsAndConfig(hugoConfig, urlsPerPath) {
 		collections
 	};
 }
-
-module.exports = {
-	getCollectionKey,
-	getPageUrl,
-	getLayout,
-	getCollectionsAndConfig
-};

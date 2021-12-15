@@ -1,4 +1,4 @@
-const pathsByType = {
+export const pathsByType = {
 	defaultPaths: [
 		'archetypes/default.md',
 		'archetypes/notes.md'],
@@ -51,7 +51,7 @@ const pathsByType = {
 		'theme/exampleSite/index.html']
 };
 
-const configFiles = {
+export const configFiles = {
 	directory: {
 		'moreconfig.json':
 `{
@@ -137,7 +137,7 @@ prio2 = "prodconfig"`
 	}
 };
 
-const configOrder = [
+export const configOrder = [
 	'nonexistentFile.yaml',
 	'extraconfig.toml',
 	'directory/moreconfig.json',
@@ -150,7 +150,7 @@ const configOrder = [
 	'config/production/params.toml'
 ];
 
-const collectionFiles = {
+export const collectionFiles = {
 	archetypes: {
 		leaf: {
 			'index.md': ''
@@ -172,7 +172,7 @@ const collectionFiles = {
 	}
 };
 
-const dataFiles = {
+export const dataFiles = {
 	data: {
 		'footer.json':
 `[
@@ -203,16 +203,17 @@ title = "Designer"
 	}
 };
 
-const testFileStructure = {};
-Object.keys(pathsByType).forEach((pathType) => {
+export const testFileStructure = Object.keys(pathsByType).reduce((memo, pathType) => {
 	pathsByType[pathType].forEach((path) => {
-		if (!testFileStructure[path]) {
-			testFileStructure[path] = 'file contents';
+		if (!memo[path]) {
+			memo[path] = 'file contents';
 		}
 	});
-});
 
-module.exports = {
+	return memo;
+}, {});
+
+export default {
 	pathsByType: pathsByType,
 	testFileStructure: testFileStructure, // in a structure that is readable to mock-fs
 	configFiles: configFiles,

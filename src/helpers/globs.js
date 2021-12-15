@@ -1,10 +1,10 @@
-const { promisify } = require('util');
-const glob = require('glob');
-const { log } = require('./logger');
+import { promisify } from 'util';
+import glob from 'glob';
+import log from './logger.js';
 
 const globPromise = promisify(glob);
 
-function getGlobString(globPatterns) {
+export function getGlobString(globPatterns) {
 	if (globPatterns.length < 2) {
 		return globPatterns[0] ?? '';
 	}
@@ -17,7 +17,7 @@ function getGlobString(globPatterns) {
 	return `{${globString}}`;
 }
 
-async function getGlob(globPattern, options = {}) {
+export async function getGlob(globPattern, options = {}) {
 	if (Array.isArray(globPattern)) {
 		globPattern = getGlobString(globPattern);
 	}
@@ -40,8 +40,3 @@ async function getGlob(globPattern, options = {}) {
 		log(globErr, 'error');
 	}
 }
-
-module.exports = {
-	getGlobString: getGlobString,
-	getGlob: getGlob
-};

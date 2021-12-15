@@ -1,5 +1,5 @@
-const { expect } = require('chai');
-const { parseYaml } = require('../../src/parsers/yaml');
+import { expect } from 'chai';
+import { parseYaml } from '../../src/parsers/yaml.js';
 
 describe('yaml.js', function () {
 	describe('parseYaml', function () {

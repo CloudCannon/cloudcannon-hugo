@@ -1,11 +1,11 @@
-const { dirname, join } = require('path');
-const { getGlob } = require('./globs');
+import { dirname, join } from 'path';
+import { getGlob } from './globs.js';
 
 let cachedPaths;
 let cachedLanguages;
 let cachedLayouts;
 
-function getPaths(hugoConfig = {}) {
+export function getPaths(hugoConfig = {}) {
 	if (cachedPaths) {
 		return cachedPaths;
 	}
@@ -30,7 +30,7 @@ function getPaths(hugoConfig = {}) {
 	return cachedPaths;
 }
 
-function getSupportedLanguages(hugoConfig = {}) {
+export function getSupportedLanguages(hugoConfig = {}) {
 	if (cachedLanguages) {
 		return cachedLanguages;
 	}
@@ -39,28 +39,28 @@ function getSupportedLanguages(hugoConfig = {}) {
 	return cachedLanguages;
 }
 
-function clearCachedLayouts() {
+export function clearCachedLayouts() {
 	cachedLayouts = null;
 }
 
-function generatePaths(hugoConfig) {
+export function generatePaths(hugoConfig) {
 	cachedPaths = null;
 	getPaths(hugoConfig);
 }
 
-async function getDefaultsPaths() {
+export async function getDefaultsPaths() {
 	const { source, archetypes } = getPaths();
 	const archetypeGlob = join(source, archetypes, '**/**.md');
 
 	return getGlob(archetypeGlob);
 }
 
-async function getDataPaths() {
+export async function getDataPaths() {
 	const { source, data } = getPaths();
 	return getGlob(join(source, data, '**'));
 }
 
-async function getLayoutTree() {
+export async function getLayoutTree() {
 	if (cachedLayouts) {
 		return cachedLayouts;
 	}
@@ -89,7 +89,7 @@ async function getLayoutTree() {
 	return cachedLayouts;
 }
 
-async function getLayoutPaths() {
+export async function getLayoutPaths() {
 	const { source, layouts } = getPaths();
 	return getGlob(join(source, layouts, '**'));
 }
@@ -99,7 +99,7 @@ async function getLayoutPaths() {
  * index.md files in top-level folders (e.g. /about/index.md)
  * standalone _index.md files in top level folders (e.g. /contact/_index.md)
  */
-async function getPagePaths() {
+export async function getPagePaths() {
 	const { source, content } = getPaths();
 	const contentFiles = await getGlob([join(source, content, '**/*')]);
 
@@ -129,7 +129,7 @@ async function getPagePaths() {
 	return Array.from(new Set(pagePaths));
 }
 
-async function getCollectionPaths(extraCollectionPaths = []) {
+export async function getCollectionPaths(extraCollectionPaths = []) {
 	const { source, archetypes, content } = getPaths();
 	const mdArchetypeGlob = join(source, archetypes, '**/*.md');
 	const htmlArchetypeGlob = join(source, archetypes, '**/*.html');
@@ -154,10 +154,10 @@ async function getCollectionPaths(extraCollectionPaths = []) {
 	return Array.from(new Set(collectionPaths.filter((item) => item)));
 }
 
-module.exports = {
+export default {
 	getPaths,
-	clearCachedLayouts,
 	getSupportedLanguages,
+	clearCachedLayouts,
 	generatePaths,
 	getDefaultsPaths,
 	getDataPaths,

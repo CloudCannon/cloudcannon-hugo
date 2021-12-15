@@ -1,5 +1,5 @@
-const { expect } = require('chai');
-const { getGeneratorMetadata } = require('../../src/generators/generator');
+import { expect } from 'chai';
+import { getGeneratorMetadata } from '../../src/generators/generator.js';
 
 describe('getGeneratorMetadata', function () {
 	it('should return default markdown metadata', function () {

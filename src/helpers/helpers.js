@@ -1,10 +1,10 @@
-const cp = require('child_process');
-const fs = require('fs').promises;
+import cp from 'child_process';
+import fs from 'fs/promises';
 
 const isObject = (item) => item && typeof item === 'object' && !Array.isArray(item);
 
 // Adapted from https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
-function mergeDeep(target, ...sources) {
+export function mergeDeep(target, ...sources) {
 	if (!sources.length) {
 		return target;
 	}
@@ -28,14 +28,14 @@ function mergeDeep(target, ...sources) {
 	return mergeDeep(target, ...sources);
 }
 
-function pluralize(amount, str, options = {}) {
+export function pluralize(amount, str, options = {}) {
 	const amountStr = amount === 0 ? 'no' : amount;
 	const plural = amount === 1 ? '' : 's';
 	const suffix = amount > 0 ? options.nonZeroSuffix || '' : '';
 	return `${amountStr} ${str}${plural}${suffix}`;
 }
 
-async function exists(path) {
+export async function exists(path) {
 	try {
 		await fs.access(path);
 		return true;
@@ -44,7 +44,7 @@ async function exists(path) {
 	}
 }
 
-function getUrlPathname(url = '/') {
+export function getUrlPathname(url = '/') {
 	try {
 		return new URL(url).pathname;
 	} catch (urlError) {
@@ -52,7 +52,7 @@ function getUrlPathname(url = '/') {
 	}
 }
 
-function runProcess(command, args) {
+export function runProcess(command, args) {
 	const childProcess = cp.spawnSync(command, args, {
 		cwd: process.cwd(),
 		env: process.env,
@@ -63,11 +63,3 @@ function runProcess(command, args) {
 	// Second item contains the actual response
 	return childProcess.output?.[1]?.toString().trim() ?? '';
 }
-
-module.exports = {
-	mergeDeep,
-	pluralize,
-	exists,
-	getUrlPathname,
-	runProcess
-};

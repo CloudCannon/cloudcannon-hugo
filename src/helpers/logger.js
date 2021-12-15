@@ -1,5 +1,9 @@
 let enabled = true;
 
+export function toggleLogging(value) {
+	enabled = value;
+}
+
 function logInfo(text) {
 	console.log(text);
 }
@@ -18,16 +22,10 @@ const levels = {
 	error: logError
 };
 
-module.exports = {
-	toggleLogging: function (value) {
-		enabled = value;
-	},
-
-	log: function (text, level = 'info') {
-		if (!enabled) {
-			return;
-		}
-
-		levels[level](text);
+export default function log(text, level = 'info') {
+	if (!enabled) {
+		return;
 	}
-};
+
+	levels[level](text);
+}

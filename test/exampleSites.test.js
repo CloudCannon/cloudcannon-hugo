@@ -1,9 +1,8 @@
-const cp = require('child_process');
-const { join, relative } = require('path');
-const fs = require('fs');
-
-const chai = require('chai');
-const deepEqualInAnyOrder = require('deep-equal-in-any-order');
+import cp from 'child_process';
+import { join, relative } from 'path';
+import fs from 'fs';
+import chai from 'chai';
+import deepEqualInAnyOrder from 'deep-equal-in-any-order';
 
 chai.use(deepEqualInAnyOrder);
 const { expect } = chai;

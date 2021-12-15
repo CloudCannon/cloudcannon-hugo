@@ -1,11 +1,11 @@
-const fs = require('fs').promises;
-const { extname } = require('path');
-const { parseToml } = require('./toml');
-const { parseYaml } = require('./yaml');
-const { parseJsonUnstrict } = require('./json');
-const { log } = require('../helpers/logger');
+import fs from 'fs/promises';
+import { extname } from 'path';
+import { parseToml } from './toml.js';
+import { parseYaml } from './yaml.js';
+import { parseJsonUnstrict } from './json.js';
+import log from '../helpers/logger.js';
 
-async function parseFile(path) {
+export async function parseFile(path) {
 	try {
 		let frontMatterObject = await parseDataFile(path);
 		if (frontMatterObject) {
@@ -19,7 +19,7 @@ async function parseFile(path) {
 	}
 }
 
-async function parseDataFile(path) {
+export async function parseDataFile(path) {
 	const type = extname(path).toLowerCase();
 
 	try {
@@ -40,7 +40,7 @@ async function parseDataFile(path) {
 	}
 }
 
-function parseFrontMatter(data) {
+export function parseFrontMatter(data) {
 	if (!data) {
 		return {};
 	}
@@ -78,9 +78,3 @@ function parseFrontMatter(data) {
 
 	return {};
 }
-
-module.exports = {
-	parseFile,
-	parseDataFile,
-	parseFrontMatter
-};

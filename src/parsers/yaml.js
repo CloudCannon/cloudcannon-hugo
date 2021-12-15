@@ -1,14 +1,10 @@
-const yaml = require('js-yaml');
-const { log } = require('../helpers/logger');
+import yaml from 'js-yaml';
+import log from '../helpers/logger.js';
 
-function parseYaml(data) {
+export function parseYaml(data) {
 	try {
 		return yaml.load(data, { json: true });
 	} catch (parseError) {
 		log(parseError, 'error');
 	}
 }
-
-module.exports = {
-	parseYaml
-};

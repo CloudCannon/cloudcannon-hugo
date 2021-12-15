@@ -1,5 +1,5 @@
-const { expect } = require('chai');
-const { parseFile, parseFrontMatter } = require('../../src/parsers/parser');
+import { expect } from 'chai';
+import { parseFile, parseFrontMatter } from '../../src/parsers/parser.js';
 
 describe('parseFile', function () {
 	it('should return empty when path is empty', async function () {

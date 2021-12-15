@@ -1,7 +1,7 @@
-const { expect } = require('chai');
-const mock = require('mock-fs');
-const pathHelper = require('../../src/helpers/paths');
-const { pathsByType, testFileStructure } = require('../test-paths');
+import { expect } from 'chai';
+import mock from 'mock-fs';
+import pathHelper from '../../src/helpers/paths.js';
+import { pathsByType, testFileStructure } from '../test-paths.js';
 
 describe('pathHelper', function () {
 	before(function () {

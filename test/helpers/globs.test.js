@@ -1,7 +1,6 @@
-const { expect } = require('chai');
-const mock = require('mock-fs');
-
-const globHelper = require('../../src/helpers/globs');
+import { expect } from 'chai';
+import mock from 'mock-fs';
+import { getGlobString, getGlob } from '../../src/helpers/globs.js';
 
 describe('globs', function () {
 	describe('getGlobString()', function () {
@@ -13,7 +12,7 @@ describe('globs', function () {
 
 		tests.forEach((test) => {
 			it(test.context || '', function () {
-				const outputPattern = globHelper.getGlobString(test.input);
+				const outputPattern = getGlobString(test.input);
 				expect(outputPattern).to.equal(test.expected);
 			});
 		});
@@ -66,7 +65,7 @@ describe('globs', function () {
 
 		tests.forEach((test) => {
 			it(test.context || '', async function () {
-				const outputPattern = await globHelper.getGlob(...test.input);
+				const outputPattern = await getGlob(...test.input);
 				expect(outputPattern).to.deep.equal(test.expected);
 			});
 		});

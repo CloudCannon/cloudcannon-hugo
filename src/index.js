@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-const meow = require('meow');
-const { log, toggleLogging } = require('./helpers/logger');
-const fs = require('fs').promises;
-const { join } = require('path');
-const chalk = require('chalk');
-const { getInfo } = require('./generators/info');
-const { getHugoConfig } = require('./helpers/hugo-config');
-const pathHelper = require('./helpers/paths');
+import meow from 'meow';
+import fs from 'fs/promises';
+import { join } from 'path';
+import chalk from 'chalk';
+import log, { toggleLogging } from './helpers/logger.js';
+import { getInfo } from './generators/info.js';
+import { getHugoConfig } from './helpers/hugo-config.js';
+import pathHelper from './helpers/paths.js';
 
 const cli = meow(`
   Usage
