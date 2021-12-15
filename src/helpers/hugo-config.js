@@ -1,6 +1,7 @@
 const { join, extname, basename } = require('path');
+const chalk = require('chalk');
 const { getGlob } = require('./globs');
-const { exists, mergeDeep } = require('./helpers');
+const { exists, mergeDeep, pluralize } = require('./helpers');
 const { parseDataFile } = require('../parsers/parser');
 const { log } = require('./logger');
 
@@ -83,8 +84,8 @@ async function getConfigContents(configFileList, passedConfigFiles = '') {
 async function getHugoConfig(flags = {}) {
 	const configFileList = await getConfigPaths(flags);
 
-	log('⚙️ using config files:');
-	log(configFileList);
+	log(`🔧 Found ${pluralize(configFileList.length, 'Hugo config file', { nonZeroSuffix: ':' })}`);
+	configFileList.forEach((configFilePath) => log(`   ${chalk.bold(configFilePath)}`));
 
 	const configContents = await getConfigContents(configFileList, flags.config);
 	configContents.reverse(); // reversing because deep merge places priority on the second object

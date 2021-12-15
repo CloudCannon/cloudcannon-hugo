@@ -5,7 +5,7 @@ const { version } = require('../helpers/metadata');
 const { log } = require('../helpers/logger');
 const { getGenerator } = require('./generator');
 const { getData } = require('./data');
-const { generateCollectionsInfo } = require('./collections');
+const { getCollectionsAndConfig } = require('./collections');
 
 function getHugoUrls() {
 	log('⏳ Processing permalinks...');
@@ -34,7 +34,7 @@ async function getInfo(hugoConfig, options) {
 	const {
 		collections,
 		collectionsConfig
-	} = await generateCollectionsInfo(hugoConfig, urlsPerPath);
+	} = await getCollectionsAndConfig(hugoConfig, urlsPerPath);
 
 	return {
 		time: new Date().toISOString(),

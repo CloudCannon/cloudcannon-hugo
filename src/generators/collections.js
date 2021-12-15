@@ -1,6 +1,6 @@
-const Path = require('path');
+const { basename, dirname, extname } = require('path');
 const chalk = require('chalk');
-const helpers = require('../helpers/helpers');
+const { pluralize } = require('../helpers/helpers');
 const pathHelper = require('../helpers/paths');
 const { log } = require('../helpers/logger');
 const { parseFile } = require('../parsers/parser');
@@ -25,17 +25,17 @@ function getTopSectionName(path, options = {}) {
 	return leadingPath?.[0] ? leadingPath[0].replace(/\//g, '') : '';
 }
 
-function getCollectionNameConfig(path, contentDir, archetypePath) {
+function getCollectionKey(path, contentDir, archetypePath) {
 	if (path.indexOf(archetypePath) >= 0) {
 		if (path.indexOf('default.md') >= 0) {
 			return;
 		}
 
 		if (path.indexOf('index.md') >= 0) {
-			return Path.basename(Path.dirname(path));
+			return basename(dirname(path));
 		}
 
-		return Path.basename(path, Path.extname(path)); // e.g. archetypes/type.md
+		return basename(path, extname(path)); // e.g. archetypes/type.md
 	}
 
 	return path.replace(`${contentDir}/`, '').split('/')[0];
@@ -61,8 +61,7 @@ async function getLayout(path, details) {
 	const layoutFiles = [];
 	const { content } = pathHelper.getPaths();
 	const isHome = path.indexOf(`${content}/_index.md`) >= 0;
-	const basename = Path.basename(path);
-	const isSingle = basename.indexOf('_index.md') < 0;
+	const isSingle = basename(path).indexOf('_index.md') < 0;
 	const { layout, type } = details;
 	const section = getTopSectionName(path, {
 		rootDir: content,
@@ -97,67 +96,64 @@ async function getLayout(path, details) {
 	}
 }
 
-async function generateCollectionItem(itemPath, itemDetails, collectionName, urlsPerPath) {
-	const { archetypes, content } = pathHelper.getPaths();
-	const isArchetype = itemPath.indexOf(archetypes) >= 0;
+async function processCollectionItem(itemPath, itemDetails, collectionKey, urlsPerPath) {
+	const paths = pathHelper.getPaths();
+	const isArchetype = itemPath.indexOf(paths.archetypes) >= 0;
 
-	let item;
-	if (!isArchetype) {
-		const url = getPageUrl(itemPath, urlsPerPath, content);
-		const layout = await getLayout(itemPath, itemDetails);
-
-		item = {
-			url: url || '',
-			path: itemPath,
-			collection: collectionName,
-			...itemDetails
-		};
-
-		if (item.headless || (!url && itemPath.indexOf('index') < 0)) {
-			item.output = false;
-		}
-
-		if (layout && item.url) {
-			item.layout = layout;
-		}
-
-		if (item.draft) {
-			item.published = false;
-		}
+	if (isArchetype) {
+		return;
 	}
+
+	const url = getPageUrl(itemPath, urlsPerPath, paths.content);
+	const layout = await getLayout(itemPath, itemDetails);
+
+	const item = {
+		url: url || '',
+		path: itemPath,
+		collection: collectionKey,
+		...itemDetails
+	};
+
+	if (item.headless || (!url && itemPath.indexOf('index') < 0)) {
+		item.output = false;
+	}
+
+	if (layout && item.url) {
+		item.layout = layout;
+	}
+
+	if (item.draft) {
+		item.published = false;
+	}
+
 	return item;
 }
 
-async function generateCollectionConfigItem(itemPath, itemDetails, collectionName, config) {
-	const { data, content } = pathHelper.getPaths();
-	let isOutput = true;
-	if (itemPath.startsWith(data)) {
-		isOutput = false;
-	} else {
-		isOutput = !itemDetails.headless;
-	}
+async function processCollectionConfig(itemPath, itemDetails, collectionKey, cloudcannonCollections) {
+	const paths = pathHelper.getPaths();
+	const isOutput = itemPath.startsWith(paths.data) ? false : !itemDetails.headless;
+
 	return {
-		path: `${content}/${collectionName}`,
+		path: `${paths.content}/${collectionKey}`,
 		output: isOutput,
-		...config[collectionName]
+		...cloudcannonCollections[collectionKey]
 	};
 }
 
-async function generateCollectionsInfo(config, urlsPerPath) {
+async function getCollectionsAndConfig(hugoConfig, urlsPerPath) {
 	const paths = pathHelper.getPaths();
-	const cloudcannonCollections = config?.cloudcannon?.collections || {};
-
+	const cloudcannonCollections = hugoConfig?.cloudcannon?.collections || {};
 	const definedCollections = {};
-	Object.keys(cloudcannonCollections).forEach((collectionName) => {
-		if (cloudcannonCollections[collectionName].path) {
-			definedCollections[cloudcannonCollections[collectionName].path] = collectionName;
+
+	Object.keys(cloudcannonCollections).forEach((collectionKey) => {
+		if (cloudcannonCollections[collectionKey].path) {
+			definedCollections[cloudcannonCollections[collectionKey].path] = collectionKey;
 		}
 	});
 
-	const collectionItemPaths = await pathHelper
-		.getCollectionPaths(Object.keys(definedCollections));
+	const definedCollectionKeys = Object.keys(definedCollections);
+	const collectionItemPaths = await pathHelper.getCollectionPaths(definedCollectionKeys);
 	const pagePaths = await pathHelper.getPagePaths();
-
 	const collections = {};
 	const collectionsConfig = {
 		data: {
@@ -167,41 +163,45 @@ async function generateCollectionsInfo(config, urlsPerPath) {
 		}
 	};
 
-	const partitionSize = 10;
 	// Run these in partitions to prevent memory issues
-
+	const partitionSize = 10;
 	const numPartitions = Math.ceil(collectionItemPaths.length / partitionSize);
-	log('⏳ processing collection items...');
 
-	/* eslint-disable no-await-in-loop */
+	log('⏳ Processing collections...');
+
 	for (let i = 0; i < numPartitions; i += 1) {
 		const slice = collectionItemPaths.slice(i * partitionSize, ((i + 1) * partitionSize));
 
 		await Promise.all(slice.map(async (itemPath) => {
-			const collectionName = definedCollections[Path.dirname(itemPath)]
-				|| getCollectionNameConfig(
-					itemPath,
-					paths.content,
-					paths.archetypes
-				);
+			const collectionKey = definedCollections[dirname(itemPath)]
+				|| getCollectionKey(itemPath, paths.content, paths.archetypes);
 
-			if (collectionName) {
+			if (collectionKey) {
 				const itemDetails = await parseFile(itemPath);
 
-				const collectionConfigItem = await generateCollectionConfigItem(
-					itemPath, itemDetails, collectionName, cloudcannonCollections
+				const collectionConfig = await processCollectionConfig(
+					itemPath,
+					itemDetails,
+					collectionKey,
+					cloudcannonCollections
 				);
-				collectionConfigItem.output = collectionConfigItem.output
-					|| (collectionsConfig[collectionName]?.output ?? false); // true if any output: true;
-				collectionsConfig[collectionName] = collectionConfigItem;
 
-				const collectionItem = await generateCollectionItem(
-					itemPath, itemDetails, collectionName, urlsPerPath
+				collectionConfig.output = collectionConfig.output
+					|| (collectionsConfig[collectionKey]?.output ?? false); // true if any output: true;
+
+				collectionsConfig[collectionKey] = collectionConfig;
+
+				const collectionItem = await processCollectionItem(
+					itemPath,
+					itemDetails,
+					collectionKey,
+					urlsPerPath
 				);
-				if (collections[collectionName]) {
-					collections[collectionName].push(collectionItem);
-				} else {
-					collections[collectionName] = collectionItem ? [collectionItem] : [];
+
+				collections[collectionKey] = collections[collectionKey] || [];
+
+				if (collectionItem) {
+					collections[collectionKey].push(collectionItem);
 				}
 			}
 		}));
@@ -214,45 +214,47 @@ async function generateCollectionsInfo(config, urlsPerPath) {
 			filter: 'strict',
 			...cloudcannonCollections.pages
 		};
+
 		collections.pages = [];
 
 		const numPartitionsPages = Math.ceil(pagePaths.length / partitionSize);
 
 		for (let i = 0; i < numPartitionsPages; i += 1) {
 			const slice = pagePaths.slice(i * partitionSize, ((i + 1) * partitionSize));
+
 			await Promise.all(slice.map(async (itemPath) => {
 				const itemDetails = await parseFile(itemPath);
 
-				const collectionItem = await generateCollectionItem(
-					itemPath, itemDetails, 'pages', urlsPerPath
+				const collectionItem = await processCollectionItem(
+					itemPath,
+					itemDetails,
+					'pages',
+					urlsPerPath
 				);
+
 				collections.pages.push(collectionItem);
 			}));
 		}
 	}
-	/* eslint-enable no-await-in-loop */
 
-	const collectionNames = Object.keys(collections);
-	const numCollections = collectionNames.length;
+	const collectionKeys = Object.keys(collections);
 
-	let logString = helpers.pluralize(numCollections, 'collection');
-	logString = numCollections ? `${logString}:` : logString;
+	log(`📁 Processed ${pluralize(collectionKeys.length, 'collection', { nonZeroSuffix: ':' })}`);
 
-	log(`📁 processed ${logString}`);
-	collectionNames.forEach((name) => {
+	collectionKeys.forEach((name) => {
 		const numItems = Object.keys(collections[name]).length;
 		log(`   ${chalk.bold(name)} with ${numItems} files`);
 	});
 
 	return {
-		collectionsConfig: collectionsConfig,
-		collections: collections
+		collectionsConfig,
+		collections
 	};
 }
 
 module.exports = {
-	getCollectionNameConfig,
+	getCollectionKey,
 	getPageUrl,
 	getLayout,
-	generateCollectionsInfo
+	getCollectionsAndConfig
 };

@@ -1,5 +1,5 @@
 const cp = require('child_process');
-const Path = require('path');
+const { join, relative } = require('path');
 const fs = require('fs');
 
 const chai = require('chai');
@@ -9,7 +9,7 @@ chai.use(deepEqualInAnyOrder);
 const { expect } = chai;
 
 let ccInfo;
-const expectedRaw = fs.readFileSync(Path.join(process.cwd(), 'test/example-info.json'));
+const expectedRaw = fs.readFileSync(join(process.cwd(), 'test/example-info.json'));
 const ccInfoExpected = JSON.parse(expectedRaw);
 
 const runProcess = function (wd, command, args) {
@@ -23,8 +23,8 @@ const runProcess = function (wd, command, args) {
 describe('exampleSite', function () {
 	this.timeout(5000); // sometimes takes longer than 2000ms (default)
 	before(function () {
-		const pathToPackage = Path.relative('exampleSite/', '../');
-		const wd = Path.join(process.cwd(), 'test/exampleSite/');
+		const pathToPackage = relative('exampleSite/', '../');
+		const wd = join(process.cwd(), 'test/exampleSite/');
 		runProcess(wd, 'npx', [pathToPackage, '--config', 'cloudcannon.toml,config.toml']);
 
 		const rawInfo = fs.readFileSync('test/exampleSite/public/_cloudcannon/info.json');

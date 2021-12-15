@@ -1,260 +1,259 @@
 const { expect } = require('chai');
 const mock = require('mock-fs');
 const {
-	getCollectionNameConfig,
+	getCollectionKey,
 	getPageUrl,
 	getLayout,
-	generateCollectionsInfo
+	getCollectionsAndConfig
 } = require('../../src/generators/collections');
 const pathHelper = require('../../src/helpers/paths');
 const { collectionFiles, testFileStructure } = require('../test-paths');
 
-describe('getCollectionNameConfig', function () {
-	describe('contentDirectory', function () {
-		const tests = [
-			{ input: 'content/collectionName/_index.md', expected: 'collectionName', context: 'input: _index file' },
-			{ input: 'content/authors/jane-doe.md', expected: 'authors', context: 'input: no _index file' },
-			{ input: 'content/authors/nested/file/path/jane-doe.md', expected: 'authors', context: 'input: nested, no _index file' }
-		];
+describe('collections generator', function () {
+	describe('getCollectionKey contentDirectory', function () {
+		it('_index file', function () {
+			const result = getCollectionKey('content/collectionName/_index.md', 'content');
+			expect(result).to.equal('collectionName');
+		});
 
-		tests.forEach((test) => {
-			it(test.context || '', function () {
-				const result = getCollectionNameConfig(test.input, 'content');
-				expect(result).to.equal(test.expected);
-			});
+		it('no _index file', function () {
+			const result = getCollectionKey('content/authors/jane-doe.md', 'content');
+			expect(result).to.equal('authors');
+		});
+
+		it('nested, no _index file', function () {
+			const result = getCollectionKey('content/authors/nested/file/path/jane-doe.md', 'content');
+			expect(result).to.equal('authors');
 		});
 	});
 
-	describe('archetypes', function () {
-		const tests = [
-			{ input: ['archetypes/archetypeName/index.md', 'content', 'archetypes'], expected: 'archetypeName', context: 'input: index file' },
-			{ input: ['archetypes/someFolder/archetype.md', 'content', 'archetypes'], expected: 'archetype', context: 'input: no index file' },
-			{ input: ['archetypes/archetypeName.md', 'content', 'archetypes'], expected: 'archetypeName', context: 'input: item in root archetype dir' },
-			{ input: ['archetypes/default.md', 'content', 'archetypes'], expected: undefined, context: 'default archetype' }
-		];
-
-		tests.forEach((test) => {
-			it(test.context || '', function () {
-				const result = getCollectionNameConfig(...test.input);
-				expect(result).to.equal(test.expected);
-			});
+	describe('getCollectionKey archetypes', function () {
+		it('index file', function () {
+			const result = getCollectionKey('archetypes/archetypeName/index.md', 'content', 'archetypes');
+			expect(result).to.equal('archetypeName');
 		});
-	});
-});
 
-describe('getPageUrl', function () {
-	const tests = [
-		{ input: ['content/authors/_index.md', {}, 'content'], expected: '/authors/', context: 'input: _index file' },
-		{ input: ['content/about/index.md', {}, 'content'], expected: '/about/', context: 'input: index file' }
-	];
-
-	tests.forEach((test) => {
-		it(test.context || '', function () {
-			const result = getPageUrl(...test.input);
-			expect(result).to.equal(test.expected);
+		it('no index file', function () {
+			const result = getCollectionKey('archetypes/someFolder/archetype.md', 'content', 'archetypes');
+			expect(result).to.equal('archetype');
 		});
-	});
-});
 
-describe('getLayout', function () {
-	before(function () {
-		delete pathHelper.cachedLayouts;
-		mock(testFileStructure);
-		pathHelper.getSupportedLanguages({ languages: { en: {} } });
-	});
+		it('item in root archetype dir', function () {
+			const result = getCollectionKey('archetypes/archetypeName.md', 'content', 'archetypes');
+			expect(result).to.equal('archetypeName');
+		});
 
-	const tests = [
-		{
-			input: ['content/_index.md', {}],
-			expected: 'index',
-			context: 'input: Home page'
-		},
-		{
-			input: ['content/_index.md', { type: 'mytype' }],
-			expected: 'mytype/list',
-			context: 'input: Home page with type set'
-		},
-		{
-			input: ['content/_index.md', { layout: 'mylayout' }],
-			expected: 'index',
-			context: 'input: Home page with layout set'
-		},
-		{
-			input: ['content/posts/post.md', {}],
-			expected: 'posts/single',
-			context: 'input: single post'
-		},
-		{
-			input: ['content/posts/item/index.md', {}],
-			expected: 'posts/single',
-			context: 'input: single leaf bundle post'
-		},
-		{
-			input: ['content/en/posts/item/index.md', {}],
-			expected: 'posts/single',
-			context: 'input: single leaf bundle post in a language code'
-		},
-		{
-			input: ['content/posts/post.md', { layout: 'mylayout' }],
-			expected: 'posts/mylayout',
-			context: 'input: single post with layout set'
-		},
-		{
-			input: ['content/posts/post.md', { type: 'invalidType' }],
-			expected: 'posts/single',
-			context: 'input: single post with a non-existent type set'
-		},
-		{
-			input: ['content/posts/_index.md', {}],
-			expected: '_default/list',
-			context: 'input: list page for posts'
-		},
-		{
-			input: ['content/mytype/_index.md', {}],
-			expected: 'mytype/list',
-			context: 'input: list page for mytype'
-		},
-		{
-			input: ['content/posts/_index.md', { type: 'mytype' }],
-			expected: 'mytype/list',
-			context: 'input: list page for posts with type mytype'
-		},
-		{
-			input: ['content/posts/_index.md', { layout: 'mylayout' }],
-			expected: 'posts/mylayout',
-			context: 'input: list page for posts with layout set'
-		},
-		{
-			input: ['content/posts/_index.md', { type: 'mytype', layout: 'mylayout' }],
-			expected: 'mytype/mylayout',
-			context: 'input: list page for posts with type and layout set'
-		}
-	];
-
-	tests.forEach((test) => {
-		it(test.context || '', async function () {
-			const result = await getLayout(...test.input);
-			expect(result).to.equal(test.expected);
+		it('default archetype', function () {
+			const result = getCollectionKey('archetypes/default.md', 'content', 'archetypes');
+			expect(result).to.equal(undefined);
 		});
 	});
 
-	after(function () {
-		mock.restore();
-		delete pathHelper.cachedLayouts;
-	});
-});
+	describe('getPageUrl', function () {
+		it('_index file', function () {
+			const result = getPageUrl('content/authors/_index.md', {}, 'content');
+			expect(result).to.equal('/authors/');
+		});
 
-describe('generateCollectionsInfo', function () {
-	before(function () {
-		const fileStructure = {
-			...collectionFiles,
-			'data/staff_members': { 'anna.yml': '' }
-		};
-		mock(fileStructure);
+		it('index file', function () {
+			const result = getPageUrl('content/about/index.md', {}, 'content');
+			expect(result).to.equal('/about/');
+		});
 	});
 
-	it('should retrieve collections', async function () {
-		const urlsPerPath = {
-			'content/coll1/item1.md': '/coll1/item1/',
-			'content/coll1/item2.md': '/coll1/item2/',
-			'content/posts/post1.md': '/posts/post1/'
-		};
+	describe('getLayout', function () {
+		before(function () {
+			delete pathHelper.cachedLayouts;
+			mock(testFileStructure);
+			pathHelper.getSupportedLanguages({ languages: { en: {} } });
+		});
 
-		const hugoConfig = {
-			cloudcannon: {
-				collections: {
-					data: { _image_key: 'thumbnail' },
-					posts: { _image_key: 'author_image', _image_size: 'cover' },
-					fakeCollection: 'wackyLink',
-					staff_members: { path: 'data/staff_members' }
+		it('Home page', async function () {
+			const result = await getLayout('content/_index.md', {});
+			expect(result).to.equal('index');
+		});
+
+		it('Home page with type set', async function () {
+			const result = await getLayout('content/_index.md', { type: 'mytype' });
+			expect(result).to.equal('mytype/list');
+		});
+
+		it('Home page with layout set', async function () {
+			const result = await getLayout('content/_index.md', { layout: 'mylayout' });
+			expect(result).to.equal('index');
+		});
+
+		it('single post', async function () {
+			const result = await getLayout('content/posts/post.md', {});
+			expect(result).to.equal('posts/single');
+		});
+
+		it('single leaf bundle post', async function () {
+			const result = await getLayout('content/posts/item/index.md', {});
+			expect(result).to.equal('posts/single');
+		});
+
+		it('single leaf bundle post in a language code', async function () {
+			const result = await getLayout('content/en/posts/item/index.md', {});
+			expect(result).to.equal('posts/single');
+		});
+
+		it('single post with layout set', async function () {
+			const result = await getLayout('content/posts/post.md', { layout: 'mylayout' });
+			expect(result).to.equal('posts/mylayout');
+		});
+
+		it('single post with a non-existent type set', async function () {
+			const result = await getLayout('content/posts/post.md', { type: 'invalidType' });
+			expect(result).to.equal('posts/single');
+		});
+
+		it('list page for posts', async function () {
+			const result = await getLayout('content/posts/_index.md', {});
+			expect(result).to.equal('_default/list');
+		});
+
+		it('list page for mytype', async function () {
+			const result = await getLayout('content/mytype/_index.md', {});
+			expect(result).to.equal('mytype/list');
+		});
+
+		it('list page for posts with type mytype', async function () {
+			const result = await getLayout('content/posts/_index.md', { type: 'mytype' });
+			expect(result).to.equal('mytype/list');
+		});
+
+		it('list page for posts with layout set', async function () {
+			const result = await getLayout('content/posts/_index.md', { layout: 'mylayout' });
+			expect(result).to.equal('posts/mylayout');
+		});
+
+		it('list page for posts with type and layout set', async function () {
+			const result = await getLayout('content/posts/_index.md', { type: 'mytype', layout: 'mylayout' });
+			expect(result).to.equal('mytype/mylayout');
+		});
+
+		after(function () {
+			mock.restore();
+			delete pathHelper.cachedLayouts;
+		});
+	});
+
+	describe('getCollectionsAndConfig', function () {
+		before(function () {
+			const fileStructure = {
+				...collectionFiles,
+				'data/staff_members': { 'anna.yml': '' }
+			};
+
+			mock(fileStructure);
+		});
+
+		it('should retrieve collections', async function () {
+			const urlsPerPath = {
+				'content/coll1/item1.md': '/coll1/item1/',
+				'content/coll1/item2.md': '/coll1/item2/',
+				'content/posts/post1.md': '/posts/post1/'
+			};
+
+			const hugoConfig = {
+				cloudcannon: {
+					collections: {
+						data: { _image_key: 'thumbnail' },
+						posts: { _image_key: 'author_image', _image_size: 'cover' },
+						fakeCollection: 'wackyLink',
+						staff_members: { path: 'data/staff_members' }
+					}
 				}
-			}
-		};
+			};
 
-		const {
-			collections, collectionsConfig
-		} = await generateCollectionsInfo(hugoConfig, urlsPerPath);
-		const expectedCollections = {
-			coll1: [
-				{
-					collection: 'coll1',
-					path: 'content/coll1/_index.md',
-					url: '/coll1/'
+			const {
+				collections,
+				collectionsConfig
+			} = await getCollectionsAndConfig(hugoConfig, urlsPerPath);
+
+			const expectedCollections = {
+				coll1: [
+					{
+						collection: 'coll1',
+						path: 'content/coll1/_index.md',
+						url: '/coll1/'
+					},
+					{
+						collection: 'coll1',
+						path: 'content/coll1/item1.md',
+						url: '/coll1/item1/'
+					},
+					{
+						collection: 'coll1',
+						headless: true,
+						output: false,
+						path: 'content/coll1/item2.md',
+						url: '/coll1/item2/'
+					}
+				],
+				posts: [
+					{
+						collection: 'posts',
+						path: 'content/posts/_index.md',
+						url: '/posts/'
+					},
+					{
+						collection: 'posts',
+						draft: true,
+						published: false,
+						path: 'content/posts/post1.md',
+						url: '/posts/post1/'
+					}
+				],
+				staff_members: [
+					{
+						collection: 'staff_members',
+						output: false,
+						path: 'data/staff_members/anna.yml',
+						url: ''
+					}
+				],
+				leaf: [],
+				type: []
+			};
+
+			const expectedCollectionsConfig = {
+				coll1: {
+					path: 'content/coll1',
+					output: true
 				},
-				{
-					collection: 'coll1',
-					path: 'content/coll1/item1.md',
-					url: '/coll1/item1/'
+				posts: {
+					path: 'content/posts',
+					output: true,
+					_image_key: 'author_image',
+					_image_size: 'cover'
 				},
-				{
-					collection: 'coll1',
-					headless: true,
+				data: {
+					path: 'data',
 					output: false,
-					path: 'content/coll1/item2.md',
-					url: '/coll1/item2/'
-				}
-			],
-			posts: [
-				{
-					collection: 'posts',
-					path: 'content/posts/_index.md',
-					url: '/posts/'
+					_image_key: 'thumbnail'
 				},
-				{
-					collection: 'posts',
-					draft: true,
-					published: false,
-					path: 'content/posts/post1.md',
-					url: '/posts/post1/'
+				leaf: {
+					path: 'content/leaf',
+					output: true
+				},
+				type: {
+					path: 'content/type',
+					output: false
+				},
+				staff_members: {
+					path: 'data/staff_members',
+					output: false
 				}
-			],
-			staff_members: [
-				{
-					collection: 'staff_members',
-					output: false,
-					path: 'data/staff_members/anna.yml',
-					url: ''
-				}
-			],
-			leaf: [],
-			type: []
-		};
+			};
 
-		const expectedCollectionsConfig = {
-			coll1: {
-				path: 'content/coll1',
-				output: true
-			},
-			posts: {
-				path: 'content/posts',
-				output: true,
-				_image_key: 'author_image',
-				_image_size: 'cover'
-			},
-			data: {
-				path: 'data',
-				output: false,
-				_image_key: 'thumbnail'
-			},
-			leaf: {
-				path: 'content/leaf',
-				output: true
-			},
-			type: {
-				path: 'content/type',
-				output: false
-			},
-			staff_members: {
-				path: 'data/staff_members',
-				output: false
-			}
-		};
+			expect(collections).to.deep.equal(expectedCollections);
+			expect(collectionsConfig).to.deep.equal(expectedCollectionsConfig);
+		});
 
-		expect(collections).to.deep.equal(expectedCollections);
-		expect(collectionsConfig).to.deep.equal(expectedCollectionsConfig);
-	});
-
-	after(function () {
-		mock.restore();
+		after(function () {
+			mock.restore();
+		});
 	});
 });

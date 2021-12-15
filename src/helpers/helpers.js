@@ -31,9 +31,11 @@ function mergeDeep(target, ...sources) {
 module.exports = {
 	mergeDeep,
 
-	pluralize: function (amount, str) {
+	pluralize: function (amount, str, options = {}) {
 		const amountStr = amount === 0 ? 'no' : amount;
-		return `${amountStr} ${str}${amount === 1 ? '' : 's'}`;
+		const plural = amount === 1 ? '' : 's';
+		const suffix = amount > 0 ? options.nonZeroSuffix || '' : '';
+		return `${amountStr} ${str}${plural}${suffix}`;
 	},
 
 	exists: async function (path) {
