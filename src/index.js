@@ -34,7 +34,7 @@ const cli = meow(`
     $ cloudcannon-hugo --output "public"
     $ CLOUDCANNON_CONFIG_PATH=src/cloudcannon.config.json cloudcannon-hugo
 `, {
-	// importMeta: import.meta,
+	importMeta: import.meta,
 	flags: {
 		output: {
 			type: 'string',

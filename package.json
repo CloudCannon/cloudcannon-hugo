@@ -5,11 +5,11 @@
   "description": "Generates the files necessary for a hugo site to integrate with CloudCannon CMS",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint src",
+    "lint": "eslint .",
     "start": "node src/index.js",
-    "test": "nyc mocha --recursive --ignore */exampleSites.test.js",
-    "test-example": "nyc mocha */exampleSites.test.js",
-    "test-complete": "nyc mocha --recursive",
+    "test": "nyc mocha --recursive --ignore **/integration.test.js",
+    "test:integration": "nyc mocha **/integration.test.js",
+    "test:all": "nyc mocha --recursive",
     "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "release:latest": "npx np",
     "release:next": "npx np prerelease --tag=next"

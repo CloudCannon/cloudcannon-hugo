@@ -129,25 +129,25 @@ async function processCollectionItem(itemPath, itemDetails, collectionKey, urlsP
 	return item;
 }
 
-async function processCollectionConfig(itemPath, itemDetails, collectionKey, cloudcannonCollections) {
+async function processCollectionConfig(itemPath, itemDetails, collectionKey, initialCollectionsConfig) {
 	const paths = pathHelper.getPaths();
 	const isOutput = itemPath.startsWith(paths.data) ? false : !itemDetails.headless;
 
 	return {
 		path: `${paths.content}/${collectionKey}`,
 		output: isOutput,
-		...cloudcannonCollections[collectionKey]
+		...initialCollectionsConfig[collectionKey]
 	};
 }
 
-export async function getCollectionsAndConfig(hugoConfig, urlsPerPath) {
+export async function getCollectionsAndConfig(config, urlsPerPath) {
 	const paths = pathHelper.getPaths();
-	const cloudcannonCollections = hugoConfig?.cloudcannon?.collections || {};
+	const initialCollectionsConfig = config.collections_config || {};
 	const definedCollections = {};
 
-	Object.keys(cloudcannonCollections).forEach((collectionKey) => {
-		if (cloudcannonCollections[collectionKey].path) {
-			definedCollections[cloudcannonCollections[collectionKey].path] = collectionKey;
+	Object.keys(initialCollectionsConfig).forEach((collectionKey) => {
+		if (initialCollectionsConfig[collectionKey].path) {
+			definedCollections[initialCollectionsConfig[collectionKey].path] = collectionKey;
 		}
 	});
 
@@ -159,7 +159,7 @@ export async function getCollectionsAndConfig(hugoConfig, urlsPerPath) {
 		data: {
 			path: paths.data,
 			output: false,
-			...cloudcannonCollections.data
+			...initialCollectionsConfig.data
 		}
 	};
 
@@ -183,7 +183,7 @@ export async function getCollectionsAndConfig(hugoConfig, urlsPerPath) {
 					itemPath,
 					itemDetails,
 					collectionKey,
-					cloudcannonCollections
+					initialCollectionsConfig
 				);
 
 				collectionConfig.output = collectionConfig.output
@@ -212,7 +212,7 @@ export async function getCollectionsAndConfig(hugoConfig, urlsPerPath) {
 			path: paths.content,
 			output: true,
 			filter: 'strict',
-			...cloudcannonCollections.pages
+			...initialCollectionsConfig.pages
 		};
 
 		collections.pages = [];
