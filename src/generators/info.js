@@ -22,7 +22,7 @@ function getHugoUrls() {
 }
 
 export async function getInfo(hugoConfig, options) {
-	const config = getConfig(hugoConfig);
+	const config = await getConfig(hugoConfig);
 	const urlsPerPath = getHugoUrls();
 
 	pathHelper.getSupportedLanguages(hugoConfig);

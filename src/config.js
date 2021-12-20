@@ -1,5 +1,9 @@
+import chalk from 'chalk';
+import { relative } from 'path';
+import { cosmiconfig } from 'cosmiconfig';
 import { getUrlPathname } from './helpers/helpers.js';
 import pathHelper from './helpers/paths.js';
+import log from './helpers/logger.js';
 
 function rewriteKey(object, oldKey, newKey) {
 	const canRename = Object.prototype.hasOwnProperty.call(object, oldKey)
@@ -69,14 +73,58 @@ function getLegacyConfig(hugoConfig) {
 	};
 }
 
-export function getConfig(hugoConfig) {
-	const paths = pathHelper.getPaths();
-	const baseUrl = getUrlPathname(hugoConfig.baseURL);
-
-	return migrateLegacyKeys({
-		...getLegacyConfig(hugoConfig),
-		source: paths.source || '',
-		base_url: baseUrl === '/' ? '' : baseUrl,
-		paths: paths
+async function readFile(configPath) {
+	const moduleName = 'cloudcannon';
+	const explorer = cosmiconfig(moduleName, {
+		searchPlaces: [
+			`${moduleName}.config.json`,
+			`${moduleName}.config.yaml`,
+			`${moduleName}.config.yml`,
+			`${moduleName}.config.js`,
+			`${moduleName}.config.cjs`
+		]
 	});
+
+	try {
+		const config = configPath
+			? await explorer.load(configPath)
+			: await explorer.search();
+
+		if (config) {
+			const relativeConfigPath = relative(process.cwd(), config.filepath);
+			log(`⚙️ Using config file at ${chalk.bold(relativeConfigPath)}`);
+			return migrateLegacyKeys(config.config || {});
+		}
+	} catch (e) {
+		if (e.code === 'ENOENT') {
+			log(`⚠️ ${chalk.red('No config file found at')} ${chalk.red.bold(configPath)}`);
+			return false;
+		}
+
+		log(`⚠️ ${chalk.red('Error reading config file')}`, 'error');
+		throw e;
+	}
+
+	log('⚙️ No config file found');
+	return false;
+}
+
+export async function getConfig(hugoConfig) {
+	const paths = pathHelper.getPaths();
+	const file = await readFile(process.env.CLOUDCANNON_CONFIG_PATH) || {};
+	const legacy = getLegacyConfig(hugoConfig);
+	const baseUrl = file.base_url || getUrlPathname(hugoConfig.baseURL) || '';
+
+	const config = {
+		...legacy,
+		...file,
+		base_url: baseUrl === '/' ? '' : baseUrl,
+		source: file.source || paths.source || '',
+		paths: {
+			...paths,
+			...file.paths
+		}
+	};
+
+	return migrateLegacyKeys(config);
 }
