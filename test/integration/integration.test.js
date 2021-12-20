@@ -52,26 +52,7 @@ async function run(fixture, npxArgs = []) {
 	const infoRaw = await readFile(infoPath);
 	const info = JSON.parse(infoRaw);
 
-	const expectedKeys = [
-		'source',
-		'base_url',
-		'_comments',
-		'_options',
-		'editor',
-		'source_editor',
-		'_array_structures',
-		'_select_data',
-		'paths',
-		'time',
-		'version',
-		'cloudcannon',
-		'generator',
-		'collections_config',
-		'collections',
-		'data',
-		'data_config'
-	];
-
+	const expectedKeys = Object.keys(expected);
 	expect(Object.keys(info)).to.deep.equalInAnyOrder(expectedKeys);
 
 	CHECKED_KEYS.forEach(function (key) {
@@ -84,6 +65,10 @@ describe('integration should generate info.json', function () {
 
 	it('with YAML config file', async function () {
 		await run('yaml-config');
+	});
+
+	it('with collections_config_override', async function () {
+		await run('collections-config-override');
 	});
 
 	it('with legacy config', async function () {

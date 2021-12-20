@@ -59,15 +59,13 @@
 		"uploads": "static/uploads",
 		"config": ""
 	},
-	"time": "a",
+	"time": "UNCHECKED",
 	"version": "0.0.3",
 	"cloudcannon": {
 		"name": "cloudcannon-hugo",
 		"version": "0.12.5"
 	},
-	"generator": {
-		"hi": "there"
-	},
+	"generator": "UNCHECKED",
 	"collections_config": {
 		"pages": {
 			"path": "content",

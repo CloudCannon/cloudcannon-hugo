@@ -142,8 +142,11 @@ async function processCollectionConfig(itemPath, itemDetails, collectionKey, ini
 
 export async function getCollectionsAndConfig(config, urlsPerPath) {
 	const paths = pathHelper.getPaths();
+	const override = config.collections_config_override === true;
 	const initialCollectionsConfig = config.collections_config || {};
 	const definedCollections = {};
+
+	const isAllowedCollectionKey = (key) => !override || initialCollectionsConfig[key];
 
 	Object.keys(initialCollectionsConfig).forEach((collectionKey) => {
 		if (initialCollectionsConfig[collectionKey].path) {
@@ -155,13 +158,15 @@ export async function getCollectionsAndConfig(config, urlsPerPath) {
 	const collectionItemPaths = await pathHelper.getCollectionPaths(definedCollectionKeys);
 	const pagePaths = await pathHelper.getPagePaths();
 	const collections = {};
-	const collectionsConfig = {
-		data: {
+	const collectionsConfig = {};
+
+	if (!override) {
+		collectionsConfig.data = {
 			path: paths.data,
 			output: false,
 			...initialCollectionsConfig.data
-		}
-	};
+		};
+	}
 
 	// Run these in partitions to prevent memory issues
 	const partitionSize = 10;
@@ -175,6 +180,10 @@ export async function getCollectionsAndConfig(config, urlsPerPath) {
 		await Promise.all(slice.map(async (itemPath) => {
 			const collectionKey = definedCollections[dirname(itemPath)]
 				|| getCollectionKey(itemPath, paths.content, paths.archetypes);
+
+			if (!isAllowedCollectionKey(collectionKey)) {
+				return;
+			}
 
 			if (collectionKey) {
 				const itemDetails = await parseFile(itemPath);
@@ -207,7 +216,7 @@ export async function getCollectionsAndConfig(config, urlsPerPath) {
 		}));
 	}
 
-	if (!collectionsConfig.pages && pagePaths.length) {
+	if (isAllowedCollectionKey('pages') && !collectionsConfig.pages && pagePaths.length) {
 		collectionsConfig.pages = {
 			path: paths.content,
 			output: true,

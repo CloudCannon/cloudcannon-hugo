@@ -1,0 +1,5 @@
+collections_config_override: true
+collections_config:
+  staff_members:
+    path: data/staff_members
+    output: false
