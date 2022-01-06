@@ -61,7 +61,7 @@ export async function getLayout(path, details) {
 	const layoutFiles = [];
 	const { content } = pathHelper.getPaths();
 	const isHome = path.indexOf(`${content}/_index.md`) >= 0;
-	const isSingle = basename(path).indexOf('_index.md') < 0;
+	const isSingle = !(/^_index\.(md|html?)$/i.test(basename(path)));
 	const { layout, type } = details;
 	const section = getTopSectionName(path, {
 		rootDir: content,

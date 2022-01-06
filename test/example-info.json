@@ -21,6 +21,10 @@
             "output": true,
             "_enabled_editors": ["data"]
         },
+        "locations": {
+            "output": true,
+            "path": "content/locations"
+        },
         "posts": {
             "path": "content/posts",
             "output": true
@@ -207,6 +211,15 @@
         ],
         "emptyHTMLCollection": [],
         "emptyMarkdownCollection": [],
+        "locations": [
+            {
+                "collection": "locations",
+                "layout": "_default/list",
+                "path": "content/locations/_index.html",
+                "title": "locations",
+                "url": "/locations/_index.html"
+            }
+        ],
         "staff_members": [
             {
                 "url": "",

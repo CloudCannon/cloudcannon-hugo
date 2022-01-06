@@ -113,6 +113,11 @@ describe('collections generator', function () {
 			expect(result).to.equal('_default/list');
 		});
 
+		it('list page using an _index.html file', async function () {
+			const result = await getLayout('content/collectionName/_index.html', {});
+			expect(result).to.equal('_default/list');
+		});
+
 		it('list page for mytype', async function () {
 			const result = await getLayout('content/mytype/_index.md', {});
 			expect(result).to.equal('mytype/list');
