@@ -1,38 +1,8 @@
 import { expect } from 'chai';
 import mock from 'mock-fs';
 import { getInfo } from '../../src/generators/info.js';
-import { version } from '../../src/helpers/metadata.js';
 import pathHelper from '../../src/helpers/paths.js';
 import { dataFiles } from '../test-paths.js';
-
-const EXPECTED_GENERATOR = {
-	name: 'hugo',
-	version: '0.0.0', // This will probably fail locally
-	metadata: {
-		markdown: 'goldmark',
-		goldmark: {
-			extensions: {
-				definitionList: true,
-				footnote: true,
-				linkify: true,
-				strikethrough: true,
-				table: true,
-				taskList: true,
-				typographer: true
-			},
-			parser: {
-				attribute: true,
-				autoHeadingID: true,
-				autoHeadingIDType: 'github'
-			},
-			renderer: {
-				hardWraps: false,
-				unsafe: true,
-				xhtml: false
-			}
-		}
-	}
-};
 
 const EXPECTED_DATA = {
 	footer: [
@@ -49,86 +19,104 @@ const EXPECTED_DATA = {
 	}
 };
 
-describe('getInfo', function () {
+describe('info generator', function () {
 	this.timeout(10000); // sometimes takes longer than 2000ms (default)
 
-	it('work with no cloudcannon specific config', async function () {
+	const untested = {
+		time: 'UNTESTED',
+		generator: 'UNTESTED'
+	};
+
+	it('with no cloudcannon specific config', async function () {
 		const expected = {
-			time: 'TODO', // TODO
-			version: version,
-			generator: EXPECTED_GENERATOR,
+			source: '',
+			base_url: '',
+			data_config: undefined,
+			_comments: undefined,
+			_options: undefined,
+			_inputs: undefined,
+			_editables: undefined,
+			collection_groups: undefined,
+			editor: undefined,
+			source_editor: undefined,
+			_enabled_editors: undefined,
+			_instance_values: undefined,
+			_structures: undefined,
+			_array_structures: undefined,
+			_select_data: undefined,
+			paths: pathHelper.getPaths(),
+			version: '0.0.3',
 			cloudcannon: {
 				name: 'cloudcannon-hugo',
 				version: '0.0.0'
 			},
-			source: '', // don't think hugo has custom src / mabe get this from cloudcannon
-			'base-url': '/',
-			'collections-config': { data: { path: 'data', output: false } },
-			_comments: {},
-			_options: {},
-			_editor: {},
-			_source_editor: {},
-			_array_structures: {},
-			_select_data: {},
-			paths: pathHelper.getPaths(),
-			collections: {}
+			collections_config: {
+				data: {
+					path: 'data',
+					output: false
+				}
+			},
+			collections: {},
+			data: undefined
 		};
 
 		const result = await getInfo({ baseURL: '/' });
 
-		[...new Set([...Object.keys(expected), ...Object.keys(result)])].forEach((key) => {
-			if (key === 'time' || key === 'generator') { // TODO mock these instead
-				return;
-			}
-
-			expect(result[key]).to.deep.equal(expected[key]);
-		});
+		expect({ ...result, ...untested }).to.deep.equal({ ...expected, ...untested });
 	});
 
-	it('work with cloudcannon specific config', async function () {
+	it('with cloudcannon specific config', async function () {
 		const cloudcannon = {
 			_comments: { comment: 'comment' },
 			_options: { option: 'value' },
 			_inputs: {},
 			_editables: {},
-			_editor: { default_path: '/about/' },
-			_source_editor: { theme: 'monokai', tab_size: 2, show_gutter: false },
+			editor: { default_path: '/about/' },
+			source_editor: { theme: 'monokai', tab_size: 2, show_gutter: false },
 			_structures: {},
 			_array_structures: { object: {} },
 			_select_data: { object: {} }
 		};
 
 		const expected = {
-			time: 'TODO', // TODO,
-			version: version,
-			generator: EXPECTED_GENERATOR,
+			source: '',
+			base_url: '',
+			data_config: undefined,
+			_comments: { comment: 'comment' },
+			_options: { option: 'value' },
+			_inputs: {},
+			_editables: {},
+			collection_groups: undefined,
+			editor: { default_path: '/about/' },
+			source_editor: { theme: 'monokai', tab_size: 2, show_gutter: false },
+			_enabled_editors: undefined,
+			_instance_values: undefined,
+			_structures: {},
+			_array_structures: { object: {} },
+			_select_data: { object: {} },
+			paths: pathHelper.getPaths(),
+			version: '0.0.3',
 			cloudcannon: {
 				name: 'cloudcannon-hugo',
 				version: '0.0.1'
 			},
-			source: '', // TODO
-			'base-url': '/',
-			'collections-config': { data: { path: 'data', output: false } },
-			...cloudcannon,
-			paths: pathHelper.getPaths(),
-			collections: {}
+			collections_config: {
+				data: {
+					path: 'data',
+					output: false
+				}
+			},
+			collections: {},
+			data: undefined
 		};
 
-		const result = await getInfo({
-			baseURL: '/',
-			...cloudcannon
-		}, { version: '0.0.1' });
+		const hugoConfig = { baseURL: '/', ...cloudcannon };
+		const result = await getInfo(hugoConfig, { version: '0.0.1' });
 
-		[...new Set([...Object.keys(expected), ...Object.keys(result)])].forEach((key) => {
-			if (key === 'time' || key === 'generator') { // TODO mock these instead
-				return;
-			}
-
-			expect(result[key]).to.deep.equal(expected[key]);
-		});
+		expect({ ...result, ...untested }).to.deep.equal({ ...expected, ...untested });
 	});
 
-	describe('with data', async function () {
+	describe('with data', function () {
 		before(function () {
 			mock(dataFiles);
 		});

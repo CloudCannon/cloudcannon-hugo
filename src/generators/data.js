@@ -19,31 +19,29 @@ function getSectionName(path, rootDir = '') {
 	return leadingPath ? dir.replace(leadingPath[0], '') : '';
 }
 
-export async function getData(hugoConfig) {
-	const dataConfig = hugoConfig?.cloudcannon?.data;
+export async function getData(config) {
+	const dataConfig = config.data_config;
 	let data;
 
 	if (dataConfig) {
 		data = {};
-		const allowedCollections = (typeof dataConfig === 'object') ? Object.keys(dataConfig) : null;
+
 		const paths = pathHelper.getPaths();
 		const dataFiles = await pathHelper.getDataPaths();
 
 		await Promise.all(dataFiles.map(async (path) => {
-			const filename = basename(path, extname(path));
+			const filenameWithoutExtension = basename(path, extname(path));
 			const dataKey = getSectionName(path, paths.data);
 
-			if (allowedCollections && !allowedCollections.includes(dataKey || filename)) {
-				return;
-			}
+			if (dataConfig === true || dataConfig[dataKey || filenameWithoutExtension] === true) {
+				const contents = await parseDataFile(path) ?? {};
 
-			const contents = await parseDataFile(path) ?? {};
-
-			if (dataKey) {
-				data[dataKey] = data[dataKey] ?? {};
-				data[dataKey][filename] = contents;
-			} else {
-				data[filename] = contents;
+				if (dataKey) {
+					data[dataKey] = data[dataKey] || {};
+					data[dataKey][filenameWithoutExtension] = contents;
+				} else {
+					data[filenameWithoutExtension] = contents;
+				}
 			}
 		}));
 	}

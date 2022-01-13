@@ -161,21 +161,23 @@ describe('collections generator', function () {
 				'content/posts/post1.md': '/posts/post1/'
 			};
 
-			const hugoConfig = {
-				cloudcannon: {
-					collections: {
-						data: { _image_key: 'thumbnail' },
-						posts: { _image_key: 'author_image', _image_size: 'cover' },
-						fakeCollection: 'wackyLink',
-						staff_members: { path: 'data/staff_members' }
+			const config = {
+				collections_config: {
+					data: {
+						_image_key: 'thumbnail'
+					},
+					posts: {
+						_image_key: 'author_image',
+						_image_size: 'cover'
+					},
+					fakeCollection: 'wackyLink',
+					staff_members: {
+						path: 'data/staff_members'
 					}
 				}
 			};
 
-			const {
-				collections,
-				collectionsConfig
-			} = await getCollectionsAndConfig(hugoConfig, urlsPerPath);
+			const { collections, collectionsConfig } = await getCollectionsAndConfig(config, urlsPerPath);
 
 			const expectedCollections = {
 				coll1: [

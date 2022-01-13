@@ -18,14 +18,24 @@ const EXPECTED_DATA = {
 	}
 };
 
-describe('getData', function () {
+describe('data generator', function () {
 	before(function () {
 		mock(dataFiles);
 	});
 
-	it('should work', async function () {
-		const dataObjects = await getData({ cloudcannon: { data: true } });
+	it('should allow all', async function () {
+		const dataObjects = await getData({ data_config: true });
 		expect(dataObjects).to.deep.equal(EXPECTED_DATA);
+	});
+
+	it('should allow some', async function () {
+		const dataObjects = await getData({ data_config: { nav: true } });
+		expect(dataObjects).to.deep.equal({ nav: EXPECTED_DATA.nav });
+	});
+
+	it('should allow none', async function () {
+		const dataObjects = await getData({});
+		expect(dataObjects).to.deep.equal(undefined);
 	});
 
 	after(function () {
