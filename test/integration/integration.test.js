@@ -9,7 +9,6 @@ const { expect } = chai;
 
 const CHECKED_KEYS = [ // Skips time and generator
 	'version',
-	'cloudcannon',
 	'paths',
 	'data_config',
 	'collections_config',

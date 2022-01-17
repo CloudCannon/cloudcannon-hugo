@@ -61,10 +61,7 @@
 	},
 	"time": "UNCHECKED",
 	"version": "0.0.3",
-	"cloudcannon": {
-		"name": "cloudcannon-hugo",
-		"version": "0.12.5"
-	},
+	"cloudcannon": "UNCHECKED",
 	"generator": "UNCHECKED",
 	"collections_config": {
 		"pages": {

@@ -61,10 +61,7 @@
 	},
 	"time": "UNCHECKED",
 	"version": "0.0.3",
-	"cloudcannon": {
-		"name": "cloudcannon-hugo",
-		"version": "0.12.5"
-	},
+	"cloudcannon": "UNCHECKED",
 	"generator": "UNCHECKED",
 	"collections_config": {
 		"pages": {
@@ -254,7 +251,7 @@
 				"layout": "_default/list",
 				"path": "content/locations/_index.html",
 				"title": "locations",
-				"url": "/locations/_index.html"
+				"url": "/locations/"
 			}
 		],
 		"staff_members": [
