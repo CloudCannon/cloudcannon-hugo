@@ -79,7 +79,7 @@ export async function getLayoutTree() {
 			}
 
 			memo[parts[0]][parts[1]] = relLayoutPath;
-		} else {
+		} else if (parts.length === 1) {
 			memo[parts[0]] = relLayoutPath;
 		}
 
