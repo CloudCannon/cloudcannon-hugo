@@ -89,6 +89,10 @@
 			"output": true,
 			"path": "content/locations"
 		},
+		"nested": {
+			"output": true,
+			"path": "content/nested"
+		},
 		"posts": {
 			"path": "content/posts",
 			"output": true
@@ -254,6 +258,30 @@
 				"url": "/locations/"
 			}
 		],
+		"nested": [
+            {
+                "url": "/nested/",
+                "path": "content/nested/_index.md",
+                "collection": "nested",
+				"title": "Nested content",
+                "layout": "_default/list"
+            },
+            {
+                "url": "/nested/inner/item/",
+                "path": "content/nested/inner/item.md",
+                "collection": "nested",
+                "title": "item",
+                "layout": "_default/single"
+
+            },
+            {
+                "url": "/nested/inner/",
+                "path": "content/nested/inner/_index.md",
+                "collection": "nested",
+                "title": "inner",
+                "layout": "_default/list"
+            }
+        ],
 		"staff_members": [
 			{
 				"url": "",
