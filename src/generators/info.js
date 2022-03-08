@@ -7,12 +7,12 @@ import { getData } from './data.js';
 import { getConfig } from '../config.js';
 import { getCollectionsAndConfig } from './collections.js';
 
-function getHugoUrls() {
+async function getHugoUrls() {
 	log('⏳ Processing permalinks...');
 	const { source } = pathHelper.getPaths();
 	let cmdArgs = ['list', 'all'];
 	cmdArgs = cmdArgs.concat(source ? ['--source', source] : []);
-	const fileCsv = runProcess('hugo', cmdArgs);
+	const fileCsv = await runProcess('hugo', cmdArgs);
 	const fileList = Papa.parse(fileCsv, { header: true });
 
 	return fileList.data.reduce((memo, file) => {
@@ -23,12 +23,13 @@ function getHugoUrls() {
 
 export async function getInfo(hugoConfig, options) {
 	const config = await getConfig(hugoConfig);
-	const urlsPerPath = getHugoUrls();
+	const urlsPerPath = await getHugoUrls();
 
 	pathHelper.getSupportedLanguages(hugoConfig);
 
 	const { collections, collectionsConfig } = await getCollectionsAndConfig(config, urlsPerPath);
 	const data = await getData(config);
+	const generator = await getGenerator(hugoConfig);
 
 	return {
 		...config,
@@ -38,7 +39,7 @@ export async function getInfo(hugoConfig, options) {
 			name: 'cloudcannon-hugo',
 			version: options?.version || '0.0.0'
 		},
-		generator: getGenerator(hugoConfig),
+		generator,
 		collections_config: collectionsConfig,
 		collections,
 		data

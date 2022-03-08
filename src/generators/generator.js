@@ -12,8 +12,8 @@ export function getGeneratorMetadata(hugoConfig) {
 	};
 }
 
-export function getGenerator(hugoConfig) {
-	const hugoVersion = runProcess('hugo', ['version']);
+export async function getGenerator(hugoConfig) {
+	const hugoVersion = await runProcess('hugo', ['version']);
 
 	return {
 		name: 'hugo',

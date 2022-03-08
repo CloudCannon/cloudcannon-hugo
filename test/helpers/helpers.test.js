@@ -33,18 +33,19 @@ describe('helpers.js', function () {
 	});
 
 	describe('runProcess', function () {
-		it('should echo', function () {
-			const result = runProcess('echo', ['hello']);
+		it('should echo', async function () {
+			const result = await runProcess('echo', ['hello']);
+			console.log(`got result: ${result}`);
 			expect(result).to.equal('hello');
 		});
 
-		it('should return empty', function () {
-			const result = runProcess('echo');
+		it('should return empty', async function () {
+			const result = await runProcess('echo');
 			expect(result).to.equal('');
 		});
 
-		it('should return empty string with unknown command', function () {
-			const result = runProcess('fakeCommand');
+		it('should return empty string with unknown command', async function () {
+			const result = await runProcess('fakeCommand');
 			expect(result).to.equal('');
 		});
 	});

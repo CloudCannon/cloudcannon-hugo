@@ -1,5 +1,6 @@
 import cp from 'child_process';
 import fs from 'fs/promises';
+import log from '../helpers/logger.js';
 
 const isObject = (item) => item && typeof item === 'object' && !Array.isArray(item);
 
@@ -52,14 +53,28 @@ export function getUrlPathname(url = '/') {
 	}
 }
 
-export function runProcess(command, args) {
-	const childProcess = cp.spawnSync(command, args, {
-		cwd: process.cwd(),
-		env: process.env,
-		stdio: 'pipe',
-		encoding: 'utf-8'
-	});
+export async function runProcess(command, args) {
+	return new Promise((resolve) => {
+		const childProcess = cp.spawn(command, args, {
+			cwd: process.cwd(),
+			env: process.env,
+			stdio: 'pipe',
+			encoding: 'utf-8'
+		});
 
-	// Second item contains the actual response
-	return childProcess.output?.[1]?.toString().trim() ?? '';
+		let result = '';
+		childProcess.stdout.on('data', (data) => {
+			result = result + data;
+		});
+
+		childProcess.on('close', () => {
+			const processed = result.toString('utf8')?.trim();
+			return resolve(processed || '');
+		});
+
+		childProcess.on('error', (code) => {
+			log(`command "${command}" exited with code ${code}`, 'error');
+			return resolve('');
+		});
+	});
 }
