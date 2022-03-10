@@ -41,7 +41,7 @@ export async function getConfigPaths(flags = {}) {
 	}
 
 	if (await exists(configDirDefault)) {
-		const files = await getGlob(`${configDirDefault}/**.**`);
+		const files = await getGlob(join(configDirDefault, '**.**'));
 		configFileList = configFileList.concat(configSort(files));
 	}
 
@@ -81,16 +81,29 @@ export async function getConfigContents(configFileList, passedConfigFiles = '') 
 	return contentList.filter((item) => item); // remove empties
 }
 
-export async function getHugoConfig(flags = {}) {
+export async function generateConfigObject(flags = {}, options) {
 	const configFileList = await getConfigPaths(flags);
 
-	log(`🔧 Found ${pluralize(configFileList.length, 'Hugo config file', { nonZeroSuffix: ':' })}`);
-	configFileList.forEach((configFilePath) => log(`   ${chalk.bold(configFilePath)}`));
+	if (!options?.silent) {
+		log(`🔧 Reading ${pluralize(configFileList.length, 'Hugo config file', { nonZeroSuffix: ':' })}`);
+		configFileList.forEach((configFilePath) => log(`   ${chalk.bold(configFilePath)}`));
+	}
 
 	const configContents = await getConfigContents(configFileList, flags.config);
 	configContents.reverse(); // reversing because deep merge places priority on the second object
 
 	const configObject = mergeDeep({}, ...configContents);
+
+	if (configObject.staticDir) {
+		// We want people to set their uploads dir in cloudcannon config, so this doesn't need to be perfect
+		configObject.staticDir = Array.isArray(configObject.staticDir) ? configObject.staticDir[0] : configObject.staticDir;
+	}
+	return configObject;
+}
+
+export async function getHugoConfig(flags = {}) {
+
+	const configObject = await generateConfigObject(flags);
 
 	configObject.baseURL = flags.baseUrl || configObject.baseURL || '/';
 
