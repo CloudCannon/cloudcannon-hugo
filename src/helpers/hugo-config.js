@@ -11,6 +11,37 @@ const EXTENSION_ORDER = [
 	'.json'
 ];
 
+
+export async function expandThemeList(hugoConfig) {
+	let {
+		source, environment, themesDir, theme: themeList
+	} = hugoConfig;
+
+	let themeOrder = [];
+
+	const processTheme = async function (themeName) {
+		if (!themeOrder.includes(themeName)) {
+			themeOrder.push(themeName);
+			const themePath = join(source || '', themesDir || 'themes', themeName);
+			const themeConfig = await generateConfigObject({ source: themePath, environment }, { silent: true });
+			let subThemeList = themeConfig.theme;
+			if (subThemeList) {
+				subThemeList = Array.isArray(subThemeList) ? subThemeList : [subThemeList];
+				for (const theme of subThemeList) {
+					await processTheme(theme);
+				}
+			}
+		}
+	};
+
+	for (const theme of themeList) {
+		await processTheme(theme);
+	}
+
+	return themeOrder;
+}
+
+
 export function configSort(fileArray) {
 	return fileArray.sort((a, b) => {
 		const configRegex = /config\.(toml|yaml|json)$/i;
@@ -125,6 +156,19 @@ export async function getHugoConfig(flags = {}) {
 
 	if (flags.layoutDir) {
 		configObject.layoutDir = flags.layoutDir;
+	}
+
+	if (flags.themesDir) {
+		configObject.themesDir = flags.themesDir;
+	}
+
+	if (flags.theme) {
+		configObject.theme = flags.theme;
+	}
+
+	if (configObject.theme) {
+		configObject.theme = Array.isArray(configObject.theme) ? configObject.theme : [configObject.theme];
+		configObject.theme = await expandThemeList(configObject);
 	}
 
 	return configObject;

@@ -81,6 +81,7 @@ export async function getLayout(path, details) {
 
 	const tree = await pathHelper.getLayoutTree();
 
+	// ANOTHER for-loop for the theme lookup order
 	for (let t = 0; t < typeFolders.length; t += 1) {
 		for (let l = 0; l < layoutFiles.length; l += 1) {
 			const typeFolder = typeFolders[t];

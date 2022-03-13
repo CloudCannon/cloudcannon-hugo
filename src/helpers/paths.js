@@ -21,6 +21,7 @@ export function getPaths(hugoConfig = {}) {
 		pages: contentDir,
 		data: hugoConfig.dataDir || 'data',
 		layouts: hugoConfig.layoutDir || 'layouts',
+		theme: hugoConfig.theme || 'themes',
 		publish: hugoConfig.destination || hugoConfig.publishDir || 'public',
 		static: staticDir,
 		uploads: join(staticDir, hugoConfig.uploads_dir || hugoConfig.uploadsDir || 'uploads'),
