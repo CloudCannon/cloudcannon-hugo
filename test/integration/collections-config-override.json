@@ -23,6 +23,10 @@
 		"staff_members": {
 			"path": "data/staff_members",
 			"output": false
+		},
+		"blog": {
+			"path": "content/posts",
+			"output": true
 		}
 	},
 	"collections": {
@@ -63,6 +67,65 @@
 				"blurb": "Betty is a bookworm who will typically have four books on the go.",
 				"output": false
 			}
-		]
+		],
+		"blog": [
+            {
+                "url": "/blog/",
+                "path": "content/posts/_index.md",
+                "collection": "blog",
+                "title": "Blog",
+                "description": "Keep up with the latest news.",
+                "menu": {
+                    "main": {
+                        "weight": 2
+                    },
+                    "footer": {
+                        "weight": 2
+                    }
+                },
+                "_enabled_editors": [
+                    "visual",
+                    "content",
+                    "source"
+                ],
+                "layout": "posts/list"
+            },
+            {
+                "url": "/posts/2016/08/06/post3/",
+                "path": "content/posts/post3.md",
+                "collection": "blog",
+                "date": "2016-08-06T00:00:00.000Z",
+                "title": "Post3",
+                "categories": [
+                    "sales"
+                ],
+                "author_staff_member": "anna",
+                "layout": "posts/single"
+            },
+            {
+                "url": "/posts/2016/08/12/post2/",
+                "path": "content/posts/post2.md",
+                "collection": "blog",
+                "date": "2016-08-12T00:00:00.000Z",
+                "title": "Post2",
+                "categories": [
+                    "marketing"
+                ],
+                "author_staff_member": "betty",
+                "layout": "posts/single"
+            },
+            {
+                "url": "/posts/2016/07/20/post1/",
+                "path": "content/posts/post1.md",
+                "collection": "blog",
+                "date": "2016-07-20T00:00:00.000Z",
+                "title": "Post1",
+                "categories": [
+                    "sales"
+                ],
+                "author_staff_member": "anna",
+                "layout": "posts/single"
+            }
+        ]
 	}
 }
