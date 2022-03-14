@@ -24,8 +24,8 @@
 			"path": "data/staff_members",
 			"output": false
 		},
-		"blog": {
-			"path": "content/posts",
+		"nests": {
+			"path": "content/nested/inner",
 			"output": true
 		}
 	},
@@ -68,63 +68,27 @@
 				"output": false
 			}
 		],
-		"blog": [
+		"nests": [
             {
-                "url": "/blog/",
-                "path": "content/posts/_index.md",
-                "collection": "blog",
-                "title": "Blog",
-                "description": "Keep up with the latest news.",
-                "menu": {
-                    "main": {
-                        "weight": 2
-                    },
-                    "footer": {
-                        "weight": 2
-                    }
-                },
-                "_enabled_editors": [
-                    "visual",
-                    "content",
-                    "source"
-                ],
-                "layout": "posts/list"
+                "url": "/nested/inner/",
+                "path": "content/nested/inner/_index.md",
+                "collection": "nests",
+                "title": "inner",
+                "layout": "_default/list"
             },
             {
-                "url": "/posts/2016/08/06/post3/",
-                "path": "content/posts/post3.md",
-                "collection": "blog",
-                "date": "2016-08-06T00:00:00.000Z",
-                "title": "Post3",
-                "categories": [
-                    "sales"
-                ],
-                "author_staff_member": "anna",
-                "layout": "posts/single"
+                "url": "/nested/inner/leaf/node/",
+                "path": "content/nested/inner/leaf/node.md",
+                "collection": "nests",
+                "title": "Node",
+                "layout": "_default/single"
             },
             {
-                "url": "/posts/2016/08/12/post2/",
-                "path": "content/posts/post2.md",
-                "collection": "blog",
-                "date": "2016-08-12T00:00:00.000Z",
-                "title": "Post2",
-                "categories": [
-                    "marketing"
-                ],
-                "author_staff_member": "betty",
-                "layout": "posts/single"
-            },
-            {
-                "url": "/posts/2016/07/20/post1/",
-                "path": "content/posts/post1.md",
-                "collection": "blog",
-                "date": "2016-07-20T00:00:00.000Z",
-                "title": "Post1",
-                "categories": [
-                    "sales"
-                ],
-                "author_staff_member": "anna",
-                "layout": "posts/single"
+                "url": "/nested/inner/item/",
+                "path": "content/nested/inner/item.md",
+                "collection": "nests",
+                "title": "item",
+                "layout": "_default/single"
             }
         ]
 	}

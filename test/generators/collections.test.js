@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import mock from 'mock-fs';
 import {
+	getDefinedCollectionName,
 	getCollectionKey,
 	getPageUrl,
 	getLayout,
@@ -10,6 +11,40 @@ import pathHelper from '../../src/helpers/paths.js';
 import { collectionFiles, testFileStructure } from '../test-paths.js';
 
 describe('collections generator', function () {
+
+	describe('getDefinedCollectionName', function () {
+		const definedCollections = {
+			'content/posts': 'posts',
+			'content/group': 'renamed',
+			'content/nested/inner': 'nestedRename'
+		};
+
+		it('post in collection', function () {
+			const result = getDefinedCollectionName('content/posts/item.md', definedCollections);
+			expect(result).to.equal('posts');
+		});
+
+		it('about page', function () {
+			const result = getDefinedCollectionName('content/about/_index.md', definedCollections);
+			expect(result).to.be.undefined;
+		});
+
+		it('nested item in renamed collection', function () {
+			const result = getDefinedCollectionName('content/group/nested/file/path/item.md', definedCollections);
+			expect(result).to.equal('renamed');
+		});
+
+		it('nested item in nested renamed collection', function () {
+			const result = getDefinedCollectionName('content/nested/inner/file/path/item.md', definedCollections);
+			expect(result).to.equal('nestedRename');
+		});
+
+		it('item outside of nested collection', function () {
+			const result = getDefinedCollectionName('content/nested/item.md', definedCollections);
+			expect(result).to.be.undefined;
+		});
+	});
+
 	describe('getCollectionKey contentDirectory', function () {
 		it('_index file', function () {
 			const result = getCollectionKey('content/collectionName/_index.md', 'content');

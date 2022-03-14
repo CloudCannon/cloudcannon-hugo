@@ -41,6 +41,18 @@ export function getCollectionKey(path, contentDir, archetypePath) {
 	return path.replace(`${contentDir}/`, '').split('/')[0];
 }
 
+export function getDefinedCollectionName(itemPath, definedCollections) {
+	let collectionKey, prevDirectory;
+	let itemDirectory = itemPath;
+	do {
+		prevDirectory = itemDirectory;
+		itemDirectory = dirname(prevDirectory);
+		collectionKey = definedCollections[itemDirectory];
+	} while (!collectionKey && itemDirectory !== prevDirectory);
+
+	return collectionKey;
+}
+
 export function getPageUrl(path, hugoUrls = {}, contentDir) {
 	if (hugoUrls[path]) {
 		return hugoUrls[path];
@@ -150,7 +162,9 @@ export async function getCollectionsAndConfig(config, urlsPerPath) {
 
 	Object.keys(initialCollectionsConfig).forEach((collectionKey) => {
 		if (initialCollectionsConfig[collectionKey].path) {
-			definedCollections[initialCollectionsConfig[collectionKey].path] = collectionKey;
+			// remove trailing slash
+			const collectionPath = initialCollectionsConfig[collectionKey].path.replace(/\/$/, '');
+			definedCollections[collectionPath] = collectionKey;
 		}
 	});
 
@@ -178,7 +192,7 @@ export async function getCollectionsAndConfig(config, urlsPerPath) {
 		const slice = collectionItemPaths.slice(i * partitionSize, ((i + 1) * partitionSize));
 
 		await Promise.all(slice.map(async (itemPath) => {
-			const collectionKey = definedCollections[dirname(itemPath)]
+			const collectionKey = getDefinedCollectionName(itemPath, definedCollections)
 				|| getCollectionKey(itemPath, paths.content, paths.archetypes);
 
 			if (!isAllowedCollectionKey(collectionKey)) {
