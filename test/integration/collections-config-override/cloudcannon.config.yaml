@@ -3,3 +3,6 @@ collections_config:
   staff_members:
     path: data/staff_members
     output: false
+  nests:
+    path: content/nested/inner
+    output: true
