@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import mock from 'mock-fs';
-import { testFileStructure, configFiles, configOrder } from '../test-paths.js';
+import { testFileStructure, configFiles, themeFiles, configOrder } from '../test-paths.js';
 import {
+	expandThemeList,
 	configSort,
 	getConfigPaths,
 	getConfigContents,
@@ -9,6 +10,25 @@ import {
 } from '../../src/helpers/hugo-config.js';
 
 describe('hugo-config', function () {
+	describe('expandThemeList()', function () {
+
+		before(function () {
+			mock(themeFiles);
+		});
+
+		it('should return the correct themeList', async function () {
+			const hugoConfig = {
+				environment: 'customenv', themesDir: 'custom/themesDir', theme: ['t1']
+			};
+			const themeList = await expandThemeList(hugoConfig);
+			expect(themeList).to.deep.equal(['t1', 't2/nested', 't3', 't4', 't5', 'github.com/user/theme']);
+		});
+
+		after(function () {
+			mock.restore();
+		});
+	});
+
 	describe('configSort', function () {
 		it('should sort based on extension name', function () {
 			const testArray = ['config.toml', 'a.json', 'b.toml', 'c.yaml'];

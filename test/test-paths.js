@@ -203,6 +203,21 @@ title = "Designer"
 	}
 };
 
+export const themeFiles = {
+	'custom/themesDir': {
+		t1: { 'config.toml': 'theme = ["t2/nested", "github.com/user/theme"]' },
+		t2: { nested: { 'config.yaml': 'theme: t3' } },
+		t3: { config: {
+			customenv: { 'config.json':
+`{
+	"theme": ["t4", "t5"]
+}`
+			},
+			_default: { 'config.toml': 'theme = ["t5", "t4"]' } },
+		}
+	}
+};
+
 export const testFileStructure = Object.keys(pathsByType).reduce((memo, pathType) => {
 	pathsByType[pathType].forEach((path) => {
 		if (!memo[path]) {

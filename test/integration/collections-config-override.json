@@ -9,6 +9,7 @@
 		"pages": "content",
 		"data": "data",
 		"layouts": "layouts",
+		"theme": "themes",
 		"publish": "public",
 		"static": "static",
 		"uploads": "static/uploads",
