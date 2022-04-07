@@ -43,7 +43,9 @@ export const pathsByType = {
 		'layouts/mytype/list.html',
 		'layouts/mytype/mylayout.html',
 		'layouts/posts/mylayout.html',
-		'layouts/posts/single.html'
+		'layouts/posts/single.html',
+		'themes/theme/layouts/_default/single.html',
+		'themes/theme/layouts/posts/single.html',
 	],
 	otherPages: [
 		'config.yaml',

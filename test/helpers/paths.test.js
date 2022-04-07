@@ -44,22 +44,29 @@ describe('pathHelper', function () {
 	describe('getLayoutTree', function () {
 		before(function () {
 			pathHelper.clearCachedLayouts();
+			pathHelper.generatePaths({ theme: ['theme'] });
 		});
 
 		it('should create a layout tree using layout file structure', async function () {
 			const tree = await pathHelper.getLayoutTree();
 			const expected = {
-				index: 'index',
-				_default: {
-					list: '_default/list'
+				source: {
+					index: 'index',
+					_default: {
+						list: '_default/list'
+					},
+					mytype: {
+						list: 'mytype/list',
+						mylayout: 'mytype/mylayout'
+					},
+					posts: {
+						mylayout: 'posts/mylayout',
+						single: 'posts/single'
+					}
 				},
-				mytype: {
-					list: 'mytype/list',
-					mylayout: 'mytype/mylayout'
-				},
-				posts: {
-					mylayout: 'posts/mylayout',
-					single: 'posts/single'
+				theme: {
+					_default: { single: '_default/single' },
+					posts: { single: 'posts/single' }
 				}
 			};
 			expect(tree).to.deep.equal(expected);

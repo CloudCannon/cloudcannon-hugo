@@ -21,7 +21,8 @@ export function getPaths(hugoConfig = {}) {
 		pages: contentDir,
 		data: hugoConfig.dataDir || 'data',
 		layouts: hugoConfig.layoutDir || 'layouts',
-		theme: hugoConfig.theme || 'themes',
+		theme: hugoConfig.themesDir || 'themes',
+		themeList: hugoConfig.theme || [],
 		publish: hugoConfig.destination || hugoConfig.publishDir || 'public',
 		static: staticDir,
 		uploads: join(staticDir, hugoConfig.uploads_dir || hugoConfig.uploadsDir || 'uploads'),
@@ -66,22 +67,38 @@ export async function getLayoutTree() {
 		return cachedLayouts;
 	}
 
-	const { source, layouts } = getPaths();
+	const { source, layouts, theme, themeList } = getPaths();
 	const layoutPaths = await getLayoutPaths();
 
 	cachedLayouts = layoutPaths.reduce((memo, layoutPath) => {
 		layoutPath = layoutPath.replace(/\..+$/i, '');
-		const relLayoutPath = layoutPath.replace(join(source, layouts, '/'), '');
+		let layoutSource;
+		let relLayoutPath;
+
+		if (layoutPath.indexOf(join(source, layouts)) === 0) {
+			layoutSource = 'source';
+			relLayoutPath = layoutPath.replace(join(source, layouts, '/'), '');
+		} else {
+			const themePath = layoutPath.replace(join(source, theme, '/'), '');
+			layoutSource = themeList.find(themeName => themePath.indexOf(themeName) === 0);
+			if (!layoutSource) {
+				return memo;
+			}
+			relLayoutPath = themePath.replace(join(layoutSource, 'layouts', '/'), '');
+		}
+
+		memo[layoutSource] = memo[layoutSource] || {};
+
 		const parts = relLayoutPath.split('/');
 
 		if (parts.length === 2) {
-			if (!memo[parts[0]]) {
-				memo[parts[0]] = {};
+			if (!memo[layoutSource][parts[0]]) {
+				memo[layoutSource][parts[0]] = {};
 			}
 
-			memo[parts[0]][parts[1]] = relLayoutPath;
+			memo[layoutSource][parts[0]][parts[1]] = relLayoutPath;
 		} else if (parts.length === 1) {
-			memo[parts[0]] = relLayoutPath;
+			memo[layoutSource][parts[0]] = relLayoutPath;
 		}
 
 		return memo;
@@ -91,8 +108,10 @@ export async function getLayoutTree() {
 }
 
 export async function getLayoutPaths() {
-	const { source, layouts } = getPaths();
-	return getGlob(join(source, layouts, '**'));
+	const { source, layouts, theme } = getPaths();
+	const sourceLayoutGlob = join(source, layouts, '**');
+	const themeLayoutGlob = join(source, theme, '**/layouts/**');
+	return getGlob([sourceLayoutGlob, themeLayoutGlob]);
 }
 
 /**

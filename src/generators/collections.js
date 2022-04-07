@@ -69,9 +69,7 @@ export function getPageUrl(path, hugoUrls = {}, contentDir) {
 }
 
 export async function getLayout(path, details) {
-	const typeFolders = [];
-	const layoutFiles = [];
-	const { content } = pathHelper.getPaths();
+	const { content, themeList } = pathHelper.getPaths();
 	const isHome = path.indexOf(`${content}/_index.md`) >= 0;
 	const isSingle = !(/^_index\.(md|html?)$/i.test(basename(path)));
 	const { layout, type } = details;
@@ -80,6 +78,11 @@ export async function getLayout(path, details) {
 		removeLangaugeCodes: true
 	});
 
+	const sources = themeList;
+	sources.push('source');
+
+	const typeFolders = [];
+	const layoutFiles = [];
 	if (isHome) {
 		typeFolders.push(type, '/', '_default'); // '/' signifies to use root folder
 		layoutFiles.push(layout, 'index', 'home', 'list');
@@ -93,17 +96,19 @@ export async function getLayout(path, details) {
 
 	const tree = await pathHelper.getLayoutTree();
 
-	// ANOTHER for-loop for the theme lookup order
-	for (let t = 0; t < typeFolders.length; t += 1) {
-		for (let l = 0; l < layoutFiles.length; l += 1) {
-			const typeFolder = typeFolders[t];
-			const layoutFile = layoutFiles[l];
-			if (typeFolder === '/' && typeof tree[layoutFile] === 'string') {
-				return tree[layoutFile];
-			}
+	for (let s = 0; s < sources.length; s += 1) {
+		for (let t = 0; t < typeFolders.length; t += 1) {
+			for (let l = 0; l < layoutFiles.length; l += 1) {
+				const source = sources[s];
+				const typeFolder = typeFolders[t];
+				const layoutFile = layoutFiles[l];
+				if (typeFolder === '/' && typeof tree[source]?.[layoutFile] === 'string') {
+					return tree[source][layoutFile];
+				}
 
-			if (tree[typeFolder] && typeof tree[typeFolder][layoutFile] === 'string') {
-				return tree[typeFolder][layoutFile];
+				if (typeof tree[source]?.[typeFolder]?.[layoutFile] === 'string') {
+					return tree[source][typeFolder][layoutFile];
+				}
 			}
 		}
 	}
