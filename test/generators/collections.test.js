@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import mock from 'mock-fs';
 import {
 	getCollectionKeyFromMap,
+	getCollectionKeyFromArchetype,
 	getCollectionKeyFromPath,
 	getPageUrl,
 	getLayout,
@@ -62,24 +63,24 @@ describe('collections generator', function () {
 		});
 	});
 
-	describe('getCollectionKeyFromPath archetypes', function () {
+	describe('getCollectionKeyFromArchetype', function () {
 		it('index file', function () {
-			const result = getCollectionKeyFromPath('archetypes/archetypeName/index.md', 'content', 'archetypes');
+			const result = getCollectionKeyFromArchetype('archetypes/archetypeName/index.md', 'archetypes');
 			expect(result).to.equal('archetypeName');
 		});
 
 		it('no index file', function () {
-			const result = getCollectionKeyFromPath('archetypes/someFolder/archetype.md', 'content', 'archetypes');
+			const result = getCollectionKeyFromArchetype('archetypes/someFolder/archetype.md', 'archetypes');
 			expect(result).to.equal('archetype');
 		});
 
 		it('item in root archetype dir', function () {
-			const result = getCollectionKeyFromPath('archetypes/archetypeName.md', 'content', 'archetypes');
+			const result = getCollectionKeyFromArchetype('archetypes/archetypeName.md', 'archetypes');
 			expect(result).to.equal('archetypeName');
 		});
 
 		it('default archetype', function () {
-			const result = getCollectionKeyFromPath('archetypes/default.md', 'content', 'archetypes');
+			const result = getCollectionKeyFromArchetype('archetypes/default.md', 'archetypes');
 			expect(result).to.equal(undefined);
 		});
 	});

@@ -25,19 +25,17 @@ function getTopSectionName(path, options = {}) {
 	return leadingPath?.[0] ? leadingPath[0].replace(/\//g, '') : '';
 }
 
-export function getCollectionKeyFromPath(path, contentDir, archetypePath) {
-	if (path.indexOf(archetypePath) >= 0) {
-		if (path.indexOf('default.md') >= 0) {
-			return;
-		}
-
-		if (path.indexOf('index.md') >= 0) {
-			return basename(dirname(path));
-		}
-
-		return basename(path, extname(path)); // e.g. archetypes/type.md
+export function getCollectionKeyFromArchetype(path, archetypePath) {
+	if (path.indexOf(archetypePath) < 0 || path.indexOf('default.md') >= 0) {
+		return;
 	}
 
+	return (path.indexOf('index.md') >= 0)
+		? basename(dirname(path))
+		: basename(path, extname(path)); // e.g. archetypes/type.md
+}
+
+export function getCollectionKeyFromPath(path, contentDir) {
 	return path.replace(`${contentDir}/`, '').split('/')[0];
 }
 
@@ -194,7 +192,8 @@ export async function getCollectionsAndConfig(config, urlsPerPath) {
 
 		await Promise.all(slice.map(async (itemPath) => {
 			const collectionKey = getCollectionKeyFromMap(itemPath, collectionPathsMap)
-				|| getCollectionKeyFromPath(itemPath, paths.content, paths.archetypes);
+				|| getCollectionKeyFromArchetype(itemPath, paths.archetypes)
+				|| getCollectionKeyFromPath(itemPath, paths.content);
 
 			if (!isAllowedCollectionKey(collectionKey)) {
 				return;
