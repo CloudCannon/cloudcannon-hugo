@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import mock from 'mock-fs';
 import {
-	getDefinedCollectionName,
-	getCollectionKey,
+	getCollectionKeyFromMap,
+	getCollectionKeyFromPath,
 	getPageUrl,
 	getLayout,
 	getCollectionsAndConfig
@@ -12,74 +12,74 @@ import { collectionFiles, testFileStructure } from '../test-paths.js';
 
 describe('collections generator', function () {
 
-	describe('getDefinedCollectionName', function () {
-		const definedCollections = {
+	describe('getCollectionKeyFromMap', function () {
+		const collectionPathsMap = {
 			'content/posts': 'posts',
 			'content/group': 'renamed',
 			'content/nested/inner': 'nestedRename'
 		};
 
 		it('post in collection', function () {
-			const result = getDefinedCollectionName('content/posts/item.md', definedCollections);
+			const result = getCollectionKeyFromMap('content/posts/item.md', collectionPathsMap);
 			expect(result).to.equal('posts');
 		});
 
 		it('about page', function () {
-			const result = getDefinedCollectionName('content/about/_index.md', definedCollections);
+			const result = getCollectionKeyFromMap('content/about/_index.md', collectionPathsMap);
 			expect(result).to.be.undefined;
 		});
 
 		it('nested item in renamed collection', function () {
-			const result = getDefinedCollectionName('content/group/nested/file/path/item.md', definedCollections);
+			const result = getCollectionKeyFromMap('content/group/nested/file/path/item.md', collectionPathsMap);
 			expect(result).to.equal('renamed');
 		});
 
 		it('nested item in nested renamed collection', function () {
-			const result = getDefinedCollectionName('content/nested/inner/file/path/item.md', definedCollections);
+			const result = getCollectionKeyFromMap('content/nested/inner/file/path/item.md', collectionPathsMap);
 			expect(result).to.equal('nestedRename');
 		});
 
 		it('item outside of nested collection', function () {
-			const result = getDefinedCollectionName('content/nested/item.md', definedCollections);
+			const result = getCollectionKeyFromMap('content/nested/item.md', collectionPathsMap);
 			expect(result).to.be.undefined;
 		});
 	});
 
-	describe('getCollectionKey contentDirectory', function () {
+	describe('getCollectionKeyFromPath contentDirectory', function () {
 		it('_index file', function () {
-			const result = getCollectionKey('content/collectionName/_index.md', 'content');
+			const result = getCollectionKeyFromPath('content/collectionName/_index.md', 'content');
 			expect(result).to.equal('collectionName');
 		});
 
 		it('no _index file', function () {
-			const result = getCollectionKey('content/authors/jane-doe.md', 'content');
+			const result = getCollectionKeyFromPath('content/authors/jane-doe.md', 'content');
 			expect(result).to.equal('authors');
 		});
 
 		it('nested, no _index file', function () {
-			const result = getCollectionKey('content/authors/nested/file/path/jane-doe.md', 'content');
+			const result = getCollectionKeyFromPath('content/authors/nested/file/path/jane-doe.md', 'content');
 			expect(result).to.equal('authors');
 		});
 	});
 
-	describe('getCollectionKey archetypes', function () {
+	describe('getCollectionKeyFromPath archetypes', function () {
 		it('index file', function () {
-			const result = getCollectionKey('archetypes/archetypeName/index.md', 'content', 'archetypes');
+			const result = getCollectionKeyFromPath('archetypes/archetypeName/index.md', 'content', 'archetypes');
 			expect(result).to.equal('archetypeName');
 		});
 
 		it('no index file', function () {
-			const result = getCollectionKey('archetypes/someFolder/archetype.md', 'content', 'archetypes');
+			const result = getCollectionKeyFromPath('archetypes/someFolder/archetype.md', 'content', 'archetypes');
 			expect(result).to.equal('archetype');
 		});
 
 		it('item in root archetype dir', function () {
-			const result = getCollectionKey('archetypes/archetypeName.md', 'content', 'archetypes');
+			const result = getCollectionKeyFromPath('archetypes/archetypeName.md', 'content', 'archetypes');
 			expect(result).to.equal('archetypeName');
 		});
 
 		it('default archetype', function () {
-			const result = getCollectionKey('archetypes/default.md', 'content', 'archetypes');
+			const result = getCollectionKeyFromPath('archetypes/default.md', 'content', 'archetypes');
 			expect(result).to.equal(undefined);
 		});
 	});

@@ -25,7 +25,7 @@ function getTopSectionName(path, options = {}) {
 	return leadingPath?.[0] ? leadingPath[0].replace(/\//g, '') : '';
 }
 
-export function getCollectionKey(path, contentDir, archetypePath) {
+export function getCollectionKeyFromPath(path, contentDir, archetypePath) {
 	if (path.indexOf(archetypePath) >= 0) {
 		if (path.indexOf('default.md') >= 0) {
 			return;
@@ -41,13 +41,14 @@ export function getCollectionKey(path, contentDir, archetypePath) {
 	return path.replace(`${contentDir}/`, '').split('/')[0];
 }
 
-export function getDefinedCollectionName(itemPath, definedCollections) {
+export function getCollectionKeyFromMap(itemPath, collectionPathsMap) {
 	let collectionKey, prevDirectory;
 	let itemDirectory = itemPath;
+
 	do {
 		prevDirectory = itemDirectory;
 		itemDirectory = dirname(prevDirectory);
-		collectionKey = definedCollections[itemDirectory];
+		collectionKey = collectionPathsMap[itemDirectory];
 	} while (!collectionKey && itemDirectory !== prevDirectory);
 
 	return collectionKey;
@@ -156,7 +157,7 @@ export async function getCollectionsAndConfig(config, urlsPerPath) {
 	const paths = pathHelper.getPaths();
 	const override = config.collections_config_override === true;
 	const initialCollectionsConfig = config.collections_config || {};
-	const definedCollections = {};
+	const collectionPathsMap = {};
 
 	const isAllowedCollectionKey = (key) => !override || initialCollectionsConfig[key];
 
@@ -164,12 +165,12 @@ export async function getCollectionsAndConfig(config, urlsPerPath) {
 		if (initialCollectionsConfig[collectionKey].path) {
 			// remove trailing slash
 			const collectionPath = initialCollectionsConfig[collectionKey].path.replace(/\/$/, '');
-			definedCollections[collectionPath] = collectionKey;
+			collectionPathsMap[collectionPath] = collectionKey;
 		}
 	});
 
-	const definedCollectionKeys = Object.keys(definedCollections);
-	const collectionItemPaths = await pathHelper.getCollectionPaths(definedCollectionKeys);
+	const collectionPaths = Object.keys(collectionPathsMap);
+	const collectionItemPaths = await pathHelper.getCollectionPaths(collectionPaths);
 	const pagePaths = await pathHelper.getPagePaths();
 	const collections = {};
 	const collectionsConfig = {};
@@ -192,8 +193,8 @@ export async function getCollectionsAndConfig(config, urlsPerPath) {
 		const slice = collectionItemPaths.slice(i * partitionSize, ((i + 1) * partitionSize));
 
 		await Promise.all(slice.map(async (itemPath) => {
-			const collectionKey = getDefinedCollectionName(itemPath, definedCollections)
-				|| getCollectionKey(itemPath, paths.content, paths.archetypes);
+			const collectionKey = getCollectionKeyFromMap(itemPath, collectionPathsMap)
+				|| getCollectionKeyFromPath(itemPath, paths.content, paths.archetypes);
 
 			if (!isAllowedCollectionKey(collectionKey)) {
 				return;
