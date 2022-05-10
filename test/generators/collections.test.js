@@ -200,11 +200,11 @@ describe('collections generator', function () {
 			const config = {
 				collections_config: {
 					data: {
-						_image_key: 'thumbnail'
+						image_key: 'thumbnail'
 					},
 					posts: {
-						_image_key: 'author_image',
-						_image_size: 'cover'
+						image_key: 'author_image',
+						image_size: 'cover'
 					},
 					fakeCollection: 'wackyLink',
 					staff_members: {
@@ -269,13 +269,13 @@ describe('collections generator', function () {
 				posts: {
 					path: 'content/posts',
 					output: true,
-					_image_key: 'author_image',
-					_image_size: 'cover'
+					image_key: 'author_image',
+					image_size: 'cover'
 				},
 				data: {
 					path: 'data',
 					output: false,
-					_image_key: 'thumbnail'
+					image_key: 'thumbnail'
 				},
 				leaf: {
 					path: 'content/leaf',

@@ -14,9 +14,9 @@ async function getHugoUrls() {
 	const { source } = pathHelper.getPaths();
 	const cmdArgs = ['list', 'all', ...(source ? ['--source', source] : [])];
 	const raw = await runProcess('hugo', cmdArgs);
-	const startIndex = raw.indexOf('\npath,');
+	const startIndex = raw.search(/^path,/m); // hugo logs warnings before this point
 	if (startIndex < 0) {
-		log(`⚠️ ${chalk.red('Error parsing files list')}`, 'error');
+		log(`⚠️ ${chalk.red('No output listing files')}`, 'error');
 	}
 
 	const fileCsv = raw.substring(startIndex).trim();

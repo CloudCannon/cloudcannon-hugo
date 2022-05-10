@@ -26,11 +26,11 @@ function getTopSectionName(path, options = {}) {
 }
 
 export function getCollectionKeyFromArchetype(path, archetypePath) {
-	if (path.indexOf(archetypePath) < 0 || path.indexOf('default.md') >= 0) {
+	if (!path.includes(archetypePath) || path.endsWith('/default.md')) {
 		return;
 	}
 
-	return (path.indexOf('index.md') >= 0)
+	return path.endsWith('/index.md')
 		? basename(dirname(path))
 		: basename(path, extname(path)); // e.g. archetypes/type.md
 }
@@ -52,26 +52,32 @@ export function getCollectionKeyFromMap(itemPath, collectionPathsMap) {
 	return collectionKey;
 }
 
+function isIndex(path) {
+	return path.match(/\/_?index\.(md|html?)$/);
+}
+
+function getPageUrlFromPath(path, contentDir) {
+	if (!isIndex(path)) {
+		return;
+	}
+
+	return path
+		.replace(`${contentDir || ''}/`, '/')
+		.replace(/\/_?index\.(md|html?)/, '/')
+		.replace(/\/+/g, '/');
+}
+
 export function getPageUrl(path, hugoUrls = {}, contentDir) {
-	if (hugoUrls[path]) {
-		return hugoUrls[path];
-	}
-
-	if (path.indexOf('index') >= 0) {
-		return path
-			.replace(`${contentDir || ''}/`, '/')
-			.replace(/\/_?index\.(md|html?)/, '/')
-			.replace('//', '/');
-	}
-
-	return '';
+	return hugoUrls[path]
+		|| getPageUrlFromPath(path, contentDir)
+		|| '';
 }
 
 export async function getLayout(path, details) {
 	const typeFolders = [];
 	const layoutFiles = [];
 	const { content } = pathHelper.getPaths();
-	const isHome = path.indexOf(`${content}/_index.md`) >= 0;
+	const isHome = path.endsWith(`${content}/_index.md`);
 	const isSingle = !(/^_index\.(md|html?)$/i.test(basename(path)));
 	const { layout, type } = details;
 	const section = getTopSectionName(path, {
@@ -100,7 +106,7 @@ export async function getLayout(path, details) {
 				return tree[layoutFile];
 			}
 
-			if (tree[typeFolder] && typeof tree[typeFolder][layoutFile] === 'string') {
+			if (typeof tree[typeFolder]?.[layoutFile] === 'string') {
 				return tree[typeFolder][layoutFile];
 			}
 		}
@@ -109,26 +115,24 @@ export async function getLayout(path, details) {
 
 async function processCollectionItem(itemPath, itemDetails, collectionKey, urlsPerPath) {
 	const paths = pathHelper.getPaths();
-	const isArchetype = itemPath.indexOf(paths.archetypes) >= 0;
+	const isArchetype = itemPath.includes(paths.archetypes);
 
 	if (isArchetype) {
 		return;
 	}
 
-	const url = getPageUrl(itemPath, urlsPerPath, paths.content);
-	const layout = await getLayout(itemPath, itemDetails);
-
 	const item = {
-		url: url || '',
+		url: getPageUrl(itemPath, urlsPerPath, paths.content) || '',
 		path: itemPath,
 		collection: collectionKey,
 		...itemDetails
 	};
 
-	if (item.headless || (!url && itemPath.indexOf('index') < 0)) {
+	if (item.headless || !item.url) {
 		item.output = false;
 	}
 
+	const layout = await getLayout(itemPath, itemDetails);
 	if (layout && item.url) {
 		item.layout = layout;
 	}
@@ -209,8 +213,8 @@ export async function getCollectionsAndConfig(config, urlsPerPath) {
 					initialCollectionsConfig
 				);
 
-				collectionConfig.output = collectionConfig.output
-					|| (collectionsConfig[collectionKey]?.output ?? false); // true if any output: true;
+				collectionConfig.output = collectionConfig.output // true if any output: true;
+					|| (collectionsConfig[collectionKey]?.output ?? false);
 
 				collectionsConfig[collectionKey] = collectionConfig;
 
