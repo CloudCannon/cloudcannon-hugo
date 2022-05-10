@@ -1,6 +1,7 @@
 import Papa from 'papaparse';
 import { runProcess, getUrlPathname } from '../helpers/helpers.js';
 import pathHelper from '../helpers/paths.js';
+import chalk from 'chalk';
 import log from '../helpers/logger.js';
 import { getGenerator } from './generator.js';
 import { getData } from './data.js';
@@ -8,11 +9,17 @@ import { getConfig } from '../config.js';
 import { getCollectionsAndConfig } from './collections.js';
 
 async function getHugoUrls() {
-	log('⏳ Processing permalinks...');
+	log('⏳ Listing files...');
+
 	const { source } = pathHelper.getPaths();
-	let cmdArgs = ['list', 'all'];
-	cmdArgs = cmdArgs.concat(source ? ['--source', source] : []);
-	const fileCsv = await runProcess('hugo', cmdArgs);
+	const cmdArgs = ['list', 'all', ...(source ? ['--source', source] : [])];
+	const raw = await runProcess('hugo', cmdArgs);
+	const startIndex = raw.indexOf('\npath,');
+	if (startIndex < 0) {
+		log(`⚠️ ${chalk.red('Error parsing files list')}`, 'error');
+	}
+
+	const fileCsv = raw.substring(startIndex).trim();
 	const fileList = Papa.parse(fileCsv, { header: true });
 
 	return fileList.data.reduce((memo, file) => {
