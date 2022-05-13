@@ -6,3 +6,4 @@ collections_config:
   nests:
     path: content/nested/inner
     output: true
+    parse_branch_index: true

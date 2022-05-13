@@ -68,26 +68,20 @@
 			"path": "content",
 			"output": true,
 			"filter": "strict",
+			"auto_discovered": false,
+			"parse_branch_index": true,
 			"_comments": {
 				"draft": "Tick if page is a draft"
 			}
 		},
 		"data": {
 			"path": "data",
+			"auto_discovered": false,
 			"output": false
-		},
-		"emptyHTMLCollection": {
-			"path": "content/emptyHTMLCollection",
-			"output": true
 		},
 		"emptyMarkdownCollection": {
 			"path": "content/emptyMarkdownCollection",
-			"output": true,
 			"_enabled_editors": ["data"]
-		},
-		"locations": {
-			"output": true,
-			"path": "content/locations"
 		},
 		"nested": {
 			"output": true,
@@ -108,6 +102,48 @@
 	},
 	"collections": {
 		"pages": [
+			{
+				"url": "/nested/",
+				"path": "content/nested/_index.md",
+				"collection": "pages",
+				"title": "Nested content",
+				"layout": "_default/list"
+			},
+			{
+				"url": "/nested/inner/",
+				"path": "content/nested/inner/_index.md",
+				"collection": "pages",
+				"title": "inner",
+				"layout": "_default/list"
+			},
+			{
+				"url": "/blog/",
+				"path": "content/posts/_index.md",
+				"collection": "pages",
+				"title": "Blog",
+				"description": "Keep up with the latest news.",
+				"menu": {
+					"main": {
+						"weight": 2
+					},
+					"footer": {
+						"weight": 2
+					}
+				},
+				"_enabled_editors": [
+					"visual",
+					"content",
+					"source"
+				],
+				"layout": "posts/list"
+			},
+			{
+				"collection": "pages",
+				"layout": "_default/list",
+				"path": "content/locations/_index.html",
+				"title": "locations",
+				"url": "/locations/"
+			},
 			{
 				"title": "The last sales CRM you'll ever need",
 				"url": "/",
@@ -190,27 +226,6 @@
 		],
 		"posts": [
 			{
-				"url": "/blog/",
-				"path": "content/posts/_index.md",
-				"collection": "posts",
-				"title": "Blog",
-				"description": "Keep up with the latest news.",
-				"menu": {
-					"main": {
-						"weight": 2
-					},
-					"footer": {
-						"weight": 2
-					}
-				},
-				"_enabled_editors": [
-					"visual",
-					"content",
-					"source"
-				],
-				"layout": "posts/list"
-			},
-			{
 				"url": "/posts/2016/07/20/post1/",
 				"path": "content/posts/post1.md",
 				"collection": "posts",
@@ -247,41 +262,18 @@
 				"layout": "posts/single"
 			}
 		],
-		"emptyHTMLCollection": [],
+		"data": [],
 		"emptyMarkdownCollection": [],
-		"locations": [
+		"nested": [
 			{
-				"collection": "locations",
-				"layout": "_default/list",
-				"path": "content/locations/_index.html",
-				"title": "locations",
-				"url": "/locations/"
+				"url": "/nested/inner/item/",
+				"path": "content/nested/inner/item.md",
+				"collection": "nested",
+				"title": "item",
+				"layout": "_default/single"
+
 			}
 		],
-		"nested": [
-            {
-                "url": "/nested/",
-                "path": "content/nested/_index.md",
-                "collection": "nested",
-				"title": "Nested content",
-                "layout": "_default/list"
-            },
-            {
-                "url": "/nested/inner/item/",
-                "path": "content/nested/inner/item.md",
-                "collection": "nested",
-                "title": "item",
-                "layout": "_default/single"
-
-            },
-            {
-                "url": "/nested/inner/",
-                "path": "content/nested/inner/_index.md",
-                "collection": "nested",
-                "title": "inner",
-                "layout": "_default/list"
-            }
-        ],
 		"staff_members": [
 			{
 				"url": "",

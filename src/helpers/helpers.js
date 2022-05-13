@@ -29,11 +29,18 @@ export function mergeDeep(target, ...sources) {
 	return mergeDeep(target, ...sources);
 }
 
-export function pluralize(amount, str, options = {}) {
+export async function runInChunks(array, asyncMapFn, chunkSize = 10) {
+	const chunkCount = Math.ceil(array.length / chunkSize);
+
+	for (let i = 0; i < chunkCount; i += 1) {
+		const slice = array.slice(i * chunkSize, ((i + 1) * chunkSize));
+		await Promise.all(slice.map(asyncMapFn));
+	}
+}
+
+export function cheapPlural(amount, str) {
 	const amountStr = amount === 0 ? 'no' : amount;
-	const plural = amount === 1 ? '' : 's';
-	const suffix = amount > 0 ? options.nonZeroSuffix || '' : '';
-	return `${amountStr} ${str}${plural}${suffix}`;
+	return `${amountStr} ${str}${amount === 1 ? '' : 's'}`;
 }
 
 export async function exists(path) {

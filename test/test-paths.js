@@ -1,22 +1,22 @@
 export const pathsByType = {
-	defaultPaths: [
-		'archetypes/default.md',
-		'archetypes/notes.md'],
 	collectionPaths: [
-		'archetypes/notes.md',
-		'archetypes/web_pages.html',
+		'content/_index.md',
+		'content/about.md',
+		'content/about/index.md',
 		'content/authors/jane-doe.md',
 		'content/authors/john-smith.md',
 		'content/collectionName/_index.md',
 		'content/posts/_index.md',
-		'content/posts/firstPost.md'],
+		'content/posts/firstPost.md'
+	],
 	configPaths: [
 		'config/_default/languages.toml',
 		'config/_default/menus.en.toml',
 		'config/_default/menus.zh.toml',
 		'config/_default/params.toml',
 		'config/_default/config.toml',
-		'config.toml'],
+		'config.toml'
+	],
 	configPathsProduction: [
 		'config/production/params.toml',
 		'config/production/config.toml'
@@ -30,12 +30,6 @@ export const pathsByType = {
 		'data/nav.yml',
 		'data/staff_members/jane.toml',
 		'data/staff_members/john.toml'
-	],
-	pagePaths: [
-		'content/_index.md',
-		'content/about.md',
-		'content/about/index.md',
-		'content/collectionName/_index.md'
 	],
 	layoutPaths: [
 		'layouts/_default/list.html',
@@ -151,13 +145,6 @@ export const configOrder = [
 ];
 
 export const collectionFiles = {
-	archetypes: {
-		leaf: {
-			'index.md': ''
-		},
-		'default.md': '',
-		'type.md': '+++\nheadless = true\n+++\n'
-	},
 	content: {
 		coll1: {
 			'_index.md': '',
@@ -214,10 +201,10 @@ export const testFileStructure = Object.keys(pathsByType).reduce((memo, pathType
 }, {});
 
 export default {
-	pathsByType: pathsByType,
-	testFileStructure: testFileStructure, // in a structure that is readable to mock-fs
-	configFiles: configFiles,
-	configOrder: configOrder,
-	collectionFiles: collectionFiles,
-	dataFiles: dataFiles
+	pathsByType,
+	testFileStructure, // in a structure that is readable to mock-fs
+	configFiles,
+	configOrder,
+	collectionFiles,
+	dataFiles
 };

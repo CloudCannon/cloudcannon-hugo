@@ -1,7 +1,7 @@
 import { join, extname, basename } from 'path';
 import chalk from 'chalk';
 import { getGlob } from './globs.js';
-import { exists, mergeDeep, pluralize } from './helpers.js';
+import { exists, mergeDeep } from './helpers.js';
 import { parseDataFile } from '../parsers/parser.js';
 import log from './logger.js';
 
@@ -85,8 +85,13 @@ export async function generateConfigObject(flags = {}, options) {
 	const configFileList = await getConfigPaths(flags);
 
 	if (!options?.silent) {
-		log(`🔧 Reading ${pluralize(configFileList.length, 'Hugo config file', { nonZeroSuffix: ':' })}`);
-		configFileList.forEach((configFilePath) => log(`   ${chalk.bold(configFilePath)}`));
+		configFileList.forEach((configFilePath) => {
+			log(`🔧 Reading Hugo config file at ${chalk.bold(configFilePath)}`);
+		});
+
+		if (configFileList.length === 0) {
+			log(chalk.yellow('🔧 No Hugo config file found'));
+		}
 	}
 
 	const configContents = await getConfigContents(configFileList, flags.config);
@@ -95,16 +100,16 @@ export async function generateConfigObject(flags = {}, options) {
 	const configObject = mergeDeep({}, ...configContents);
 
 	if (configObject.staticDir) {
-		// We want people to set their uploads dir in cloudcannon config, so this doesn't need to be perfect
-		configObject.staticDir = Array.isArray(configObject.staticDir) ? configObject.staticDir[0] : configObject.staticDir;
+		configObject.staticDir = Array.isArray(configObject.staticDir)
+			? configObject.staticDir[0]
+			: configObject.staticDir;
 	}
+
 	return configObject;
 }
 
 export async function getHugoConfig(flags = {}) {
-
 	const configObject = await generateConfigObject(flags);
-
 	configObject.baseURL = flags.baseUrl || configObject.baseURL || '/';
 
 	if (flags.source) {

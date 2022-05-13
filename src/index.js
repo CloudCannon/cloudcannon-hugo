@@ -4,7 +4,7 @@ import meow from 'meow';
 import fs from 'fs/promises';
 import { join } from 'path';
 import chalk from 'chalk';
-import log, { toggleLogging } from './helpers/logger.js';
+import log, { setLogOptions } from './helpers/logger.js';
 import { getInfo } from './generators/info.js';
 import { getHugoConfig } from './helpers/hugo-config.js';
 import pathHelper from './helpers/paths.js';
@@ -17,6 +17,7 @@ const cli = meow(`
     --version          Print the current version
     --output, -o       Write to a different location than .
     --quiet, -q        Disable logging
+    --verbose, -v      Log more details (unless --quiet is enabled)
 
     --environment, -e  environment
 		--source, -s       source
@@ -44,7 +45,10 @@ const cli = meow(`
 			type: 'boolean',
 			alias: 'q'
 		},
-
+		verbose: {
+			type: 'boolean',
+			alias: 'v'
+		},
 		environment: {
 			type: 'string',
 			alias: 'e',
@@ -78,12 +82,13 @@ const cli = meow(`
 	}
 });
 
-if (cli.flags.quiet) {
-	toggleLogging(false);
-}
+setLogOptions({
+	enabled: !cli.flags.quiet,
+	verbose: !!cli.flags.verbose
+});
 
 async function main({ flags, pkg }) {
-	log(`⭐️ Starting ${chalk.blue('cloudcannon-hugo')}`);
+	log(`⭐️ Starting ${chalk.blue('cloudcannon-hugo')} ${pkg.version}`);
 
 	const hugoConfig = await getHugoConfig(flags);
 	pathHelper.generatePaths(hugoConfig);

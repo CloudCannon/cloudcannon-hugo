@@ -1,31 +1,22 @@
 let enabled = true;
+let verbose = false;
 
-export function toggleLogging(value) {
-	enabled = value;
+export function setLogOptions(options) {
+	enabled = options.enabled;
+	verbose = options.verbose;
 }
 
-function logInfo(text) {
-	console.log(text);
-}
-
-function logWarning(text) {
-	console.warn(text);
-}
-
-function logError(text) {
-	console.error(text);
-}
-
-const levels = {
-	info: logInfo,
-	warn: logWarning,
-	error: logError
+const loggers = {
+	debug: (text) => console.debug(text),
+	info: (text) => console.log(text),
+	warn: (text) => console.warn(text),
+	error: (text) => console.error(text)
 };
 
 export default function log(text, level = 'info') {
-	if (!enabled) {
+	if (!enabled || (level === 'debug' && !verbose)) {
 		return;
 	}
 
-	levels[level](text);
+	loggers[level](text);
 }

@@ -1,6 +1,5 @@
 import { basename, dirname, extname } from 'path';
 import chalk from 'chalk';
-import { pluralize } from '../helpers/helpers.js';
 import { parseDataFile } from '../parsers/parser.js';
 import pathHelper from '../helpers/paths.js';
 import log from '../helpers/logger.js';
@@ -48,11 +47,8 @@ export async function getData(config) {
 
 	const dataKeys = Object.keys(data || {});
 
-	log(`💾 Processed ${pluralize(dataKeys.length, 'data set', { nonZeroSuffix: ':' })}`);
-
-	dataKeys.forEach((name) => {
-		const numItems = Object.keys(data?.[name]).length;
-		log(`   ${chalk.bold(name)} with ${numItems} files`);
+	dataKeys.forEach((key) => {
+		log(`💾 Processed ${chalk.bold(key)} data set`);
 	});
 
 	return data;

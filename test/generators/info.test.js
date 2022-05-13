@@ -50,12 +50,7 @@ describe('info generator', function () {
 				name: 'cloudcannon-hugo',
 				version: '0.0.0'
 			},
-			collections_config: {
-				data: {
-					path: 'data',
-					output: false
-				}
-			},
+			collections_config: {},
 			collections: {},
 			data: undefined
 		};
@@ -100,12 +95,7 @@ describe('info generator', function () {
 				name: 'cloudcannon-hugo',
 				version: '0.0.1'
 			},
-			collections_config: {
-				data: {
-					path: 'data',
-					output: false
-				}
-			},
+			collections_config: {},
 			collections: {},
 			data: undefined
 		};

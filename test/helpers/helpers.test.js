@@ -10,7 +10,7 @@ describe('helpers.js', function () {
 
 	describe('exists', function () {
 		it('should return true with existing path', async function () {
-			const doesExist = await exists('archetypes/default.md');
+			const doesExist = await exists('content/about.md');
 			expect(doesExist).to.equal(true);
 		});
 
@@ -35,7 +35,6 @@ describe('helpers.js', function () {
 	describe('runProcess', function () {
 		it('should echo', async function () {
 			const result = await runProcess('echo', ['hello']);
-			console.log(`got result: ${result}`);
 			expect(result).to.equal('hello');
 		});
 

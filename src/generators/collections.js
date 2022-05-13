@@ -1,6 +1,6 @@
-import { basename, dirname, extname } from 'path';
+import { basename } from 'path';
 import chalk from 'chalk';
-import { pluralize } from '../helpers/helpers.js';
+import { cheapPlural, runInChunks } from '../helpers/helpers.js';
 import pathHelper from '../helpers/paths.js';
 import log from '../helpers/logger.js';
 import { parseFile } from '../parsers/parser.js';
@@ -23,54 +23,6 @@ function getTopSectionName(path, options = {}) {
 
 	const leadingPath = path.split('/');
 	return leadingPath?.[0] ? leadingPath[0].replace(/\//g, '') : '';
-}
-
-export function getCollectionKeyFromArchetype(path, archetypePath) {
-	if (!path.includes(archetypePath) || path.endsWith('/default.md')) {
-		return;
-	}
-
-	return path.endsWith('/index.md')
-		? basename(dirname(path))
-		: basename(path, extname(path)); // e.g. archetypes/type.md
-}
-
-export function getCollectionKeyFromPath(path, contentDir) {
-	return path.replace(`${contentDir}/`, '').split('/')[0];
-}
-
-export function getCollectionKeyFromMap(itemPath, collectionPathsMap) {
-	let collectionKey, prevDirectory;
-	let itemDirectory = itemPath;
-
-	do {
-		prevDirectory = itemDirectory;
-		itemDirectory = dirname(prevDirectory);
-		collectionKey = collectionPathsMap[itemDirectory];
-	} while (!collectionKey && itemDirectory !== prevDirectory);
-
-	return collectionKey;
-}
-
-function isIndex(path) {
-	return path.match(/\/_?index\.(md|html?)$/);
-}
-
-function getPageUrlFromPath(path, contentDir) {
-	if (!isIndex(path)) {
-		return;
-	}
-
-	return path
-		.replace(`${contentDir || ''}/`, '/')
-		.replace(/\/_?index\.(md|html?)/, '/')
-		.replace(/\/+/g, '/');
-}
-
-export function getPageUrl(path, hugoUrls = {}, contentDir) {
-	return hugoUrls[path]
-		|| getPageUrlFromPath(path, contentDir)
-		|| '';
 }
 
 export async function getLayout(path, details) {
@@ -113,26 +65,81 @@ export async function getLayout(path, details) {
 	}
 }
 
-async function processCollectionItem(itemPath, itemDetails, collectionKey, urlsPerPath) {
+export function getCollectionKey(path, collectionsConfig) {
 	const paths = pathHelper.getPaths();
-	const isArchetype = itemPath.includes(paths.archetypes);
+	const pathIsBranchIndex = isBranchIndex(path);
+	const normalised = path.replace(/\/index\.(md|html?)$/, '');
+	const parts = normalised.split('/');
 
-	if (isArchetype) {
+	// Find collection from config based on explicit path
+	for (let i = parts.length - 1; i >= 0; i--) {
+		const collectionPath = parts.slice(0, i).join('/');
+
+		const configKey = Object.keys(collectionsConfig || {}).find((key) => {
+			return collectionsConfig[key]
+				&& collectionsConfig[key].path === collectionPath
+				&& (!pathIsBranchIndex || collectionsConfig[key].parse_branch_index);
+		});
+
+		if (configKey) {
+			return configKey;
+		}
+	}
+
+	const contentPrefix = `${paths.content}/`;
+	if (!path.startsWith(contentPrefix)) {
+		return null; // Not in content path
+	}
+
+	// Fall back to using top-level folder inside content path
+	const normalisedContentPath = normalised.replace(contentPrefix, '');
+	const [folderKey, ...contentParts] = normalisedContentPath.split('/');
+	const isCollection = contentParts.length > 0
+		&& (!pathIsBranchIndex || collectionsConfig?.[folderKey]?.parse_branch_index);
+
+	if (isCollection) {
+		return folderKey; // Valid subfolder in content path
+	}
+
+	// Either directly inside the content path, or a branch index file.
+	return 'pages';
+}
+
+function isBranchIndex(path) {
+	return !!path.match(/\/_index\.(md|html?)$/);
+}
+
+function isIndex(path) {
+	return !!path.match(/\/_?index\.(md|html?)$/);
+}
+
+export function getPageUrlFromPath(path, contentDir) {
+	if (!isIndex(path)) {
 		return;
 	}
 
+	return path
+		.replace(`${contentDir || ''}/`, '/')
+		.replace(/\/_?index\.(md|html?)/, '/')
+		.replace(/\/+/g, '/');
+}
+
+async function processItem(path, collectionKey, hugoUrls) {
+	const parsed = await parseFile(path);
+	const paths = pathHelper.getPaths();
+
 	const item = {
-		url: getPageUrl(itemPath, urlsPerPath, paths.content) || '',
-		path: itemPath,
+		url: hugoUrls[path] || getPageUrlFromPath(path, paths.content) || '',
+		path,
 		collection: collectionKey,
-		...itemDetails
+		...parsed
 	};
 
 	if (item.headless || !item.url) {
 		item.output = false;
 	}
 
-	const layout = await getLayout(itemPath, itemDetails);
+	const layout = await getLayout(path, parsed);
 	if (layout && item.url) {
 		item.layout = layout;
 	}
@@ -144,137 +151,103 @@ async function processCollectionItem(itemPath, itemDetails, collectionKey, urlsP
 	return item;
 }
 
-async function processCollectionConfig(itemPath, itemDetails, collectionKey, initialCollectionsConfig) {
-	const paths = pathHelper.getPaths();
-	const isOutput = itemPath.startsWith(paths.data) ? false : !itemDetails.headless;
-
-	return {
-		path: `${paths.content}/${collectionKey}`,
-		output: isOutput,
-		...initialCollectionsConfig[collectionKey]
-	};
-}
-
-export async function getCollectionsAndConfig(config, urlsPerPath) {
+export async function getCollectionsAndConfig(config, hugoUrls) {
 	const paths = pathHelper.getPaths();
 	const override = config.collections_config_override === true;
-	const initialCollectionsConfig = config.collections_config || {};
-	const collectionPathsMap = {};
-
-	const isAllowedCollectionKey = (key) => !override || initialCollectionsConfig[key];
-
-	Object.keys(initialCollectionsConfig).forEach((collectionKey) => {
-		if (initialCollectionsConfig[collectionKey].path) {
-			// remove trailing slash
-			const collectionPath = initialCollectionsConfig[collectionKey].path.replace(/\/$/, '');
-			collectionPathsMap[collectionPath] = collectionKey;
-		}
-	});
-
-	const collectionPaths = Object.keys(collectionPathsMap);
-	const collectionItemPaths = await pathHelper.getCollectionPaths(collectionPaths);
-	const pagePaths = await pathHelper.getPagePaths();
+	const rawCollectionsConfig = config.collections_config || {};
+	const dataPath = pathHelper.normalisePath(rawCollectionsConfig.data?.path) || paths.data;
+	const pagesPath = pathHelper.normalisePath(rawCollectionsConfig.pages?.path) || paths.content;
+	const skippedCollections = {};
 	const collections = {};
-	const collectionsConfig = {};
 
-	if (!override) {
-		collectionsConfig.data = {
-			path: paths.data,
-			output: false,
-			...initialCollectionsConfig.data
-		};
-	}
+	const extraPaths = Object.keys(rawCollectionsConfig).reduce((memo, collectionKey) => {
+		const path = pathHelper.normalisePath(rawCollectionsConfig[collectionKey].path);
+		return (path && !path.startsWith(paths.content)) ? [path, ...memo] : memo;
+	}, []);
 
-	// Run these in partitions to prevent memory issues
-	const partitionSize = 10;
-	const numPartitions = Math.ceil(collectionItemPaths.length / partitionSize);
+	const filePaths = await pathHelper.getCollectionPaths(extraPaths);
+	const collectionsConfig = { ...rawCollectionsConfig };
 
 	log('⏳ Processing collections...');
 
-	for (let i = 0; i < numPartitions; i += 1) {
-		const slice = collectionItemPaths.slice(i * partitionSize, ((i + 1) * partitionSize));
+	await runInChunks(filePaths, async (path) => { // Runs in chunks to avoid memory issues
+		const collectionKey = getCollectionKey(path, collectionsConfig);
+		if (!collectionKey) {
+			log(`No collection for ${chalk.yellow(path)}`, 'debug');
+			return;
+		}
 
-		await Promise.all(slice.map(async (itemPath) => {
-			const collectionKey = getCollectionKeyFromMap(itemPath, collectionPathsMap)
-				|| getCollectionKeyFromArchetype(itemPath, paths.archetypes)
-				|| getCollectionKeyFromPath(itemPath, paths.content);
+		// Skipped if not defined in global config with collections_config_override enabled
+		if (override && !rawCollectionsConfig[collectionKey]) {
+			log(`Skipping ${chalk.bold(collectionKey)} collection for ${chalk.yellow(path)}`, 'debug');
+			skippedCollections[collectionKey] = (skippedCollections[collectionKey] || 0) + 1;
+			return;
+		}
 
-			if (!isAllowedCollectionKey(collectionKey)) {
-				return;
-			}
+		log(`Parsing ${chalk.green(path)} into ${chalk.bold(collectionKey)} collection`, 'debug');
+		const item = await processItem(path, collectionKey, hugoUrls);
+		collections[collectionKey] = collections[collectionKey] || [];
+		collections[collectionKey].push(item);
 
-			if (collectionKey) {
-				const itemDetails = await parseFile(itemPath);
+		// Sets config as output if any file inside it is output
+		const output = collectionsConfig[collectionKey]?.output
+			|| (path.startsWith(paths.data) ? false : !item.headless);
 
-				const collectionConfig = await processCollectionConfig(
-					itemPath,
-					itemDetails,
-					collectionKey,
-					initialCollectionsConfig
-				);
+		collectionsConfig[collectionKey] = {
+			path: `${paths.content}/${collectionKey}`,
+			...collectionsConfig[collectionKey],
+			output
+		};
+	});
 
-				collectionConfig.output = collectionConfig.output // true if any output: true;
-					|| (collectionsConfig[collectionKey]?.output ?? false);
+	if (!override) {
+		const hasData = Object.prototype.hasOwnProperty.call(rawCollectionsConfig, 'data')
+			|| (await pathHelper.getDataPaths()).length > 0;
 
-				collectionsConfig[collectionKey] = collectionConfig;
-
-				const collectionItem = await processCollectionItem(
-					itemPath,
-					itemDetails,
-					collectionKey,
-					urlsPerPath
-				);
-
-				collections[collectionKey] = collections[collectionKey] || [];
-
-				if (collectionItem) {
-					collections[collectionKey].push(collectionItem);
-				}
-			}
-		}));
-	}
-
-	if (isAllowedCollectionKey('pages') && !collectionsConfig.pages && pagePaths.length) {
-		collectionsConfig.pages = {
-			path: paths.content,
-			output: true,
-			filter: 'strict',
-			...initialCollectionsConfig.pages
+		collectionsConfig.data = {
+			output: false,
+			auto_discovered: !hasData,
+			...collectionsConfig.data,
+			path: dataPath,
 		};
 
-		collections.pages = [];
-
-		const numPartitionsPages = Math.ceil(pagePaths.length / partitionSize);
-
-		for (let i = 0; i < numPartitionsPages; i += 1) {
-			const slice = pagePaths.slice(i * partitionSize, ((i + 1) * partitionSize));
-
-			await Promise.all(slice.map(async (itemPath) => {
-				const itemDetails = await parseFile(itemPath);
-
-				const collectionItem = await processCollectionItem(
-					itemPath,
-					itemDetails,
-					'pages',
-					urlsPerPath
-				);
-
-				collections.pages.push(collectionItem);
-			}));
-		}
+		// Set after processing files to avoid auto-discovered collections using this containing path
+		collectionsConfig.pages = {
+			output: true,
+			filter: 'strict',
+			parse_branch_index: true,
+			auto_discovered: !Object.prototype.hasOwnProperty.call(rawCollectionsConfig, 'pages'),
+			...collectionsConfig.pages,
+			path: pagesPath,
+		};
 	}
 
-	const collectionKeys = Object.keys(collections);
+	const processedCollections = Object.keys(collectionsConfig).reduce((memo, collectionKey) => {
+		const collection = collections[collectionKey] || [];
 
-	log(`📁 Processed ${pluralize(collectionKeys.length, 'collection', { nonZeroSuffix: ':' })}`);
+		// This is unset if a collection has not files and a configuration without path
+		collectionsConfig[collectionKey].path = collectionsConfig[collectionKey].path
+			|| `${paths.content}/${collectionKey}`;
 
-	collectionKeys.forEach((name) => {
-		const numItems = Object.keys(collections[name]).length;
-		log(`   ${chalk.bold(name)} with ${numItems} files`);
+		if (collection.length === 0 && collectionsConfig[collectionKey]?.auto_discovered) {
+			log(`📂 ${chalk.yellow('Ignored')} ${chalk.bold(collectionKey)} collection`);
+			delete collectionsConfig[collectionKey];
+			return memo;
+		}
+
+		memo[collectionKey] = collection || [];
+		const filesCount = cheapPlural(collection.length, 'file');
+		log(`📁 Processed ${chalk.bold(collectionKey)} collection with ${filesCount}`);
+		return memo;
+	}, {});
+
+	Object.keys(skippedCollections).forEach((collectionKey) => {
+		const filesCount = cheapPlural(skippedCollections[collectionKey], 'file');
+		log(`📂 ${chalk.yellow('Skipped')} ${chalk.bold(collectionKey)} collection with ${filesCount}`);
 	});
 
 	return {
 		collectionsConfig,
-		collections
+		collections: processedCollections
 	};
 }

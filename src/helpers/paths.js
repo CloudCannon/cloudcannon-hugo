@@ -5,26 +5,33 @@ let cachedPaths;
 let cachedLanguages;
 let cachedLayouts;
 
+export function normalisePath(path) {
+	return path
+		?.replace(/^\/+/, '')
+		?.replace(/\/+$/, '')
+		?.replace(/\/+/, '/');
+}
+
 export function getPaths(hugoConfig = {}) {
 	if (cachedPaths) {
 		return cachedPaths;
 	}
 
-	const staticDir = hugoConfig.staticDir || 'static';
-	const contentDir = hugoConfig.contentDir || 'content';
+	const staticDir = normalisePath(hugoConfig.staticDir) || 'static';
+	const contentDir = normalisePath(hugoConfig.contentDir) || 'content';
 
 	cachedPaths = {
-		source: hugoConfig.source || '',
-		archetypes: hugoConfig.archetypeDir || 'archetypes',
-		assets: hugoConfig.assetDir || 'assets',
+		source: normalisePath(hugoConfig.source) || '',
+		archetypes: normalisePath(hugoConfig.archetypeDir) || 'archetypes',
+		assets: normalisePath(hugoConfig.assetDir) || 'assets',
 		content: contentDir,
 		pages: contentDir,
-		data: hugoConfig.dataDir || 'data',
-		layouts: hugoConfig.layoutDir || 'layouts',
-		publish: hugoConfig.destination || hugoConfig.publishDir || 'public',
+		data: normalisePath(hugoConfig.dataDir) || 'data',
+		layouts: normalisePath(hugoConfig.layoutDir) || 'layouts',
+		publish: normalisePath(hugoConfig.destination || hugoConfig.publishDir) || 'public',
 		static: staticDir,
-		uploads: join(staticDir, hugoConfig.uploads_dir || hugoConfig.uploadsDir || 'uploads'),
-		config: hugoConfig.configDir || ''
+		uploads: join(staticDir, normalisePath(hugoConfig.uploads_dir || hugoConfig.uploadsDir) || 'uploads'),
+		config: normalisePath(hugoConfig.configDir) || ''
 	};
 
 	return cachedPaths;
@@ -46,13 +53,6 @@ export function clearCachedLayouts() {
 export function generatePaths(hugoConfig) {
 	cachedPaths = null;
 	getPaths(hugoConfig);
-}
-
-export async function getDefaultsPaths() {
-	const { source, archetypes } = getPaths();
-	const archetypeGlob = join(source, archetypes, '**/**.md');
-
-	return getGlob(archetypeGlob);
 }
 
 export async function getDataPaths() {
@@ -94,57 +94,15 @@ export async function getLayoutPaths() {
 	return getGlob(join(source, layouts, '**'));
 }
 
-/**
- * top-level index files (e.g. /contact.md)
- * index.md files in top-level folders (e.g. /about/index.md)
- * standalone _index.md files in top level folders (e.g. /contact/_index.md)
- */
-export async function getPagePaths() {
-	const { source, content } = getPaths();
-	const contentFiles = await getGlob([join(source, content, '**/*')]);
-
-	const topLevelRegex = new RegExp(`${content}/[^/]*.md$`, 'i');
-	const topLevelIndexRegex = new RegExp(`${content}/[^/]*/index.md$`, 'i');
-	const listRegex = new RegExp(`${content}/[^/]*/_index.md$`, 'i');
-
-	let pagePaths = contentFiles.filter((path) => {
-		if (topLevelIndexRegex.test(path) || topLevelRegex.test(path)) {
-			return true;
-		}
-
-		if (listRegex.test(path)) {
-			const dirName = dirname(path);
-			const matching = contentFiles.filter((item) => item.indexOf(dirName) >= 0);
-			return matching.length <= 1;
-		}
-
-		return false;
-	});
-
-	if (source) {
-		pagePaths = pagePaths.map((path) => path.replace(`${source}/`, ''));
-	}
-
-	// remove duplicates
-	return Array.from(new Set(pagePaths));
-}
-
 export async function getCollectionPaths(extraCollectionPaths = []) {
-	const { source, archetypes, content } = getPaths();
-	const mdArchetypeGlob = join(source, archetypes, '**/*.md');
-	const htmlArchetypeGlob = join(source, archetypes, '**/*.html');
-	const contentGlob = join(source, content, '*/**');
-	const globPatterns = [mdArchetypeGlob, htmlArchetypeGlob, contentGlob];
+	const { source, content } = getPaths();
 
-	extraCollectionPaths.forEach((extraPath) => globPatterns.push(join(source, extraPath, '*.*')));
+	const globPatterns = [
+		join(source, content, '**'),
+		...extraCollectionPaths.map((extraPath) => join(source, extraPath, '*.*'))
+	];
 
-	let collectionPaths = await getGlob(globPatterns, {
-		ignore: [
-			`**/${archetypes}/default.md`,
-			`**/${content}/**/index.md`,
-			`**/${content}/*.md`
-		]
-	});
+	let collectionPaths = await getGlob(globPatterns);
 
 	if (source) {
 		collectionPaths = collectionPaths.map((item) => item.replace(`${source}/`, ''));
@@ -155,14 +113,13 @@ export async function getCollectionPaths(extraCollectionPaths = []) {
 }
 
 export default {
+	normalisePath,
 	getPaths,
 	getSupportedLanguages,
 	clearCachedLayouts,
 	generatePaths,
-	getDefaultsPaths,
 	getDataPaths,
 	getLayoutTree,
 	getLayoutPaths,
-	getPagePaths,
 	getCollectionPaths
 };

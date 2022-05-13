@@ -26,6 +26,7 @@
 		},
 		"nests": {
 			"path": "content/nested/inner",
+			"parse_branch_index": true,
 			"output": true
 		}
 	},
@@ -69,27 +70,27 @@
 			}
 		],
 		"nests": [
-            {
-                "url": "/nested/inner/",
-                "path": "content/nested/inner/_index.md",
-                "collection": "nests",
-                "title": "inner",
-                "layout": "_default/list"
-            },
-            {
-                "url": "/nested/inner/leaf/node/",
-                "path": "content/nested/inner/leaf/node.md",
-                "collection": "nests",
-                "title": "Node",
-                "layout": "_default/single"
-            },
-            {
-                "url": "/nested/inner/item/",
-                "path": "content/nested/inner/item.md",
-                "collection": "nests",
-                "title": "item",
-                "layout": "_default/single"
-            }
-        ]
+			{
+				"url": "/nested/inner/",
+				"path": "content/nested/inner/_index.md",
+				"collection": "nests",
+				"title": "inner",
+				"layout": "_default/list"
+			},
+			{
+				"url": "/nested/inner/leaf/node/",
+				"path": "content/nested/inner/leaf/node.md",
+				"collection": "nests",
+				"title": "Node",
+				"layout": "_default/single"
+			},
+			{
+				"url": "/nested/inner/item/",
+				"path": "content/nested/inner/item.md",
+				"collection": "nests",
+				"title": "item",
+				"layout": "_default/single"
+			}
+		]
 	}
 }

@@ -9,7 +9,7 @@ import { getConfig } from '../config.js';
 import { getCollectionsAndConfig } from './collections.js';
 
 async function getHugoUrls() {
-	log('⏳ Listing files...');
+	log('⏳ Listing files from Hugo...');
 
 	const { source } = pathHelper.getPaths();
 	const cmdArgs = ['list', 'all', ...(source ? ['--source', source] : [])];
@@ -30,11 +30,11 @@ async function getHugoUrls() {
 
 export async function getInfo(hugoConfig, options) {
 	const config = await getConfig(hugoConfig);
-	const urlsPerPath = await getHugoUrls();
+	const hugoUrls = await getHugoUrls();
 
 	pathHelper.getSupportedLanguages(hugoConfig);
 
-	const { collections, collectionsConfig } = await getCollectionsAndConfig(config, urlsPerPath);
+	const { collections, collectionsConfig } = await getCollectionsAndConfig(config, hugoUrls);
 	const data = await getData(config);
 	const generator = await getGenerator(hugoConfig);
 

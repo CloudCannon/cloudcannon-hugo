@@ -1,10 +1,8 @@
 import { expect } from 'chai';
 import mock from 'mock-fs';
 import {
-	getCollectionKeyFromMap,
-	getCollectionKeyFromArchetype,
-	getCollectionKeyFromPath,
-	getPageUrl,
+	getCollectionKey,
+	getPageUrlFromPath,
 	getLayout,
 	getCollectionsAndConfig
 } from '../../src/generators/collections.js';
@@ -12,87 +10,88 @@ import pathHelper from '../../src/helpers/paths.js';
 import { collectionFiles, testFileStructure } from '../test-paths.js';
 
 describe('collections generator', function () {
+	describe('getCollectionKey', function () {
+		it('without configuration', function () {
+			const collectionsConfig = {};
 
-	describe('getCollectionKeyFromMap', function () {
-		const collectionPathsMap = {
-			'content/posts': 'posts',
-			'content/group': 'renamed',
-			'content/nested/inner': 'nestedRename'
-		};
-
-		it('post in collection', function () {
-			const result = getCollectionKeyFromMap('content/posts/item.md', collectionPathsMap);
-			expect(result).to.equal('posts');
+			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('pages');
+			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('staff');
+			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('staff');
+			expect(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig)).to.equal('staff');
+			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('pages');
+			expect(getCollectionKey('content/about/index.md', collectionsConfig)).to.equal('pages');
+			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal(null);
 		});
 
-		it('about page', function () {
-			const result = getCollectionKeyFromMap('content/about/_index.md', collectionPathsMap);
-			expect(result).to.be.undefined;
+		it('with configuration', function () {
+			const collectionsConfig = {
+				other: {
+					path: 'content/elsewhere'
+				},
+				staff: {
+					parse_branch_index: true
+				},
+				offices: {
+					path: 'data/offices'
+				}
+			};
+
+			expect(getCollectionKey('content/elsewhere/thing.md', collectionsConfig)).to.equal('other');
+			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('staff');
+			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('staff');
+			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('staff');
+			expect(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig)).to.equal('staff');
+			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('pages');
+			expect(getCollectionKey('content/about/index.md', collectionsConfig)).to.equal('pages');
+			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal('offices');
 		});
 
-		it('nested item in renamed collection', function () {
-			const result = getCollectionKeyFromMap('content/group/nested/file/path/item.md', collectionPathsMap);
-			expect(result).to.equal('renamed');
+		it('with redefined default configuration', function () {
+			const collectionsConfig = {
+				pages: {
+					path: 'content',
+					parse_branch_index: true
+				},
+				staff: {
+					path: 'content/staff'
+				}
+			};
+
+			// This is pages rather than elsewhere as the pages config has an explicit path
+			expect(getCollectionKey('content/elsewhere/thing.md', collectionsConfig)).to.equal('pages');
+			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('pages');
+			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('staff');
+			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('staff');
+			expect(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig)).to.equal('staff');
+			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('pages');
+			expect(getCollectionKey('content/about/index.md', collectionsConfig)).to.equal('pages');
+			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal(null);
 		});
 
-		it('nested item in nested renamed collection', function () {
-			const result = getCollectionKeyFromMap('content/nested/inner/file/path/item.md', collectionPathsMap);
-			expect(result).to.equal('nestedRename');
-		});
+		it('with custom pages configuration', function () {
+			const collectionsConfig = {
+				custom: {
+					path: 'content',
+					parse_branch_index: true
+				}
+			};
 
-		it('item outside of nested collection', function () {
-			const result = getCollectionKeyFromMap('content/nested/item.md', collectionPathsMap);
-			expect(result).to.be.undefined;
+			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('custom');
+			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('custom');
+			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('custom');
+			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('custom');
+			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal(null);
 		});
 	});
 
-	describe('getCollectionKeyFromPath contentDirectory', function () {
+	describe('getPageUrlFromPath', function () {
 		it('_index file', function () {
-			const result = getCollectionKeyFromPath('content/collectionName/_index.md', 'content');
-			expect(result).to.equal('collectionName');
-		});
-
-		it('no _index file', function () {
-			const result = getCollectionKeyFromPath('content/authors/jane-doe.md', 'content');
-			expect(result).to.equal('authors');
-		});
-
-		it('nested, no _index file', function () {
-			const result = getCollectionKeyFromPath('content/authors/nested/file/path/jane-doe.md', 'content');
-			expect(result).to.equal('authors');
-		});
-	});
-
-	describe('getCollectionKeyFromArchetype', function () {
-		it('index file', function () {
-			const result = getCollectionKeyFromArchetype('archetypes/archetypeName/index.md', 'archetypes');
-			expect(result).to.equal('archetypeName');
-		});
-
-		it('no index file', function () {
-			const result = getCollectionKeyFromArchetype('archetypes/someFolder/archetype.md', 'archetypes');
-			expect(result).to.equal('archetype');
-		});
-
-		it('item in root archetype dir', function () {
-			const result = getCollectionKeyFromArchetype('archetypes/archetypeName.md', 'archetypes');
-			expect(result).to.equal('archetypeName');
-		});
-
-		it('default archetype', function () {
-			const result = getCollectionKeyFromArchetype('archetypes/default.md', 'archetypes');
-			expect(result).to.equal(undefined);
-		});
-	});
-
-	describe('getPageUrl', function () {
-		it('_index file', function () {
-			const result = getPageUrl('content/authors/_index.md', {}, 'content');
+			const result = getPageUrlFromPath('content/authors/_index.md', 'content');
 			expect(result).to.equal('/authors/');
 		});
 
 		it('index file', function () {
-			const result = getPageUrl('content/about/index.md', {}, 'content');
+			const result = getPageUrlFromPath('content/about/index.md', 'content');
 			expect(result).to.equal('/about/');
 		});
 	});
@@ -191,7 +190,8 @@ describe('collections generator', function () {
 		});
 
 		it('should retrieve collections', async function () {
-			const urlsPerPath = {
+			const hugoUrls = {
+				'content/_index.md': '/',
 				'content/coll1/item1.md': '/coll1/item1/',
 				'content/coll1/item2.md': '/coll1/item2/',
 				'content/posts/post1.md': '/posts/post1/'
@@ -199,6 +199,9 @@ describe('collections generator', function () {
 
 			const config = {
 				collections_config: {
+					coll1: {
+						parse_branch_index: true
+					},
 					data: {
 						image_key: 'thumbnail'
 					},
@@ -206,16 +209,22 @@ describe('collections generator', function () {
 						image_key: 'author_image',
 						image_size: 'cover'
 					},
-					fakeCollection: 'wackyLink',
 					staff_members: {
 						path: 'data/staff_members'
 					}
 				}
 			};
 
-			const { collections, collectionsConfig } = await getCollectionsAndConfig(config, urlsPerPath);
+			const { collections, collectionsConfig } = await getCollectionsAndConfig(config, hugoUrls);
 
 			const expectedCollections = {
+				pages: [
+					{
+						collection: 'pages',
+						path: 'content/posts/_index.md',
+						url: '/posts/'
+					},
+				],
 				coll1: [
 					{
 						collection: 'coll1',
@@ -238,11 +247,6 @@ describe('collections generator', function () {
 				posts: [
 					{
 						collection: 'posts',
-						path: 'content/posts/_index.md',
-						url: '/posts/'
-					},
-					{
-						collection: 'posts',
 						draft: true,
 						published: false,
 						path: 'content/posts/post1.md',
@@ -257,14 +261,21 @@ describe('collections generator', function () {
 						url: ''
 					}
 				],
-				leaf: [],
-				type: []
+				data: []
 			};
 
 			const expectedCollectionsConfig = {
+				pages: {
+					path: 'content',
+					output: true,
+					filter: 'strict',
+					parse_branch_index: true,
+					auto_discovered: true
+				},
 				coll1: {
 					path: 'content/coll1',
-					output: true
+					output: true,
+					parse_branch_index: true
 				},
 				posts: {
 					path: 'content/posts',
@@ -273,17 +284,10 @@ describe('collections generator', function () {
 					image_size: 'cover'
 				},
 				data: {
+					auto_discovered: false,
 					path: 'data',
 					output: false,
 					image_key: 'thumbnail'
-				},
-				leaf: {
-					path: 'content/leaf',
-					output: true
-				},
-				type: {
-					path: 'content/type',
-					output: false
 				},
 				staff_members: {
 					path: 'data/staff_members',
