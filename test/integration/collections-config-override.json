@@ -73,6 +73,7 @@
 			{
 				"url": "/nested/inner/",
 				"path": "content/nested/inner/_index.md",
+				"content_path": "nested/inner/_index.md",
 				"collection": "nests",
 				"title": "inner",
 				"layout": "_default/list"
@@ -80,6 +81,7 @@
 			{
 				"url": "/nested/inner/leaf/node/",
 				"path": "content/nested/inner/leaf/node.md",
+				"content_path": "nested/inner/leaf/node.md",
 				"collection": "nests",
 				"title": "Node",
 				"layout": "_default/single"
@@ -87,6 +89,7 @@
 			{
 				"url": "/nested/inner/item/",
 				"path": "content/nested/inner/item.md",
+				"content_path": "nested/inner/item.md",
 				"collection": "nests",
 				"title": "item",
 				"layout": "_default/single"

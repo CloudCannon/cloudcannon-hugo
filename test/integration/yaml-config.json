@@ -101,6 +101,7 @@
 			{
 				"url": "/blog/",
 				"path": "content/posts/_index.md",
+				"content_path": "posts/_index.md",
 				"collection": "pages",
 				"title": "Blog",
 				"description": "Keep up with the latest news.",
@@ -124,6 +125,7 @@
 				"url": "/",
 				"collection": "pages",
 				"path": "content/_index.md",
+				"content_path": "_index.md",
 				"description": "Track and optimize your sales team in real time.",
 				"type": "bannerless",
 				"_enabled_editors": [
@@ -138,6 +140,7 @@
 				"url": "/404/",
 				"collection": "pages",
 				"path": "content/404.md",
+				"content_path": "404.md",
 				"description": "This does not exist",
 				"sitemap": false,
 				"layout": "_default/single"
@@ -147,6 +150,7 @@
 				"url": "/pricing/",
 				"collection": "pages",
 				"path": "content/pricing/index.md",
+				"content_path": "pricing/index.md",
 				"heading": "Find the perfect plan for your business",
 				"description": "All plans include our award winning sales optimization solution to track your sales in real time.",
 				"type": "pricing",
@@ -170,6 +174,7 @@
 				"url": "/about/",
 				"collection": "pages",
 				"path": "content/about/index.md",
+				"content_path": "about/index.md",
 				"description": "We've built an amazing team of developers, marketers, designers and sales people.",
 				"type": "about",
 				"menu": {
@@ -194,6 +199,7 @@
 			{
 				"url": "/case-studies/company1/",
 				"path": "content/case-studies/company1.md",
+				"content_path": "case-studies/company1.md",
 				"collection": "case-studies",
 				"title": "company1",
 				"layout": "_default/single"
@@ -203,6 +209,7 @@
 			{
 				"url": "/posts/2016/07/20/post1/",
 				"path": "content/posts/post1.md",
+				"content_path": "posts/post1.md",
 				"collection": "posts",
 				"date": "2016-07-20T00:00:00.000Z",
 				"title": "Post1",
@@ -215,6 +222,7 @@
 			{
 				"url": "/posts/2016/08/12/post2/",
 				"path": "content/posts/post2.md",
+				"content_path": "posts/post2.md",
 				"collection": "posts",
 				"date": "2016-08-12T00:00:00.000Z",
 				"title": "Post2",
@@ -227,6 +235,7 @@
 			{
 				"url": "/posts/2016/08/06/post3/",
 				"path": "content/posts/post3.md",
+				"content_path": "posts/post3.md",
 				"collection": "posts",
 				"date": "2016-08-06T00:00:00.000Z",
 				"title": "Post3",

@@ -135,6 +135,11 @@ async function processItem(path, collectionKey, hugoUrls) {
 		...parsed
 	};
 
+	const contentPrefix = `${paths.content}/`;
+	if (path.startsWith(contentPrefix) && !item.content_path) {
+		item.content_path = path.replace(contentPrefix, '');
+	}
+
 	if (item.headless || !item.url) {
 		item.output = false;
 	}

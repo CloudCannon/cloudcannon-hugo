@@ -222,6 +222,7 @@ describe('collections generator', function () {
 					{
 						collection: 'pages',
 						path: 'content/posts/_index.md',
+						content_path: 'posts/_index.md',
 						url: '/posts/'
 					},
 				],
@@ -229,11 +230,13 @@ describe('collections generator', function () {
 					{
 						collection: 'coll1',
 						path: 'content/coll1/_index.md',
+						content_path: 'coll1/_index.md',
 						url: '/coll1/'
 					},
 					{
 						collection: 'coll1',
 						path: 'content/coll1/item1.md',
+						content_path: 'coll1/item1.md',
 						url: '/coll1/item1/'
 					},
 					{
@@ -241,6 +244,7 @@ describe('collections generator', function () {
 						headless: true,
 						output: false,
 						path: 'content/coll1/item2.md',
+						content_path: 'coll1/item2.md',
 						url: '/coll1/item2/'
 					}
 				],
@@ -250,6 +254,7 @@ describe('collections generator', function () {
 						draft: true,
 						published: false,
 						path: 'content/posts/post1.md',
+						content_path: 'posts/post1.md',
 						url: '/posts/post1/'
 					}
 				],
