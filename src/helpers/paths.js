@@ -99,7 +99,7 @@ export async function getCollectionPaths(extraCollectionPaths = []) {
 
 	const globPatterns = [
 		join(source, content, '**'),
-		...extraCollectionPaths.map((extraPath) => join(source, extraPath, '*.*'))
+		...extraCollectionPaths.map((extraPath) => join(source, extraPath, '**'))
 	];
 
 	let collectionPaths = await getGlob(globPatterns);
