@@ -94,7 +94,7 @@ async function main({ flags, pkg }) {
 	pathHelper.generatePaths(hugoConfig);
 
 	const info = await getInfo(hugoConfig, pkg);
-	const infoData = JSON.stringify(info, null, 4);
+	const infoData = JSON.stringify(info, null, '\t');
 
 	const { source, publish } = pathHelper.getPaths();
 	const outputDir = join(source, publish, '_cloudcannon');

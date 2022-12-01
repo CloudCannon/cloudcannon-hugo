@@ -4,7 +4,7 @@ Creates [CloudCannon](https://cloudcannon.com/) build information for sites made
 
 This tool runs after your Hugo build, reading your configuration to find pages, collections, and
 data files to create a JSON file used to automatically integrate the site with CloudCannon. This
-JSON file is written to `_cloudcannon/info.json`.
+JSON file is written to `_cloudcannon/info.json` in your destination folder.
 
 [<img src="https://img.shields.io/npm/v/cloudcannon-hugo?logo=npm" alt="version badge">](https://www.npmjs.com/package/cloudcannon-hugo)
 [<img src="https://img.shields.io/npm/dt/cloudcannon-hugo" alt="downloads badge">](https://www.npmjs.com/package/cloudcannon-hugo)

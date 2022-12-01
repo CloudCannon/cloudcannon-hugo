@@ -1,4 +1,4 @@
-import { basename } from 'path';
+import { basename, join } from 'path';
 import chalk from 'chalk';
 import { cheapPlural, runInChunks } from '../helpers/helpers.js';
 import pathHelper from '../helpers/paths.js';
@@ -125,8 +125,8 @@ export function getPageUrlFromPath(path, contentDir) {
 }
 
 async function processItem(path, collectionKey, hugoUrls) {
-	const parsed = await parseFile(path);
 	const paths = pathHelper.getPaths();
+	const parsed = await parseFile(join(paths.source, path));
 
 	const item = {
 		url: hugoUrls[path] || getPageUrlFromPath(path, paths.content) || '',
