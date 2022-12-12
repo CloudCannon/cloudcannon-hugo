@@ -113,23 +113,36 @@ function isIndex(path) {
 	return !!path.match(/\/_?index\.(md|html?)$/);
 }
 
-export function getPageUrlFromPath(path, contentDir) {
+export function getPageUrlFromPath(path, contentDir, multilingualOptions = {}) {
 	if (!isIndex(path)) {
 		return;
 	}
 
-	return path
+	const languageCodes = pathHelper.getSupportedLanguages();
+	const defaultLanguage = multilingualOptions.defaultContentLanguage;
+	const prependLanguageCode = multilingualOptions.defaultContentLanguageInSubdir === true;
+
+	let unprocessedUrl = path
 		.replace(`${contentDir || ''}/`, '/')
-		.replace(/\/_?index\.(md|html?)/, '/')
+		.replace(/\/_?index\.(md|html?)/, '/');
+
+	if (!!defaultLanguage && prependLanguageCode) {
+		const rootFolder = unprocessedUrl.split('/')?.[1] || '/';
+		if (rootFolder && !(languageCodes.includes(rootFolder))) {
+			unprocessedUrl = `/${defaultLanguage}${unprocessedUrl}`;
+		}
+	}
+
+	return unprocessedUrl
 		.replace(/\/+/g, '/');
 }
 
-async function processItem(path, collectionKey, hugoUrls) {
+async function processItem({ path, collectionKey, hugoUrls, multilingual }) {
 	const paths = pathHelper.getPaths();
 	const parsed = await parseFile(join(paths.source, path));
 
 	const item = {
-		url: hugoUrls[path] || getPageUrlFromPath(path, paths.content) || '',
+		url: hugoUrls[path] || getPageUrlFromPath(path, paths.content, multilingual) || '',
 		path,
 		collection: collectionKey,
 		...parsed
@@ -190,7 +203,7 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 		}
 
 		log(`Parsing ${chalk.green(path)} into ${chalk.bold(collectionKey)} collection`, 'debug');
-		const item = await processItem(path, collectionKey, hugoUrls);
+		const item = await processItem({ path, collectionKey, hugoUrls, multilingual: config.multilingual });
 		collections[collectionKey] = collections[collectionKey] || [];
 		collections[collectionKey].push(item);
 

@@ -70,6 +70,10 @@ describe('integration should generate info.json', function () {
 		await run('collections-config-override');
 	});
 
+	it('with multilingual pages', async function () {
+		await run('multilingual');
+	});
+
 	it('with legacy config', async function () {
 		await run('legacy', ['--config', 'cloudcannon.toml,config.toml']);
 	});

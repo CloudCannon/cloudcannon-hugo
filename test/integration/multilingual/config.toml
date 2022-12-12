@@ -1,0 +1,16 @@
+baseURL = 'http://example.org/'
+languageCode = 'en-us'
+title = 'My New Hugo Site'
+disableKinds = ['term', 'taxonomy', 'section']
+
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir = true
+
+[languages]
+[languages.de]
+title = 'Mein blog'
+contentDir = 'content/de/nested'
+weight = 2
+[languages.en]
+title = 'My blog'
+weight = 1
