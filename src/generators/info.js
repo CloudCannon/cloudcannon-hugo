@@ -38,6 +38,9 @@ export async function getInfo(hugoConfig, options) {
 	const data = await getData(config);
 	const generator = await getGenerator(hugoConfig);
 
+	// multlingual not needed in info.json
+	delete config.multilingual;
+
 	return {
 		...config,
 		time: new Date().toISOString(),

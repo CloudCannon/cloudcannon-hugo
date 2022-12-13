@@ -1,4 +1,4 @@
-import { dirname, join } from 'path';
+import { join } from 'path';
 import { getGlob } from './globs.js';
 
 let cachedPaths;
@@ -44,6 +44,15 @@ export function getSupportedLanguages(hugoConfig = {}) {
 
 	cachedLanguages = hugoConfig?.languages ? Object.keys(hugoConfig.languages) : [];
 	return cachedLanguages;
+}
+
+export function clearAllCachedItems() {
+	clearCachedLanguages();
+	clearCachedLayouts();
+}
+
+export function clearCachedLanguages() {
+	cachedLanguages = null;
 }
 
 export function clearCachedLayouts() {
@@ -117,6 +126,8 @@ export default {
 	getPaths,
 	getSupportedLanguages,
 	clearCachedLayouts,
+	clearCachedLanguages,
+	clearAllCachedItems,
 	generatePaths,
 	getDataPaths,
 	getLayoutTree,

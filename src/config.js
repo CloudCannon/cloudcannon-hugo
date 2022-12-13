@@ -120,6 +120,12 @@ export async function getConfig(hugoConfig) {
 		...file,
 		base_url: baseUrl === '/' ? '' : baseUrl,
 		source: file.source || paths.source || '',
+		multilingual: {
+			languages: hugoConfig.languages || [],
+			defaultContentLanguage: hugoConfig.defaultContentLanguage || '',
+			defaultContentLanguageInSubdir: hugoConfig.defaultContentLanguageInSubdir || false,
+			disableLanguages: hugoConfig.disableLanguages || [],
+		},
 		paths: {
 			...paths,
 			...file.paths

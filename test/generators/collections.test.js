@@ -98,7 +98,7 @@ describe('collections generator', function () {
 
 	describe('getLayout', function () {
 		before(function () {
-			pathHelper.clearCachedLayouts();
+			pathHelper.clearAllCachedItems();
 			mock(testFileStructure);
 			pathHelper.getSupportedLanguages({ languages: { en: {} } });
 		});
@@ -175,7 +175,7 @@ describe('collections generator', function () {
 
 		after(function () {
 			mock.restore();
-			pathHelper.clearCachedLayouts();
+			pathHelper.clearAllCachedItems();
 		});
 	});
 
@@ -185,7 +185,7 @@ describe('collections generator', function () {
 				...collectionFiles,
 				'data/staff_members': { 'anna.yml': '' }
 			};
-
+			pathHelper.clearAllCachedItems();
 			mock(fileStructure);
 		});
 
@@ -306,6 +306,7 @@ describe('collections generator', function () {
 
 		after(function () {
 			mock.restore();
+			pathHelper.clearAllCachedItems();
 		});
 	});
 });

@@ -25,7 +25,7 @@ describe('pathHelper', function () {
 
 	describe('getLayoutTree', function () {
 		before(function () {
-			pathHelper.clearCachedLayouts();
+			pathHelper.clearAllCachedItems();
 		});
 
 		it('should create a layout tree using layout file structure', async function () {
