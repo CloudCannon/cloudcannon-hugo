@@ -1,0 +1,63 @@
+{
+	"base_url": "",
+	"source": "",
+	"paths": {
+		"source": "",
+		"archetypes": "archetypes",
+		"assets": "assets",
+		"content": "content",
+		"pages": "content",
+		"data": "data",
+		"layouts": "layouts",
+		"publish": "public",
+		"static": "static",
+		"uploads": "static/uploads",
+		"config": ""
+	},
+	"time": "UNCHECKED",
+	"version": "0.0.3",
+	"cloudcannon": "UNCHECKED",
+	"generator": "UNCHECKED",
+	"collections_config": {
+		"pages": {
+			"output": true,
+			"filter": "strict",
+			"parse_branch_index": true,
+			"auto_discovered": true,
+			"path": "content"
+		}
+	},
+	"collections": {
+		"pages": [
+			{
+				"url": "/en/",
+				"path": "content/_index.md",
+				"collection": "pages",
+				"title": "index",
+				"content_path": "_index.md",
+				"layout": "index"
+			},
+			{
+				"url": "/en/about/",
+				"path": "content/about.md",
+				"collection": "pages",
+				"title": "About",
+				"content_path": "about.md"
+			},
+			{
+				"url": "/de/",
+				"path": "content/de/nested/_index.md",
+				"collection": "pages",
+				"title": "Mein blog",
+				"content_path": "de/nested/_index.md"
+			},
+			{
+				"url": "/de/about/",
+				"path": "content/de/nested/about.md",
+				"collection": "pages",
+				"title": "Mein blog",
+				"content_path": "about.md"
+			}
+		]
+	}
+}
