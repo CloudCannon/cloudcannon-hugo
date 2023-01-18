@@ -1,7 +1,7 @@
 {
   "name": "cloudcannon-hugo",
   "type": "module",
-  "version": "1.0.3",
+  "version": "1.0.4-0",
   "description": "Generates the files necessary for a hugo site to integrate with CloudCannon CMS",
   "main": "src/index.js",
   "scripts": {
