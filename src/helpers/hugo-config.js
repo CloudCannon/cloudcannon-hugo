@@ -50,6 +50,12 @@ export async function getConfigPaths(flags = {}) {
 	if (passedConfigFiles) {
 		passedConfigFiles = passedConfigFiles.trim().split(',');
 		configFileList = configFileList.concat(passedConfigFiles.reverse());
+	} else if (await exists(join(sourceDir, 'hugo.toml'))) {
+		configFileList.push(join(sourceDir, 'hugo.toml'));
+	} else if (await exists(join(sourceDir, 'hugo.yaml'))) {
+		configFileList.push(join(sourceDir, 'hugo.yaml'));
+	} else if (await exists(join(sourceDir, 'hugo.json'))) {
+		configFileList.push(join(sourceDir, 'hugo.json'));
 	} else if (await exists(join(sourceDir, 'config.toml'))) {
 		configFileList.push(join(sourceDir, 'config.toml'));
 	} else if (await exists(join(sourceDir, 'config.yaml'))) {

@@ -15,7 +15,8 @@ export const pathsByType = {
 		'config/_default/menus.zh.toml',
 		'config/_default/params.toml',
 		'config/_default/config.toml',
-		'config.toml'
+		'config.toml',
+		'hugo.toml'
 	],
 	configPathsProduction: [
 		'config/production/params.toml',
@@ -56,32 +57,21 @@ export const configFiles = {
 		"prio4": "moreconfig",
 		"prio5": "moreconfig",
 		"prio6": "moreconfig",
-		"prio7": "moreconfig",
-		"prio8": "moreconfig"
+		"prio7": "moreconfig"
 	}
 }`
 	},
-	'config.toml':
+	'actualconfig.toml':
 `[params]
-prio1 = "config"
-prio2 = "config"
-prio3 = "config"
-prio4 = "config"
-prio5 = "config"
-prio6 = "config"
-prio7 = "config"`,
-
-	'extraconfig.toml':
-`[params]
-prio1 = "extraconfig"
-prio2 = "extraconfig"
-prio3 = "extraconfig"
-prio4 = "extraconfig"
-prio5 = "extraconfig"
-prio6 = "extraconfig"
-prio7 = "extraconfig"
-prio8 = "extraconfig"
-prio9 = "extraconfig"`,
+prio1 = "actualconfig"
+prio2 = "actualconfig"
+prio3 = "actualconfig"
+prio4 = "actualconfig"
+prio5 = "actualconfig"
+prio6 = "actualconfig"
+prio7 = "actualconfig"
+prio8 = "actualconfig"
+`,
 	config: {
 		_default: {
 			'params.yaml':
@@ -133,9 +123,8 @@ prio2 = "prodconfig"`
 
 export const configOrder = [
 	'nonexistentFile.yaml',
-	'extraconfig.toml',
+	'actualconfig.toml',
 	'directory/moreconfig.json',
-	'config.toml',
 	'config/_default/config.toml',
 	'config/_default/params.json',
 	'config/_default/params.yaml',

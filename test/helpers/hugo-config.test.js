@@ -31,6 +31,22 @@ describe('hugo-config', function () {
 					'config/_default/menus.zh.toml',
 					'config/_default/params.toml',
 					'config/_default/config.toml',
+					'hugo.toml'
+				];
+
+				const configPaths = await getConfigPaths();
+				expect(configPaths).to.deep.equal(expected);
+			});
+
+			it('should get all configPaths with specified config file', async function () {
+				const expected = [
+					'config/production/params.toml',
+					'config/production/config.toml',
+					'config/_default/languages.toml',
+					'config/_default/menus.en.toml',
+					'config/_default/menus.zh.toml',
+					'config/_default/params.toml',
+					'config/_default/config.toml',
 					'extraconfig.json'
 				];
 
@@ -41,13 +57,61 @@ describe('hugo-config', function () {
 				mock.restore();
 			});
 		});
+		context('hugo.toml and config.toml files', function () {
+			before(function () {
+				mock({ 'config.toml': '', 'hugo.toml': '' });
+			});
+			it('should get just hugo.toml', async function () {
+				const configPaths = await getConfigPaths();
+				expect(configPaths).to.deep.equal(['hugo.toml']);
+			});
+			after(function () {
+				mock.restore();
+			});
+		});
+		context('hugo.json and config.toml files', function () {
+			before(function () {
+				mock({ 'config.toml': '', 'hugo.json': '' });
+			});
+			it('should get just hugo.json', async function () {
+				const configPaths = await getConfigPaths();
+				expect(configPaths).to.deep.equal(['hugo.json']);
+			});
+			after(function () {
+				mock.restore();
+			});
+		});
+		context('hugo.yaml and config.json files', function () {
+			before(function () {
+				mock({ 'config.json': '', 'hugo.yaml': '' });
+			});
+			it('should get just hugo.yaml', async function () {
+				const configPaths = await getConfigPaths();
+				expect(configPaths).to.deep.equal(['hugo.yaml']);
+			});
+			after(function () {
+				mock.restore();
+			});
+		});
+		context('hugo.toml and config.toml files with specified config file', function () {
+			before(function () {
+				mock({ 'config.toml': '', 'hugo.toml': '' });
+			});
+			it('should get just specified file', async function () {
+				const configPaths = await getConfigPaths({ config: 'wildconfigfile.json' });
+				expect(configPaths).to.deep.equal(['wildconfigfile.json']);
+			});
+			after(function () {
+				mock.restore();
+			});
+		});
 		context('yaml and json config file', function () {
 			before(function () {
-				mock({ 'config.yaml': '', 'config.json': '' });
+				mock({ 'hugo.yaml': '', 'hugo.json': '' });
 			});
-			it('should get just config.yaml', async function () {
+			it('should get just hugo.yaml', async function () {
 				const configPaths = await getConfigPaths();
-				expect(configPaths).to.deep.equal(['config.yaml']);
+				expect(configPaths).to.deep.equal(['hugo.yaml']);
 			});
 			after(function () {
 				mock.restore();
@@ -55,11 +119,11 @@ describe('hugo-config', function () {
 		});
 		context('json config file', function () {
 			before(function () {
-				mock({ 'config.json': '' });
+				mock({ 'hugo.json': '' });
 			});
 			it('should get all configPaths', async function () {
 				const configPaths = await getConfigPaths();
-				expect(configPaths).to.deep.equal(['config.json']);
+				expect(configPaths).to.deep.equal(['hugo.json']);
 			});
 			after(function () {
 				mock.restore();
@@ -79,11 +143,11 @@ describe('hugo-config', function () {
 		});
 		context('Config files within a source directory', function () {
 			before(function () {
-				mock({ 'src/dir': { 'config.toml': '' } });
+				mock({ 'src/dir': { 'hugo.toml': '' } });
 			});
 			it('should get all configPaths', async function () {
 				const configPaths = await getConfigPaths({ source: 'src/dir' });
-				expect(configPaths).to.deep.equal(['src/dir/config.toml']);
+				expect(configPaths).to.deep.equal(['src/dir/hugo.toml']);
 			});
 			after(function () {
 				mock.restore();
@@ -91,11 +155,11 @@ describe('hugo-config', function () {
 		});
 		context('Config files within a source directory and config directory', function () {
 			before(function () {
-				mock({ 'src/dir/config/_default': { 'config.toml': '' } });
+				mock({ 'src/dir/config/_default': { 'hugo.toml': '' } });
 			});
 			it('should get all configPaths', async function () {
 				const configPaths = await getConfigPaths({ source: 'src/dir', configDir: 'config' });
-				expect(configPaths).to.deep.equal(['src/dir/config/_default/config.toml']);
+				expect(configPaths).to.deep.equal(['src/dir/config/_default/hugo.toml']);
 			});
 			after(function () {
 				mock.restore();
@@ -117,15 +181,14 @@ describe('hugo-config', function () {
 			const expected = [
 				{
 					params: {
-						prio1: 'extraconfig',
-						prio2: 'extraconfig',
-						prio3: 'extraconfig',
-						prio4: 'extraconfig',
-						prio5: 'extraconfig',
-						prio6: 'extraconfig',
-						prio7: 'extraconfig',
-						prio8: 'extraconfig',
-						prio9: 'extraconfig'
+						prio1: 'actualconfig',
+						prio2: 'actualconfig',
+						prio3: 'actualconfig',
+						prio4: 'actualconfig',
+						prio5: 'actualconfig',
+						prio6: 'actualconfig',
+						prio7: 'actualconfig',
+						prio8: 'actualconfig',
 					}
 				},
 				{
@@ -137,18 +200,6 @@ describe('hugo-config', function () {
 						prio5: 'moreconfig',
 						prio6: 'moreconfig',
 						prio7: 'moreconfig',
-						prio8: 'moreconfig'
-					}
-				},
-				{
-					params: {
-						prio1: 'config',
-						prio2: 'config',
-						prio3: 'config',
-						prio4: 'config',
-						prio5: 'config',
-						prio6: 'config',
-						prio7: 'config'
 					}
 				},
 				{
@@ -199,7 +250,7 @@ describe('hugo-config', function () {
 					}
 				}
 			];
-			const result = await getConfigContents(configOrder, 'extraconfig.toml,directory/moreconfig.json');
+			const result = await getConfigContents(configOrder, 'actualconfig.toml,directory/moreconfig.json');
 			expect(result).to.deep.equal(expected);
 		});
 
@@ -224,13 +275,12 @@ describe('hugo-config', function () {
 						prio4: 'yamldefaultparams',
 						prio5: 'jsondefaultparams',
 						prio6: 'defaultconfig',
-						prio7: 'config',
-						prio8: 'moreconfig',
-						prio9: 'extraconfig'
+						prio7: 'moreconfig',
+						prio8: 'actualconfig'
 					}
 				};
 
-				const flags = { config: 'extraconfig.toml,directory/moreconfig.json,config.toml' };
+				const flags = { config: 'actualconfig.toml,directory/moreconfig.json,config.toml' };
 				const obj = await getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
