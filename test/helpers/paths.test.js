@@ -37,7 +37,8 @@ describe('pathHelper', function () {
 				},
 				mytype: {
 					list: 'mytype/list',
-					mylayout: 'mytype/mylayout'
+					mylayout: 'mytype/mylayout',
+					single: "mytype/single"
 				},
 				posts: {
 					mylayout: 'posts/mylayout',

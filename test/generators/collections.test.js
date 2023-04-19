@@ -138,6 +138,11 @@ describe('collections generator', function () {
 			expect(result).to.equal('posts/mylayout');
 		});
 
+		it('single post with type set', async function () {
+			const result = await getLayout('content/posts/post.md', { type: 'mytype' });
+			expect(result).to.equal('mytype/single');
+		});
+
 		it('single post with a non-existent type set', async function () {
 			const result = await getLayout('content/posts/post.md', { type: 'invalidType' });
 			expect(result).to.equal('posts/single');

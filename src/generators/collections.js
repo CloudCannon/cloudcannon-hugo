@@ -41,7 +41,7 @@ export async function getLayout(path, details) {
 		typeFolders.push(type, '/', '_default'); // '/' signifies to use root folder
 		layoutFiles.push(layout, 'index', 'home', 'list');
 	} else if (isSingle) {
-		typeFolders.push(section, '_default');
+		typeFolders.push(type, section, '_default');
 		layoutFiles.push(layout, 'single');
 	} else {
 		typeFolders.push(type, section, 'section', '_default');
