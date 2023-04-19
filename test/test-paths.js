@@ -37,6 +37,7 @@ export const pathsByType = {
 		'layouts/index.html',
 		'layouts/mytype/list.html',
 		'layouts/mytype/mylayout.html',
+		'layouts/mytype/single.html',
 		'layouts/posts/mylayout.html',
 		'layouts/posts/single.html'
 	],
