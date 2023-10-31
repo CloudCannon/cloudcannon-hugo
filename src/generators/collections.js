@@ -142,10 +142,10 @@ async function processItem({ path, collectionKey, hugoUrls, multilingual }) {
 	const parsed = await parseFile(join(paths.source, path));
 
 	const item = {
-		url: hugoUrls[path] || getPageUrlFromPath(path, paths.content, multilingual) || '',
 		path,
 		collection: collectionKey,
-		...parsed
+		...parsed,
+		url: parsed.url || hugoUrls[path] || getPageUrlFromPath(path, paths.content, multilingual) || '',
 	};
 
 	const contentPrefix = `${paths.content}/`;
