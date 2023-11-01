@@ -11,8 +11,8 @@
     "test:integration": "nyc mocha **/integration.test.js",
     "test:all": "nyc mocha --recursive",
     "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "release:latest": "npx np",
-    "release:next": "npx np prerelease --tag=next"
+    "release:latest": "np",
+    "release:next": "np prerelease --tag=next"
   },
   "bin": {
     "cloudcannon-hugo": "src/index.js"
@@ -44,6 +44,7 @@
     "eslint-plugin-mocha": "^10.1.0",
     "mocha": "^10.1.0",
     "mock-fs": "^5.2.0",
+    "np": "^8.0.4",
     "nyc": "^15.1.0"
   },
   "dependencies": {
