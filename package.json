@@ -14,6 +14,9 @@
     "release:latest": "np",
     "release:next": "np prerelease --tag=next"
   },
+  "engines": {
+    "node": ">=16"
+  },
   "bin": {
     "cloudcannon-hugo": "src/index.js"
   },
