@@ -8,11 +8,14 @@ import { getData } from './data.js';
 import { getConfig } from '../config.js';
 import { getCollectionsAndConfig } from './collections.js';
 
-async function getHugoUrls() {
+async function getHugoUrls(hugoConfig) {
 	log('⏳ Listing files from Hugo...');
 
 	const { source } = pathHelper.getPaths();
-	const cmdArgs = ['list', 'all', ...(source ? ['--source', source] : [])];
+	const { environment } = hugoConfig;
+	const cmdArgs = ['list', 'all', '--environment', environment || 'production'];
+	cmdArgs.push(...(source ? ['--source', source] : []));
+
 	const raw = await runProcess('hugo', cmdArgs);
 	const startIndex = raw.search(/^path,/m); // hugo logs warnings before this point
 	if (startIndex < 0) {
@@ -30,7 +33,7 @@ async function getHugoUrls() {
 
 export async function getInfo(hugoConfig, options) {
 	const config = await getConfig(hugoConfig);
-	const hugoUrls = await getHugoUrls();
+	const hugoUrls = await getHugoUrls(hugoConfig);
 
 	pathHelper.getSupportedLanguages(hugoConfig);
 
