@@ -1,0 +1,340 @@
+{
+	"data_config": {
+		"cities": true
+	},
+	"collections_config": {
+		"staff_members": {
+			"path": "data/staff_members",
+			"output": false
+		},
+		"pages": {
+			"output": true,
+			"filter": "strict",
+			"parse_branch_index": true,
+			"auto_discovered": false,
+			"path": "content",
+			"_comments": {
+				"draft": "Tick if page is a draft"
+			}
+		},
+		"emptyMarkdownCollection": {
+			"_enabled_editors": [
+				"data"
+			],
+			"path": "content/emptyMarkdownCollection"
+		},
+		"case-studies": {
+			"path": "content/case-studies",
+			"output": true
+		},
+		"posts": {
+			"path": "content/posts",
+			"output": true
+		},
+		"data": {
+			"output": false,
+			"auto_discovered": false,
+			"path": "data"
+		}
+	},
+	"_comments": {
+		"color": "The background colour used in the plan name and call to action.",
+		"new_window": "Open link in new window",
+		"twitter": "Twitter handle (not url)"
+	},
+	"_options": {
+		"type": {
+			"hidden": true
+		},
+		"full_width": {
+			"hidden": true
+		}
+	},
+	"editor": {
+		"default_path": "/another/"
+	},
+	"source_editor": {
+		"tab_size": 3
+	},
+	"_array_structures": {
+		"gallery": {
+			"values": {
+				"label": "Image",
+				"image": "/path/to/source-image.png",
+				"icon": "image",
+				"tags": [
+					"Media",
+					"Asset"
+				],
+				"value": {
+					"image": "/placeholder.png",
+					"caption": ""
+				}
+			}
+		}
+	},
+	"_select_data": {
+		"colors": [
+			"Red",
+			"Green",
+			"Blue"
+		]
+	},
+	"base_url": "",
+	"source": "",
+	"paths": {
+		"source": "",
+		"archetypes": "archetypes",
+		"assets": "assets",
+		"content": "content",
+		"pages": "content",
+		"data": "data",
+		"layouts": "layouts",
+		"publish": "public",
+		"static": "static",
+		"uploads": "static/uploads",
+		"config": ""
+	},
+	"time": "2024-03-18T23:50:20.710Z",
+	"version": "0.0.3",
+	"cloudcannon": {
+		"name": "cloudcannon-hugo",
+		"version": "1.0.6"
+	},
+	"generator": {
+		"name": "hugo",
+		"version": "0.113.0",
+		"metadata": {
+			"markdown": "goldmark",
+			"goldmark": {
+				"extensions": {
+					"definitionList": true,
+					"footnote": true,
+					"linkify": true,
+					"strikethrough": true,
+					"table": true,
+					"taskList": true,
+					"typographer": true
+				},
+				"parser": {
+					"attribute": true,
+					"autoHeadingID": true,
+					"autoHeadingIDType": "github"
+				},
+				"renderer": {
+					"hardWraps": false,
+					"unsafe": true,
+					"xhtml": false
+				}
+			}
+		}
+	},
+	"collections": {
+		"staff_members": [
+			{
+				"path": "data/staff_members/anna.yml",
+				"collection": "staff_members",
+				"name": "Anna Thompson",
+				"position": "Marketing",
+				"image_path": "https://source.unsplash.com/collection/139386/601x601?a=.png",
+				"twitter": "CloudCannonApp",
+				"blurb": "Anna likes long walks on the beach and buffet breakfast.",
+				"url": "",
+				"output": false
+			},
+			{
+				"path": "data/staff_members/charles.yml",
+				"collection": "staff_members",
+				"name": "Charles Freeman",
+				"position": "Sales",
+				"image_path": "https://source.unsplash.com/collection/139386/603x603?a=.png",
+				"twitter": "CloudCannonApp",
+				"blurb": "Charles loves going to bike rides and spending time with his family.",
+				"_comments": {
+					"twitter": "Update your twitter handle charles!"
+				},
+				"url": "",
+				"output": false
+			},
+			{
+				"path": "data/staff_members/betty.yml",
+				"collection": "staff_members",
+				"name": "Betty Jefferson",
+				"position": "Developer",
+				"image_path": "https://source.unsplash.com/collection/139386/602x602?a=.png",
+				"twitter": "CloudCannonApp",
+				"blurb": "Betty is a bookworm who will typically have four books on the go.",
+				"url": "",
+				"output": false
+			}
+		],
+		"pages": [
+			{
+				"path": "content/_index.md",
+				"collection": "pages",
+				"title": "The last sales CRM you'll ever need",
+				"description": "Track and optimize your sales team in real time.",
+				"type": "bannerless",
+				"_enabled_editors": [
+					"visual",
+					"content",
+					"source"
+				],
+				"url": "/",
+				"content_path": "_index.md",
+				"layout": "index"
+			},
+			{
+				"path": "content/404.md",
+				"collection": "pages",
+				"title": "Not Found",
+				"description": "This does not exist",
+				"sitemap": false,
+				"url": "/404.html",
+				"content_path": "404.md",
+				"layout": "_default/single"
+			},
+			{
+				"path": "content/about/index.md",
+				"collection": "pages",
+				"title": "Our team",
+				"description": "We've built an amazing team of developers, marketers, designers and sales people.",
+				"type": "about",
+				"menu": {
+					"main": {
+						"name": "About",
+						"weight": 3
+					},
+					"footer": {
+						"name": "About",
+						"weight": 3
+					}
+				},
+				"_enabled_editors": [
+					"visual",
+					"content",
+					"source"
+				],
+				"url": "/about.html",
+				"content_path": "about/index.md",
+				"layout": "_default/single"
+			},
+			{
+				"path": "content/posts/_index.md",
+				"collection": "pages",
+				"title": "Blog",
+				"description": "Keep up with the latest news.",
+				"url": "/blog/",
+				"menu": {
+					"main": {
+						"weight": 2
+					},
+					"footer": {
+						"weight": 2
+					}
+				},
+				"_enabled_editors": [
+					"visual",
+					"content",
+					"source"
+				],
+				"content_path": "posts/_index.md",
+				"layout": "posts/list"
+			},
+			{
+				"path": "content/pricing/index.md",
+				"collection": "pages",
+				"title": "Pricing",
+				"heading": "Find the perfect plan for your business",
+				"description": "All plans include our award winning sales optimization solution to track your sales in real time.",
+				"type": "pricing",
+				"menu": {
+					"main": {
+						"weight": 1
+					},
+					"footer": {
+						"weight": 1
+					}
+				},
+				"_enabled_editors": [
+					"visual",
+					"content",
+					"source"
+				],
+				"url": "/pricing.html",
+				"content_path": "pricing/index.md",
+				"layout": "pricing/single"
+			}
+		],
+		"emptyMarkdownCollection": [],
+		"case-studies": [
+			{
+				"path": "content/case-studies/company1.md",
+				"collection": "case-studies",
+				"title": "company1",
+				"url": "/case-studies/company1.html",
+				"content_path": "case-studies/company1.md",
+				"layout": "_default/single"
+			}
+		],
+		"posts": [
+			{
+				"path": "content/posts/post1.md",
+				"collection": "posts",
+				"date": "2016-07-20T00:00:00.000Z",
+				"title": "Post1",
+				"url": "/posts/2016/07/20/post1.html",
+				"categories": [
+					"sales"
+				],
+				"author_staff_member": "anna",
+				"content_path": "posts/post1.md",
+				"layout": "posts/single"
+			},
+			{
+				"path": "content/posts/post2.md",
+				"collection": "posts",
+				"date": "2016-08-12T00:00:00.000Z",
+				"title": "Post2",
+				"categories": [
+					"marketing"
+				],
+				"author_staff_member": "betty",
+				"url": "/posts/2016/08/12/post2.html",
+				"content_path": "posts/post2.md",
+				"layout": "posts/single"
+			},
+			{
+				"path": "content/posts/post3.md",
+				"collection": "posts",
+				"date": "2016-08-06T00:00:00.000Z",
+				"title": "Post3",
+				"categories": [
+					"sales"
+				],
+				"author_staff_member": "anna",
+				"url": "/posts/2016/08/06/post3.html",
+				"content_path": "posts/post3.md",
+				"layout": "posts/single"
+			}
+		],
+		"data": []
+	},
+	"data": {
+		"cities": {
+			"_defaults": {
+				"name": "",
+				"country": "",
+				"optional": true
+			},
+			"dunedin": {
+				"name": "Dunedin",
+				"country": "New Zealand"
+			},
+			"sanfrancisco": {
+				"name": "San Francisco",
+				"country": "United States of America"
+			}
+		}
+	}
+}

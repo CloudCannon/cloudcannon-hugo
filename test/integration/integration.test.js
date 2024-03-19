@@ -26,8 +26,8 @@ const CHECKED_KEYS = [ // Skips time and generator
 	'source_editor'
 ];
 
-async function run(fixture, npxArgs = []) {
-	const expectedPath = join('test/integration', `${fixture}.json`);
+async function run(fixture, npxArgs = [], expectedOutputFile) {
+	const expectedPath = join('test/integration', expectedOutputFile || `${fixture}.json`);
 	const expectedRaw = await readFile(expectedPath);
 	const expected = JSON.parse(expectedRaw);
 
@@ -64,6 +64,10 @@ describe('integration should generate info.json', function () {
 
 	it('with YAML config file', async function () {
 		await run('yaml-config');
+	});
+
+	it('with YAML config file and specified environment', async function () {
+		await run('yaml-config', ['--environment', 'staging'], 'yaml-config-staging.json');
 	});
 
 	it('with collections_config_override', async function () {

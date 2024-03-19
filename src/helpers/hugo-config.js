@@ -28,7 +28,7 @@ export function configSort(fileArray) {
 
 export async function getConfigPaths(flags = {}) {
 	const sourceDir = flags.source || '';
-	const environment = flags.environment || 'production'; // or just use root
+	const environment = flags.environment || process.env.HUGO_ENVIRONMENT || 'production';
 
 	const configDir = flags.configDir || 'config';
 	const configDirEnvironment = join(sourceDir, configDir, environment);
@@ -120,6 +120,10 @@ export async function getHugoConfig(flags = {}) {
 
 	if (flags.source) {
 		configObject.source = flags.source;
+	}
+
+	if (flags.environment) {
+		configObject.environment = flags.environment;
 	}
 
 	if (flags.destination) {
