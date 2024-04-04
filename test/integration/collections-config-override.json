@@ -1,6 +1,6 @@
 {
 	"source": "",
-	"base_url": "",
+	"base_url": "/documentation",
 	"paths": {
 		"source": "",
 		"archetypes": "archetypes",
@@ -23,6 +23,10 @@
 		"staff_members": {
 			"path": "data/staff_members",
 			"output": false
+		},
+		"posts": {
+			"path": "content/posts",
+			"output": true
 		},
 		"nests": {
 			"path": "content/nested/inner",
@@ -94,6 +98,41 @@
 				"title": "item",
 				"layout": "_default/single"
 			}
+		],
+		"posts": [
+			{
+				"path": "content/posts/post1.md",
+				"collection": "posts",
+				"date": "2016-07-20T00:00:00.000Z",
+				"title": "Post1",
+				"categories": [ "sales" ],
+				"author_staff_member": "anna",
+				"url": "/posts/2016/07/20/post1/",
+				"content_path": "posts/post1.md",
+				"layout": "posts/single"
+			  },
+			  {
+				"path": "content/posts/post2.md",
+				"collection": "posts",
+				"date": "2016-08-12T00:00:00.000Z",
+				"title": "Post2",
+				"categories": [ "marketing" ],
+				"author_staff_member": "betty",
+				"url": "/posts/2016/08/12/post2/",
+				"content_path": "posts/post2.md",
+				"layout": "posts/single"
+			  },
+			  {
+				"path": "content/posts/post3.md",
+				"collection": "posts",
+				"date": "2016-08-06T00:00:00.000Z",
+				"title": "Post3",
+				"categories": [ "sales" ],
+				"author_staff_member": "anna",
+				"url": "/posts/2016/08/06/post3/",
+				"content_path": "posts/post3.md",
+				"layout": "posts/single"
+			  }
 		]
 	}
 }
