@@ -26,7 +26,7 @@ async function getHugoUrls(hugoConfig) {
 	const fileList = Papa.parse(fileCsv, { header: true });
 
 	return fileList.data.reduce((memo, file) => {
-		memo[file.path] = file.permalink.replace(hugoConfig.baseURL ?? '', '');
+		memo[file.path] = ('/' + file.permalink.replace(hugoConfig.baseURL ?? '', '')).replace(/^\/\//, '/');
 		return memo;
 	}, {});
 }
