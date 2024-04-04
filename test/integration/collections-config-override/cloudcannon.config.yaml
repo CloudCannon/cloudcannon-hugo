@@ -7,3 +7,6 @@ collections_config:
     path: content/nested/inner
     output: true
     parse_branch_index: true
+  posts:
+    path: content/posts
+    output: true
