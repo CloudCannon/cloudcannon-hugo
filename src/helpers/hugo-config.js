@@ -116,7 +116,7 @@ export async function generateConfigObject(flags = {}, options) {
 
 export async function getHugoConfig(flags = {}) {
 	const configObject = await generateConfigObject(flags);
-	configObject.baseURL = flags.baseUrl || configObject.baseURL || '/';
+	configObject.baseURL = flags.baseURL || configObject.baseURL || '/';
 
 	if (flags.source) {
 		configObject.source = flags.source;

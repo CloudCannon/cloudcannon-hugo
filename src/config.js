@@ -113,12 +113,12 @@ export async function getConfig(hugoConfig) {
 	const paths = pathHelper.getPaths();
 	const file = await readFile(process.env.CLOUDCANNON_CONFIG_PATH) || {};
 	const legacy = getLegacyConfig(hugoConfig);
-	const baseUrl = file.base_url || getUrlPathname(hugoConfig.baseURL) || '';
+	const baseURL = file.base_url || getUrlPathname(hugoConfig.baseURL) || '';
 
 	const config = {
 		...legacy,
 		...file,
-		base_url: baseUrl === '/' ? '' : baseUrl,
+		base_url: baseURL === '/' ? '' : baseURL,
 		source: file.source || paths.source || '',
 		multilingual: {
 			languages: hugoConfig.languages || [],

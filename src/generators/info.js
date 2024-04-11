@@ -1,5 +1,5 @@
 import Papa from 'papaparse';
-import { runProcess } from '../helpers/helpers.js';
+import { runProcess, getUrlPathname } from '../helpers/helpers.js';
 import pathHelper from '../helpers/paths.js';
 import chalk from 'chalk';
 import log from '../helpers/logger.js';
@@ -26,7 +26,18 @@ async function getHugoUrls(hugoConfig) {
 	const fileList = Papa.parse(fileCsv, { header: true });
 
 	return fileList.data.reduce((memo, file) => {
-		memo[file.path] = ('/' + file.permalink.replace(hugoConfig.baseURL ?? '', '')).replace(/^\/\//, '/');
+		const baseURLPathname = getUrlPathname(hugoConfig.baseURL || '')
+			.replace(/^\/*/g, '')
+			.replace(/\/*$/g, '/');
+
+		let filePathname = getUrlPathname(file.permalink).replace(/^\/*/g, '');
+
+		if (filePathname.startsWith(baseURLPathname)) {
+			filePathname = filePathname.substring(baseURLPathname.length);
+		}
+		const url = ('/' + filePathname).replace(/^\/\//, '/');
+
+		memo[file.path] = url;
 		return memo;
 	}, {});
 }
