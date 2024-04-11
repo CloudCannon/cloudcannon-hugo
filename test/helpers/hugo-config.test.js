@@ -299,7 +299,7 @@ describe('hugo-config', function () {
 					baseURL: 'http://build-arg.org/'
 				};
 
-				const flags = { baseUrl: 'http://build-arg.org/' };
+				const flags = { baseURL: 'http://build-arg.org/' };
 				const obj = await getHugoConfig(flags);
 				expect(obj).to.deep.equal(expected);
 			});
