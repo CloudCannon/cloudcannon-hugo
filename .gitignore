@@ -3,4 +3,4 @@ node_modules/
 test/integration/**/public/
 test/integration/**/resources/
 test/integration/**/.hugo_build.lock
-.hugo_build_lock
+.hugo_build.lock

@@ -7,8 +7,9 @@ import deepEqualInAnyOrder from 'deep-equal-in-any-order';
 chai.use(deepEqualInAnyOrder);
 const { expect } = chai;
 
-const CHECKED_KEYS = [ // Skips time and generator
+const CHECKED_KEYS = [ // Skips 'time'
 	'version',
+	'generator',
 	'paths',
 	'data_config',
 	'collections_config',
@@ -55,7 +56,16 @@ async function run(fixture, npxArgs = [], expectedOutputFile) {
 	expect(Object.keys(info)).to.deep.equalInAnyOrder(expectedKeys);
 
 	CHECKED_KEYS.forEach(function (key) {
-		expect(info[key]).to.deep.equalInAnyOrder(expected[key]);
+		if (expected[key] === 'UNCHECKED') {
+			return;
+		}
+
+		if (key === 'generator') {
+			const renderer = info.generator?.metadata?.markdown;
+			expect(info.generator?.metadata?.[renderer]).to.deep.equalInAnyOrder(expected.generator?.metadata?.[renderer]);
+		} else {
+			expect(info[key]).to.deep.equalInAnyOrder(expected[key]);
+		}
 	});
 }
 

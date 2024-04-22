@@ -62,7 +62,34 @@
 	"time": "UNCHECKED",
 	"version": "0.0.3",
 	"cloudcannon": "UNCHECKED",
-	"generator": "UNCHECKED",
+	"generator": {
+		"metadata": {
+			"name": "hugo",
+			"markdown": "goldmark",
+			"goldmark": {
+				"extensions": {
+					"definitionList": true,
+					"footnote": true,
+					"linkify": true,
+					"strikethrough": true,
+					"table": true,
+					"taskList": true,
+					"typographer": true
+				},
+				"parser": {
+					"attribute": true,
+					"autoHeadingID": true,
+					"autoHeadingIDType": "github"
+				},
+				"renderer": {
+					"hardWraps": true,
+					"unsafe": true,
+					"xhtml": false
+				},
+				"sentence_per_line": true
+			}
+		}
+	},
 	"collections_config": {
 		"pages": {
 			"auto_discovered": false,

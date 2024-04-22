@@ -50,7 +50,7 @@ export async function getInfo(hugoConfig, options) {
 
 	const { collections, collectionsConfig } = await getCollectionsAndConfig(config, hugoUrls);
 	const data = await getData(config);
-	const generator = await getGenerator(hugoConfig);
+	const generator = await getGenerator(hugoConfig, config);
 
 	// multlingual not needed in info.json
 	delete config.multilingual;
