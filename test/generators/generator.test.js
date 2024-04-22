@@ -59,6 +59,7 @@ describe('getGeneratorMetadata', function () {
 					unsafe: true,
 					xhtml: false
 				},
+				hardWraps: false,
 				sentence_per_line: true
 			}
 		};

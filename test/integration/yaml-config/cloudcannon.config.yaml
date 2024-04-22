@@ -52,4 +52,5 @@ generator:
     markdown: goldmark
     goldmark:
       hardWraps: true
+      spaced_lists: true
       sentence_per_line: true

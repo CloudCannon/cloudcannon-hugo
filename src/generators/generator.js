@@ -3,11 +3,9 @@ import { markdownMeta } from '../helpers/metadata.js';
 
 function overrideHugoSettingsWithCloudCannonSettings(renderer, hugoSettings, ccSettings) {
 	const newSettings = {
-		...hugoSettings
+		...hugoSettings,
+		...ccSettings
 	};
-	if (ccSettings.sentence_per_line) {
-		newSettings.sentence_per_line = true;
-	}
 
 	if (Object.hasOwn(ccSettings, 'hardWraps')) {
 		if (renderer === 'goldmark') {

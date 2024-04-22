@@ -126,6 +126,8 @@
 					"unsafe": true,
 					"xhtml": false
 				},
+				"hardWraps": true,
+				"spaced_lists": true,
 				"sentence_per_line": true
 			}
 		}
