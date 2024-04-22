@@ -3,23 +3,18 @@ import { markdownMeta } from '../helpers/metadata.js';
 
 export function getGeneratorMetadata(hugoConfig, config) {
 	const markup = hugoConfig.markup ?? {};
-	const hugoMarkdownHandler = markup.defaultMarkdownHandler ?? 'goldmark';
-	const defaultMeta = markdownMeta[hugoMarkdownHandler] ?? {};
-	const hugoMarkdownSettings = mergeDeep({}, defaultMeta, markup[hugoMarkdownHandler]);
+	const markdownHandler = config.generator?.metadata?.markdown || markup.defaultMarkdownHandler || 'goldmark';
 
-	const ccMarkdownHandler = config.generator?.metadata?.markdown || hugoMarkdownHandler;
-	const ccMarkdownSettings = config.generator?.metadata?.[ccMarkdownHandler] || {};
+	const defaultMeta = markdownMeta[markdownHandler] || {};
+	const ccMarkdownSettings = config.generator?.metadata?.[markdownHandler] || {};
+	const markdownSettings = mergeDeep({}, defaultMeta, markup[markdownHandler], ccMarkdownSettings);
 
-	const markdownSettings = mergeDeep({}, hugoMarkdownSettings, ccMarkdownSettings);
 	markdownSettings.renderer ||= {};
-
-	markdownSettings.renderer.hardWraps = Object.hasOwn(markdownSettings, 'hardWraps')
-		? markdownSettings.hardWraps
-		: markdownSettings.renderer.hardWraps || false;
+	markdownSettings.renderer.hardWraps = !!(markdownSettings.hardWraps ?? markdownSettings.renderer.hardWraps ?? false);
 
 	return {
-		markdown: ccMarkdownHandler,
-		[ccMarkdownHandler]: markdownSettings
+		markdown: markdownHandler,
+		[markdownHandler]: markdownSettings
 	};
 }
 
