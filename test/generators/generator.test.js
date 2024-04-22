@@ -87,7 +87,10 @@ describe('getGeneratorMetadata', function () {
 				smartDashes: true,
 				smartypants: true,
 				smartypantsQuotesNBSP: false,
-				taskLists: true
+				taskLists: true,
+				renderer: {
+					hardWraps: false
+				}
 			}
 		};
 

@@ -1,29 +1,6 @@
 import { mergeDeep, runProcess } from '../helpers/helpers.js';
 import { markdownMeta } from '../helpers/metadata.js';
 
-function overrideHugoSettingsWithCloudCannonSettings(renderer, hugoSettings, ccSettings) {
-	const newSettings = {
-		...hugoSettings,
-		...ccSettings
-	};
-
-	if (Object.hasOwn(ccSettings, 'hardWraps')) {
-		if (renderer === 'goldmark') {
-			if (Object.hasOwn(hugoSettings, 'renderer')) {
-				newSettings.renderer.hardWraps = ccSettings.hardWraps;
-			} else {
-				newSettings.renderer = {
-					hardWraps: ccSettings.hardWraps
-				};
-			}
-		} else {
-			newSettings.hardWraps = ccSettings.hardWraps;
-		}
-	}
-
-	return newSettings;
-}
-
 export function getGeneratorMetadata(hugoConfig, config) {
 	const markup = hugoConfig.markup ?? {};
 	const hugoMarkdownHandler = markup.defaultMarkdownHandler ?? 'goldmark';
@@ -33,9 +10,16 @@ export function getGeneratorMetadata(hugoConfig, config) {
 	const ccMarkdownHandler = config.generator?.metadata?.markdown || hugoMarkdownHandler;
 	const ccMarkdownSettings = config.generator?.metadata?.[ccMarkdownHandler] || {};
 
-	const markdownSettings = hugoMarkdownHandler === ccMarkdownHandler
-		? overrideHugoSettingsWithCloudCannonSettings(hugoMarkdownHandler, hugoMarkdownSettings, ccMarkdownSettings)
-		: ccMarkdownSettings;
+	// const markdownSettings = mergeDeep({}, hugoMarkdownSettings, ccMarkdownSettings);
+	const markdownSettings = {
+		...hugoMarkdownSettings,
+		...ccMarkdownSettings
+	};
+	markdownSettings.renderer ||= {};
+
+	markdownSettings.renderer.hardWraps = Object.hasOwn(markdownSettings, 'hardWraps')
+		? markdownSettings.hardWraps
+		: markdownSettings.renderer.hardWraps || false;
 
 	return {
 		markdown: ccMarkdownHandler,
