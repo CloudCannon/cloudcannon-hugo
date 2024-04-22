@@ -46,3 +46,11 @@ collections_config:
   emptyMarkdownCollection:
     _enabled_editors:
       - data
+
+generator:
+  metadata:
+    markdown: goldmark
+    goldmark:
+      hardWraps: true
+      spaced_lists: true
+      sentence_per_line: true

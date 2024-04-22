@@ -122,10 +122,13 @@
 					"autoHeadingIDType": "github"
 				},
 				"renderer": {
-					"hardWraps": false,
+					"hardWraps": true,
 					"unsafe": true,
 					"xhtml": false
-				}
+				},
+				"hardWraps": true,
+				"spaced_lists": true,
+				"sentence_per_line": true
 			}
 		}
 	},
