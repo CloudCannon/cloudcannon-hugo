@@ -5,16 +5,12 @@ export function getGeneratorMetadata(hugoConfig, config) {
 	const markup = hugoConfig.markup ?? {};
 	const hugoMarkdownHandler = markup.defaultMarkdownHandler ?? 'goldmark';
 	const defaultMeta = markdownMeta[hugoMarkdownHandler] ?? {};
-	const hugoMarkdownSettings = mergeDeep(defaultMeta, markup[hugoMarkdownHandler]);
+	const hugoMarkdownSettings = mergeDeep({}, defaultMeta, markup[hugoMarkdownHandler]);
 
 	const ccMarkdownHandler = config.generator?.metadata?.markdown || hugoMarkdownHandler;
 	const ccMarkdownSettings = config.generator?.metadata?.[ccMarkdownHandler] || {};
 
-	// const markdownSettings = mergeDeep({}, hugoMarkdownSettings, ccMarkdownSettings);
-	const markdownSettings = {
-		...hugoMarkdownSettings,
-		...ccMarkdownSettings
-	};
+	const markdownSettings = mergeDeep({}, hugoMarkdownSettings, ccMarkdownSettings);
 	markdownSettings.renderer ||= {};
 
 	markdownSettings.renderer.hardWraps = Object.hasOwn(markdownSettings, 'hardWraps')
