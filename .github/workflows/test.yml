@@ -24,6 +24,12 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.128.1'
+          extended: true
+
       - name: Install 
         run: npm ci
 
