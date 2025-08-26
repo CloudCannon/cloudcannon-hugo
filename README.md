@@ -170,13 +170,13 @@ $ cloudcannon-hugo
 Prerelease:
 
 ```sh
-$ npm run release:next
+$ npx np prerelease --tag=next
 ```
 
 Release:
 
 ```sh
-$ npm run release:latest
+$ npx np
 ```
 
 ## License
