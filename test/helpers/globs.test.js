@@ -1,77 +1,85 @@
-import assert from 'node:assert';
-import { describe, it, before, after } from 'node:test';
-import mock from 'mock-fs';
-import { getGlobString, getGlob } from '../../src/helpers/globs.js';
+import assert from "node:assert";
+import { after, before, describe, it } from "node:test";
+import mock from "mock-fs";
+import { getGlob, getGlobString } from "../../src/helpers/globs.js";
 
-describe('globs', function () {
-	describe('getGlobString()', function () {
+describe("globs", () => {
+	describe("getGlobString()", () => {
 		const tests = [
-			{ input: ['glob1', 'glob2', 'glob3'], expected: '{glob1,glob2,glob3}', context: 'input: an array of glob patterns' },
-			{ input: ['glob1'], expected: 'glob1', context: 'input: an array containing one glob pattern' },
-			{ input: [], expected: '', context: 'input: empty array' }
+			{
+				input: ["glob1", "glob2", "glob3"],
+				expected: "{glob1,glob2,glob3}",
+				context: "input: an array of glob patterns",
+			},
+			{
+				input: ["glob1"],
+				expected: "glob1",
+				context: "input: an array containing one glob pattern",
+			},
+			{ input: [], expected: "", context: "input: empty array" },
 		];
 
 		tests.forEach((test) => {
-			it(test.context || '', function () {
+			it(test.context || "", () => {
 				const outputPattern = getGlobString(test.input);
 				assert.strictEqual(outputPattern, test.expected);
 			});
 		});
 	});
 
-	describe('getGlob()', function () {
-		before(function () {
+	describe("getGlob()", () => {
+		before(() => {
 			mock({
 				archetypes: {
-					'default.md': 'content'
+					"default.md": "content",
 				},
 				content: {
 					collectionName: {
-						'index.md': 'content'
+						"index.md": "content",
 					},
-					emptyCollection: {}
+					emptyCollection: {},
 				},
-				'theme/exampleSite': {
-					'index.html': 'content'
-				}
+				"theme/exampleSite": {
+					"index.html": "content",
+				},
 			});
 		});
 		const tests = [
 			{
-				input: ['archetypes/**', {}],
-				expected: ['archetypes/default.md'],
-				context: 'single glob'
+				input: ["archetypes/**", {}],
+				expected: ["archetypes/default.md"],
+				context: "single glob",
 			},
 			{
-				input: [['archetypes/**', '**/default.md'], {}],
-				expected: ['archetypes/default.md'],
-				context: 'multiple globs that return same file'
+				input: [["archetypes/**", "**/default.md"], {}],
+				expected: ["archetypes/default.md"],
+				context: "multiple globs that return same file",
 			},
 			{
-				input: [['archetypes/**', 'content/**'], {}],
-				expected: ['archetypes/default.md', 'content/collectionName/index.md'],
-				context: 'multiple globs in array'
+				input: [["archetypes/**", "content/**"], {}],
+				expected: ["archetypes/default.md", "content/collectionName/index.md"],
+				context: "multiple globs in array",
 			},
 			{
-				input: [['archetypes/**', 'content/**'], { ignore: '**/index.md' }],
-				expected: ['archetypes/default.md'],
-				context: 'multiple globs with ignore pattern'
+				input: [["archetypes/**", "content/**"], { ignore: "**/index.md" }],
+				expected: ["archetypes/default.md"],
+				context: "multiple globs with ignore pattern",
 			},
 			{
-				input: [['**'], { ignore: '**/index.md' }],
-				expected: ['archetypes/default.md'],
-				context: 'glob that includes exampleSite and ignore pattern'
-			}
+				input: [["**"], { ignore: "**/index.md" }],
+				expected: ["archetypes/default.md"],
+				context: "glob that includes exampleSite and ignore pattern",
+			},
 		];
 
 		tests.forEach((test) => {
-			it(test.context || '', async function () {
+			it(test.context || "", async () => {
 				const outputPattern = await getGlob(...test.input);
 				assert.deepStrictEqual(outputPattern, test.expected);
 			});
 		});
 
-		after(function () {
+		after(() => {
 			mock.restore();
 		});
 	});

@@ -1,28 +1,28 @@
-import { basename, join } from 'path';
-import chalk from 'chalk';
-import { cheapPlural, runInChunks } from '../helpers/helpers.js';
-import pathHelper from '../helpers/paths.js';
-import log from '../helpers/logger.js';
-import { parseFile } from '../parsers/parser.js';
+import { basename, join } from "node:path";
+import chalk from "chalk";
+import { cheapPlural, runInChunks } from "../helpers/helpers.js";
+import log from "../helpers/logger.js";
+import pathHelper from "../helpers/paths.js";
+import { parseFile } from "../parsers/parser.js";
 
 function getTopSectionName(path, options = {}) {
-	const rootDir = options.rootDir || '';
+	const rootDir = options.rootDir || "";
 	const supportedLanguages = pathHelper.getSupportedLanguages() || [];
 
-	path = path.replace(rootDir, '').replace(/^\//i, '');
+	path = path.replace(rootDir, "").replace(/^\//i, "");
 
 	if (options.removeLangaugeCodes) {
 		for (let i = 0; i < supportedLanguages.length; i += 1) {
 			const languageCode = supportedLanguages[i];
 			if (path.startsWith(languageCode)) {
-				path = path.replace(languageCode, '').replace(/^\//i, '');
+				path = path.replace(languageCode, "").replace(/^\//i, "");
 				break;
 			}
 		}
 	}
 
-	const leadingPath = path.split('/');
-	return leadingPath?.[0] ? leadingPath[0].replace(/\//g, '') : '';
+	const leadingPath = path.split("/");
+	return leadingPath?.[0] ? leadingPath[0].replace(/\//g, "") : "";
 }
 
 export async function getLayout(path, details) {
@@ -30,22 +30,22 @@ export async function getLayout(path, details) {
 	const layoutFiles = [];
 	const { content } = pathHelper.getPaths();
 	const isHome = path.endsWith(`${content}/_index.md`);
-	const isSingle = !(/^_index\.(md|html?)$/i.test(basename(path)));
+	const isSingle = !/^_index\.(md|html?)$/i.test(basename(path));
 	const { layout, type } = details;
 	const section = getTopSectionName(path, {
 		rootDir: content,
-		removeLangaugeCodes: true
+		removeLangaugeCodes: true,
 	});
 
 	if (isHome) {
-		typeFolders.push(type, '/', '_default'); // '/' signifies to use root folder
-		layoutFiles.push(layout, 'index', 'home', 'list');
+		typeFolders.push(type, "/", "_default"); // '/' signifies to use root folder
+		layoutFiles.push(layout, "index", "home", "list");
 	} else if (isSingle) {
-		typeFolders.push(type, section, '_default');
-		layoutFiles.push(layout, 'single');
+		typeFolders.push(type, section, "_default");
+		layoutFiles.push(layout, "single");
 	} else {
-		typeFolders.push(type, section, 'section', '_default');
-		layoutFiles.push(layout, section, 'section', 'list');
+		typeFolders.push(type, section, "section", "_default");
+		layoutFiles.push(layout, section, "section", "list");
 	}
 
 	const tree = await pathHelper.getLayoutTree();
@@ -54,11 +54,11 @@ export async function getLayout(path, details) {
 		for (let l = 0; l < layoutFiles.length; l += 1) {
 			const typeFolder = typeFolders[t];
 			const layoutFile = layoutFiles[l];
-			if (typeFolder === '/' && typeof tree[layoutFile] === 'string') {
+			if (typeFolder === "/" && typeof tree[layoutFile] === "string") {
 				return tree[layoutFile];
 			}
 
-			if (typeof tree[typeFolder]?.[layoutFile] === 'string') {
+			if (typeof tree[typeFolder]?.[layoutFile] === "string") {
 				return tree[typeFolder][layoutFile];
 			}
 		}
@@ -68,17 +68,19 @@ export async function getLayout(path, details) {
 export function getCollectionKey(path, collectionsConfig) {
 	const paths = pathHelper.getPaths();
 	const pathIsBranchIndex = isBranchIndex(path);
-	const normalised = path.replace(/\/index\.(md|html?)$/, '');
-	const parts = normalised.split('/');
+	const normalised = path.replace(/\/index\.(md|html?)$/, "");
+	const parts = normalised.split("/");
 
 	// Find collection from config based on explicit path
 	for (let i = parts.length - 1; i >= 0; i--) {
-		const collectionPath = parts.slice(0, i).join('/');
+		const collectionPath = parts.slice(0, i).join("/");
 
 		const configKey = Object.keys(collectionsConfig || {}).find((key) => {
-			return collectionsConfig[key]
-				&& collectionsConfig[key].path === collectionPath
-				&& (!pathIsBranchIndex || collectionsConfig[key].parse_branch_index);
+			return (
+				collectionsConfig[key] &&
+				collectionsConfig[key].path === collectionPath &&
+				(!pathIsBranchIndex || collectionsConfig[key].parse_branch_index)
+			);
 		});
 
 		if (configKey) {
@@ -92,17 +94,18 @@ export function getCollectionKey(path, collectionsConfig) {
 	}
 
 	// Fall back to using top-level folder inside content path
-	const normalisedContentPath = normalised.replace(contentPrefix, '');
-	const [folderKey, ...contentParts] = normalisedContentPath.split('/');
-	const isCollection = contentParts.length > 0
-		&& (!pathIsBranchIndex || collectionsConfig?.[folderKey]?.parse_branch_index);
+	const normalisedContentPath = normalised.replace(contentPrefix, "");
+	const [folderKey, ...contentParts] = normalisedContentPath.split("/");
+	const isCollection =
+		contentParts.length > 0 &&
+		(!pathIsBranchIndex || collectionsConfig?.[folderKey]?.parse_branch_index);
 
 	if (isCollection) {
 		return folderKey; // Valid subfolder in content path
 	}
 
 	// Either directly inside the content path, or a branch index file.
-	return 'pages';
+	return "pages";
 }
 
 function isBranchIndex(path) {
@@ -120,21 +123,21 @@ export function getPageUrlFromPath(path, contentDir, multilingualOptions = {}) {
 
 	const languageCodes = pathHelper.getSupportedLanguages();
 	const defaultLanguage = multilingualOptions.defaultContentLanguage;
-	const prependLanguageCode = multilingualOptions.defaultContentLanguageInSubdir === true;
+	const prependLanguageCode =
+		multilingualOptions.defaultContentLanguageInSubdir === true;
 
 	let unprocessedUrl = path
-		.replace(`${contentDir || ''}/`, '/')
-		.replace(/\/_?index\.(md|html?)/, '/');
+		.replace(`${contentDir || ""}/`, "/")
+		.replace(/\/_?index\.(md|html?)/, "/");
 
 	if (!!defaultLanguage && prependLanguageCode) {
-		const rootFolder = unprocessedUrl.split('/')?.[1] || '/';
-		if (rootFolder && !(languageCodes.includes(rootFolder))) {
+		const rootFolder = unprocessedUrl.split("/")?.[1] || "/";
+		if (rootFolder && !languageCodes.includes(rootFolder)) {
 			unprocessedUrl = `/${defaultLanguage}${unprocessedUrl}`;
 		}
 	}
 
-	return unprocessedUrl
-		.replace(/\/+/g, '/');
+	return unprocessedUrl.replace(/\/+/g, "/");
 }
 
 async function processItem({ path, collectionKey, hugoUrls, multilingual }) {
@@ -145,12 +148,16 @@ async function processItem({ path, collectionKey, hugoUrls, multilingual }) {
 		path,
 		collection: collectionKey,
 		...parsed,
-		url: parsed.url || hugoUrls[path] || getPageUrlFromPath(path, paths.content, multilingual) || '',
+		url:
+			parsed.url ||
+			hugoUrls[path] ||
+			getPageUrlFromPath(path, paths.content, multilingual) ||
+			"",
 	};
 
 	const contentPrefix = `${paths.content}/`;
 	if (path.startsWith(contentPrefix) && !item.content_path) {
-		item.content_path = path.replace(contentPrefix, '');
+		item.content_path = path.replace(contentPrefix, "");
 	}
 
 	if (item.headless || !item.url) {
@@ -173,54 +180,79 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 	const paths = pathHelper.getPaths();
 	const override = config.collections_config_override === true;
 	const rawCollectionsConfig = config.collections_config || {};
-	const dataPath = pathHelper.normalisePath(rawCollectionsConfig.data?.path) || paths.data;
-	const pagesPath = pathHelper.normalisePath(rawCollectionsConfig.pages?.path) || paths.content;
+	const dataPath =
+		pathHelper.normalisePath(rawCollectionsConfig.data?.path) || paths.data;
+	const pagesPath =
+		pathHelper.normalisePath(rawCollectionsConfig.pages?.path) || paths.content;
 	const skippedCollections = {};
 	const collections = {};
 
-	const extraPaths = Object.keys(rawCollectionsConfig).reduce((memo, collectionKey) => {
-		const path = pathHelper.normalisePath(rawCollectionsConfig[collectionKey].path);
-		return (path && !path.startsWith(paths.content)) ? [path, ...memo] : memo;
-	}, []);
+	const extraPaths = Object.keys(rawCollectionsConfig).reduce(
+		(memo, collectionKey) => {
+			const path = pathHelper.normalisePath(
+				rawCollectionsConfig[collectionKey].path,
+			);
+			if (path && !path.startsWith(paths.content)) {
+				memo.unshift(path);
+			}
+			return memo;
+		},
+		[],
+	);
 
 	const filePaths = await pathHelper.getCollectionPaths(extraPaths);
 	const collectionsConfig = { ...rawCollectionsConfig };
 
-	log('⏳ Processing collections...');
+	log("⏳ Processing collections...");
 
-	await runInChunks(filePaths, async (path) => { // Runs in chunks to avoid memory issues
+	await runInChunks(filePaths, async (path) => {
+		// Runs in chunks to avoid memory issues
 		const collectionKey = getCollectionKey(path, collectionsConfig);
 		if (!collectionKey) {
-			log(`No collection for ${chalk.yellow(path)}`, 'debug');
+			log(`No collection for ${chalk.yellow(path)}`, "debug");
 			return;
 		}
 
 		// Skipped if not defined in global config with collections_config_override enabled
 		if (override && !rawCollectionsConfig[collectionKey]) {
-			log(`Skipping ${chalk.bold(collectionKey)} collection for ${chalk.yellow(path)}`, 'debug');
-			skippedCollections[collectionKey] = (skippedCollections[collectionKey] || 0) + 1;
+			log(
+				`Skipping ${chalk.bold(collectionKey)} collection for ${chalk.yellow(path)}`,
+				"debug",
+			);
+			skippedCollections[collectionKey] =
+				(skippedCollections[collectionKey] || 0) + 1;
 			return;
 		}
 
-		log(`Parsing ${chalk.green(path)} into ${chalk.bold(collectionKey)} collection`, 'debug');
-		const item = await processItem({ path, collectionKey, hugoUrls, multilingual: config.multilingual });
+		log(
+			`Parsing ${chalk.green(path)} into ${chalk.bold(collectionKey)} collection`,
+			"debug",
+		);
+		const item = await processItem({
+			path,
+			collectionKey,
+			hugoUrls,
+			multilingual: config.multilingual,
+		});
 		collections[collectionKey] = collections[collectionKey] || [];
 		collections[collectionKey].push(item);
 
 		// Sets config as output if any file inside it is output
-		const output = collectionsConfig[collectionKey]?.output
-			|| (path.startsWith(paths.data) ? false : !item.headless);
+		const output =
+			collectionsConfig[collectionKey]?.output ||
+			(path.startsWith(paths.data) ? false : !item.headless);
 
 		collectionsConfig[collectionKey] = {
 			path: `${paths.content}/${collectionKey}`,
 			...collectionsConfig[collectionKey],
-			output
+			output,
 		};
 	});
 
 	if (!override) {
-		const hasData = Object.prototype.hasOwnProperty.call(rawCollectionsConfig, 'data')
-			|| (await pathHelper.getDataPaths()).length > 0;
+		const hasData =
+			Object.hasOwn(rawCollectionsConfig, "data") ||
+			(await pathHelper.getDataPaths()).length > 0;
 
 		collectionsConfig.data = {
 			output: false,
@@ -232,40 +264,53 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 		// Set after processing files to avoid auto-discovered collections using this containing path
 		collectionsConfig.pages = {
 			output: true,
-			filter: 'strict',
+			filter: "strict",
 			parse_branch_index: true,
-			auto_discovered: !Object.prototype.hasOwnProperty.call(rawCollectionsConfig, 'pages'),
+			auto_discovered: !Object.hasOwn(rawCollectionsConfig, "pages"),
 			...collectionsConfig.pages,
 			path: pagesPath,
 		};
 	}
 
-	const processedCollections = Object.keys(collectionsConfig).reduce((memo, collectionKey) => {
-		const collection = collections[collectionKey] || [];
+	const processedCollections = Object.keys(collectionsConfig).reduce(
+		(memo, collectionKey) => {
+			const collection = collections[collectionKey] || [];
 
-		// This is unset if a collection has not files and a configuration without path
-		collectionsConfig[collectionKey].path = collectionsConfig[collectionKey].path
-			|| `${paths.content}/${collectionKey}`;
+			// This is unset if a collection has not files and a configuration without path
+			collectionsConfig[collectionKey].path =
+				collectionsConfig[collectionKey].path ||
+				`${paths.content}/${collectionKey}`;
 
-		if (collection.length === 0 && collectionsConfig[collectionKey]?.auto_discovered) {
-			log(`📂 ${chalk.yellow('Ignored')} ${chalk.bold(collectionKey)} collection`);
-			delete collectionsConfig[collectionKey];
+			if (
+				collection.length === 0 &&
+				collectionsConfig[collectionKey]?.auto_discovered
+			) {
+				log(
+					`📂 ${chalk.yellow("Ignored")} ${chalk.bold(collectionKey)} collection`,
+				);
+				delete collectionsConfig[collectionKey];
+				return memo;
+			}
+
+			memo[collectionKey] = collection || [];
+			const filesCount = cheapPlural(collection.length, "file");
+			log(
+				`📁 Processed ${chalk.bold(collectionKey)} collection with ${filesCount}`,
+			);
 			return memo;
-		}
-
-		memo[collectionKey] = collection || [];
-		const filesCount = cheapPlural(collection.length, 'file');
-		log(`📁 Processed ${chalk.bold(collectionKey)} collection with ${filesCount}`);
-		return memo;
-	}, {});
+		},
+		{},
+	);
 
 	Object.keys(skippedCollections).forEach((collectionKey) => {
-		const filesCount = cheapPlural(skippedCollections[collectionKey], 'file');
-		log(`📂 ${chalk.yellow('Skipped')} ${chalk.bold(collectionKey)} collection with ${filesCount}`);
+		const filesCount = cheapPlural(skippedCollections[collectionKey], "file");
+		log(
+			`📂 ${chalk.yellow("Skipped")} ${chalk.bold(collectionKey)} collection with ${filesCount}`,
+		);
 	});
 
 	return {
 		collectionsConfig,
-		collections: processedCollections
+		collections: processedCollections,
 	};
 }

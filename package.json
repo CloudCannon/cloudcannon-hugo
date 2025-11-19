@@ -5,12 +5,12 @@
 	"description": "Generates the files necessary for a hugo site to integrate with CloudCannon CMS",
 	"main": "src/index.js",
 	"scripts": {
-		"lint": "eslint .",
+		"lint": "biome check",
 		"start": "node src/index.js",
 		"test": "node --test 'test/{generators,helpers,parsers}/*.test.js'",
 		"test:integration": "node --test 'test/integration/*.test.js'",
 		"test:all": "node --test",
-		"report-coverage": "node --test --experimental-test-coverage --test-reporter=lcov > coverage.lcov && codecov"
+		"report-coverage": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage.lcov && codecov"
 	},
 	"engines": {
 		"node": ">=16"
@@ -40,14 +40,13 @@
 	"homepage": "https://github.com/CloudCannon/cloudcannon-hugo#readme",
 	"devDependencies": {
 		"@biomejs/biome": "2.3.6",
-		"eslint": "^8.28.0",
 		"mock-fs": "^5.5.0"
 	},
 	"dependencies": {
 		"chalk": "^5.1.2",
 		"cosmiconfig": "^8.0.0",
 		"glob": "^8.0.3",
-		"js-yaml": "^4.1.0",
+		"js-yaml": "^4.1.1",
 		"meow": "^11.0.0",
 		"papaparse": "^5.3.1",
 		"toml": "^3.0.0"

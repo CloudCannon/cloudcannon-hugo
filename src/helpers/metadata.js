@@ -1,24 +1,24 @@
 export const markdownMeta = {
-	markdown: 'goldmark',
+	markdown: "goldmark",
 	asciidocext: {
 		attributes: {},
-		backend: 'html5',
+		backend: "html5",
 		extensions: [],
-		failureLevel: 'fatal',
+		failureLevel: "fatal",
 		noHeaderOrFooter: true,
 		preserveTOC: false,
-		safeMode: 'unsafe',
+		safeMode: "unsafe",
 		sectionNumbers: false,
 		trace: false,
 		verbose: false,
-		workingFolderCurrent: false
+		workingFolderCurrent: false,
 	},
 	blackfriday: {
 		angledQuotes: false,
 		extensions: null,
 		extensionsMask: null,
-		footnoteAnchorPrefix: '',
-		footnoteReturnLinkContents: '',
+		footnoteAnchorPrefix: "",
+		footnoteReturnLinkContents: "",
 		fractions: true,
 		hrefTargetBlank: false,
 		latexDashes: true,
@@ -29,7 +29,7 @@ export const markdownMeta = {
 		smartDashes: true,
 		smartypants: true,
 		smartypantsQuotesNBSP: false,
-		taskLists: true
+		taskLists: true,
 	},
 	goldmark: {
 		extensions: {
@@ -39,35 +39,35 @@ export const markdownMeta = {
 			strikethrough: true,
 			table: true,
 			taskList: true,
-			typographer: true
+			typographer: true,
 		},
 		parser: {
 			attribute: true,
 			autoHeadingID: true,
-			autoHeadingIDType: 'github'
+			autoHeadingIDType: "github",
 		},
 		renderer: {
 			hardWraps: false,
 			unsafe: false,
-			xhtml: false
-		}
+			xhtml: false,
+		},
 	},
 	highlight: {
 		anchorLineNos: false,
 		codeFences: true,
 		guessSyntax: false,
-		hl_Lines: '',
-		lineAnchors: '',
+		hl_Lines: "",
+		lineAnchors: "",
 		lineNoStart: 1,
 		lineNos: false,
 		lineNumbersInTable: true,
 		noClasses: true,
-		style: 'monokai',
-		tabWidth: 4
+		style: "monokai",
+		tabWidth: 4,
 	},
 	tableofcontents: {
 		endLevel: 3,
 		ordered: false,
-		startLevel: 2
-	}
+		startLevel: 2,
+	},
 };

@@ -1,15 +1,11 @@
-import { join, extname, basename } from 'path';
-import chalk from 'chalk';
-import { getGlob } from './globs.js';
-import { exists, mergeDeep } from './helpers.js';
-import { parseDataFile } from '../parsers/parser.js';
-import log from './logger.js';
+import { basename, extname, join } from "node:path";
+import chalk from "chalk";
+import { parseDataFile } from "../parsers/parser.js";
+import { getGlob } from "./globs.js";
+import { exists, mergeDeep } from "./helpers.js";
+import log from "./logger.js";
 
-const EXTENSION_ORDER = [
-	'.toml',
-	'.yaml',
-	'.json'
-];
+const EXTENSION_ORDER = [".toml", ".yaml", ".json"];
 
 export function configSort(fileArray) {
 	return fileArray.sort((a, b) => {
@@ -22,17 +18,20 @@ export function configSort(fileArray) {
 			return -1 - EXTENSION_ORDER.length;
 		}
 
-		return EXTENSION_ORDER.indexOf(extname(a)) - EXTENSION_ORDER.indexOf(extname(b));
+		return (
+			EXTENSION_ORDER.indexOf(extname(a)) - EXTENSION_ORDER.indexOf(extname(b))
+		);
 	});
 }
 
 export async function getConfigPaths(flags = {}) {
-	const sourceDir = flags.source || '';
-	const environment = flags.environment || process.env.HUGO_ENVIRONMENT || 'production';
+	const sourceDir = flags.source || "";
+	const environment =
+		flags.environment || process.env.HUGO_ENVIRONMENT || "production";
 
-	const configDir = flags.configDir || 'config';
+	const configDir = flags.configDir || "config";
 	const configDirEnvironment = join(sourceDir, configDir, environment);
-	const configDirDefault = join(sourceDir, configDir, '_default/');
+	const configDirDefault = join(sourceDir, configDir, "_default/");
 
 	let configFileList = [];
 	if (await exists(configDirEnvironment)) {
@@ -41,48 +40,53 @@ export async function getConfigPaths(flags = {}) {
 	}
 
 	if (await exists(configDirDefault)) {
-		const files = await getGlob(join(configDirDefault, '**.**'));
+		const files = await getGlob(join(configDirDefault, "**.**"));
 		configFileList = configFileList.concat(configSort(files));
 	}
 
-	let passedConfigFiles = flags.config || '';
+	let passedConfigFiles = flags.config || "";
 
 	if (passedConfigFiles) {
-		passedConfigFiles = passedConfigFiles.trim().split(',');
+		passedConfigFiles = passedConfigFiles.trim().split(",");
 		configFileList = configFileList.concat(passedConfigFiles.reverse());
-	} else if (await exists(join(sourceDir, 'hugo.toml'))) {
-		configFileList.push(join(sourceDir, 'hugo.toml'));
-	} else if (await exists(join(sourceDir, 'hugo.yaml'))) {
-		configFileList.push(join(sourceDir, 'hugo.yaml'));
-	} else if (await exists(join(sourceDir, 'hugo.json'))) {
-		configFileList.push(join(sourceDir, 'hugo.json'));
-	} else if (await exists(join(sourceDir, 'config.toml'))) {
-		configFileList.push(join(sourceDir, 'config.toml'));
-	} else if (await exists(join(sourceDir, 'config.yaml'))) {
-		configFileList.push(join(sourceDir, 'config.yaml'));
-	} else if (await exists(join(sourceDir, 'config.json'))) {
-		configFileList.push(join(sourceDir, 'config.json'));
+	} else if (await exists(join(sourceDir, "hugo.toml"))) {
+		configFileList.push(join(sourceDir, "hugo.toml"));
+	} else if (await exists(join(sourceDir, "hugo.yaml"))) {
+		configFileList.push(join(sourceDir, "hugo.yaml"));
+	} else if (await exists(join(sourceDir, "hugo.json"))) {
+		configFileList.push(join(sourceDir, "hugo.json"));
+	} else if (await exists(join(sourceDir, "config.toml"))) {
+		configFileList.push(join(sourceDir, "config.toml"));
+	} else if (await exists(join(sourceDir, "config.yaml"))) {
+		configFileList.push(join(sourceDir, "config.yaml"));
+	} else if (await exists(join(sourceDir, "config.json"))) {
+		configFileList.push(join(sourceDir, "config.json"));
 	}
 
 	return configFileList;
 }
 
-export async function getConfigContents(configFileList, passedConfigFiles = '') {
-	const contentList = await Promise.all(configFileList.map(async (configPath) => {
-		configPath = configPath.replace('//', '/');
+export async function getConfigContents(
+	configFileList,
+	passedConfigFiles = "",
+) {
+	const contentList = await Promise.all(
+		configFileList.map(async (configPath) => {
+			configPath = configPath.replace("//", "/");
 
-		const parsedData = await parseDataFile(configPath);
-		if (!parsedData) {
-			return;
-		}
+			const parsedData = await parseDataFile(configPath);
+			if (!parsedData) {
+				return;
+			}
 
-		const filename = basename(configPath, extname(configPath));
-		if (filename !== 'config' && passedConfigFiles.indexOf(configPath) < 0) {
-			return { [filename]: parsedData };
-		}
+			const filename = basename(configPath, extname(configPath));
+			if (filename !== "config" && passedConfigFiles.indexOf(configPath) < 0) {
+				return { [filename]: parsedData };
+			}
 
-		return parsedData;
-	}));
+			return parsedData;
+		}),
+	);
 
 	return contentList.filter((item) => item); // remove empties
 }
@@ -96,7 +100,7 @@ export async function generateConfigObject(flags = {}, options) {
 		});
 
 		if (configFileList.length === 0) {
-			log(chalk.yellow('🔧 No Hugo config file found'));
+			log(chalk.yellow("🔧 No Hugo config file found"));
 		}
 	}
 
@@ -116,7 +120,7 @@ export async function generateConfigObject(flags = {}, options) {
 
 export async function getHugoConfig(flags = {}) {
 	const configObject = await generateConfigObject(flags);
-	configObject.baseURL = flags.baseURL || configObject.baseURL || '/';
+	configObject.baseURL = flags.baseURL || configObject.baseURL || "/";
 
 	if (flags.source) {
 		configObject.source = flags.source;
