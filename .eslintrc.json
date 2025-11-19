@@ -1,10 +1,6 @@
 {
 	"extends": [
-    "plugin:mocha/recommended",
 		"eslint:recommended"
-	],
-	"plugins": [
-		"mocha"
 	],
 	"rules": {
 		"indent": ["warn", "tab"],

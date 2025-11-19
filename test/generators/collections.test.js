@@ -1,4 +1,5 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { describe, it, before, after } from 'node:test';
 import mock from 'mock-fs';
 import {
 	getCollectionKey,
@@ -14,13 +15,13 @@ describe('collections generator', function () {
 		it('without configuration', function () {
 			const collectionsConfig = {};
 
-			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/about/index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal(null);
+			assert.strictEqual(getCollectionKey('content/staff/_index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/staff/jim.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/staff/jane/index.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/_index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/about/index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('data/offices/dunedin.md', collectionsConfig), null);
 		});
 
 		it('with configuration', function () {
@@ -36,14 +37,14 @@ describe('collections generator', function () {
 				}
 			};
 
-			expect(getCollectionKey('content/elsewhere/thing.md', collectionsConfig)).to.equal('other');
-			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/about/index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal('offices');
+			assert.strictEqual(getCollectionKey('content/elsewhere/thing.md', collectionsConfig), 'other');
+			assert.strictEqual(getCollectionKey('content/staff/_index.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/staff/jim.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/staff/jane/index.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/_index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/about/index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('data/offices/dunedin.md', collectionsConfig), 'offices');
 		});
 
 		it('with redefined default configuration', function () {
@@ -58,14 +59,14 @@ describe('collections generator', function () {
 			};
 
 			// This is pages rather than elsewhere as the pages config has an explicit path
-			expect(getCollectionKey('content/elsewhere/thing.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/about/index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal(null);
+			assert.strictEqual(getCollectionKey('content/elsewhere/thing.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/staff/_index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/staff/jim.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/staff/jane/index.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/_index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/about/index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('data/offices/dunedin.md', collectionsConfig), null);
 		});
 
 		it('with custom pages configuration', function () {
@@ -76,23 +77,23 @@ describe('collections generator', function () {
 				}
 			};
 
-			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('custom');
-			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('custom');
-			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('custom');
-			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('custom');
-			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal(null);
+			assert.strictEqual(getCollectionKey('content/staff/_index.md', collectionsConfig), 'custom');
+			assert.strictEqual(getCollectionKey('content/staff/jim.md', collectionsConfig), 'custom');
+			assert.strictEqual(getCollectionKey('content/staff/jane/index.md', collectionsConfig), 'custom');
+			assert.strictEqual(getCollectionKey('content/_index.md', collectionsConfig), 'custom');
+			assert.strictEqual(getCollectionKey('data/offices/dunedin.md', collectionsConfig), null);
 		});
 	});
 
 	describe('getPageUrlFromPath', function () {
 		it('_index file', function () {
 			const result = getPageUrlFromPath('content/authors/_index.md', 'content');
-			expect(result).to.equal('/authors/');
+			assert.strictEqual(result, '/authors/');
 		});
 
 		it('index file', function () {
 			const result = getPageUrlFromPath('content/about/index.md', 'content');
-			expect(result).to.equal('/about/');
+			assert.strictEqual(result, '/about/');
 		});
 	});
 
@@ -105,77 +106,77 @@ describe('collections generator', function () {
 
 		it('Home page', async function () {
 			const result = await getLayout('content/_index.md', {});
-			expect(result).to.equal('index');
+			assert.strictEqual(result, 'index');
 		});
 
 		it('Home page with type set', async function () {
 			const result = await getLayout('content/_index.md', { type: 'mytype' });
-			expect(result).to.equal('mytype/list');
+			assert.strictEqual(result, 'mytype/list');
 		});
 
 		it('Home page with layout set', async function () {
 			const result = await getLayout('content/_index.md', { layout: 'mylayout' });
-			expect(result).to.equal('index');
+			assert.strictEqual(result, 'index');
 		});
 
 		it('single post', async function () {
 			const result = await getLayout('content/posts/post.md', {});
-			expect(result).to.equal('posts/single');
+			assert.strictEqual(result, 'posts/single');
 		});
 
 		it('single leaf bundle post', async function () {
 			const result = await getLayout('content/posts/item/index.md', {});
-			expect(result).to.equal('posts/single');
+			assert.strictEqual(result, 'posts/single');
 		});
 
 		it('single leaf bundle post in a language code', async function () {
 			const result = await getLayout('content/en/posts/item/index.md', {});
-			expect(result).to.equal('posts/single');
+			assert.strictEqual(result, 'posts/single');
 		});
 
 		it('single post with layout set', async function () {
 			const result = await getLayout('content/posts/post.md', { layout: 'mylayout' });
-			expect(result).to.equal('posts/mylayout');
+			assert.strictEqual(result, 'posts/mylayout');
 		});
 
 		it('single post with type set', async function () {
 			const result = await getLayout('content/posts/post.md', { type: 'mytype' });
-			expect(result).to.equal('mytype/single');
+			assert.strictEqual(result, 'mytype/single');
 		});
 
 		it('single post with a non-existent type set', async function () {
 			const result = await getLayout('content/posts/post.md', { type: 'invalidType' });
-			expect(result).to.equal('posts/single');
+			assert.strictEqual(result, 'posts/single');
 		});
 
 		it('list page for posts', async function () {
 			const result = await getLayout('content/posts/_index.md', {});
-			expect(result).to.equal('_default/list');
+			assert.strictEqual(result, '_default/list');
 		});
 
 		it('list page using an _index.html file', async function () {
 			const result = await getLayout('content/collectionName/_index.html', {});
-			expect(result).to.equal('_default/list');
+			assert.strictEqual(result, '_default/list');
 		});
 
 		it('list page for mytype', async function () {
 			const result = await getLayout('content/mytype/_index.md', {});
-			expect(result).to.equal('mytype/list');
+			assert.strictEqual(result, 'mytype/list');
 		});
 
 		it('list page for posts with type mytype', async function () {
 			const result = await getLayout('content/posts/_index.md', { type: 'mytype' });
-			expect(result).to.equal('mytype/list');
+			assert.strictEqual(result, 'mytype/list');
 		});
 
 		it('list page for posts with layout set', async function () {
 			const result = await getLayout('content/posts/_index.md', { layout: 'mylayout' });
-			expect(result).to.equal('posts/mylayout');
+			assert.strictEqual(result, 'posts/mylayout');
 		});
 
 		it('list page for posts with type and layout set', async function () {
 			const result = await getLayout('content/posts/_index.md', { type: 'mytype', layout: 'mylayout' });
-			expect(result).to.equal('mytype/mylayout');
+			assert.strictEqual(result, 'mytype/mylayout');
 		});
 
 		after(function () {
@@ -305,8 +306,8 @@ describe('collections generator', function () {
 				}
 			};
 
-			expect(collections).to.deep.equal(expectedCollections);
-			expect(collectionsConfig).to.deep.equal(expectedCollectionsConfig);
+			assert.deepStrictEqual(collections, expectedCollections);
+			assert.deepStrictEqual(collectionsConfig, expectedCollectionsConfig);
 		});
 
 		after(function () {

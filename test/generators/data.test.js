@@ -1,4 +1,5 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { describe, it, before, after } from 'node:test';
 import mock from 'mock-fs';
 import { getData } from '../../src/generators/data.js';
 import { dataFiles } from '../test-paths.js';
@@ -25,17 +26,17 @@ describe('data generator', function () {
 
 	it('should allow all', async function () {
 		const dataObjects = await getData({ data_config: true });
-		expect(dataObjects).to.deep.equal(EXPECTED_DATA);
+		assert.deepEqual(dataObjects, EXPECTED_DATA);
 	});
 
 	it('should allow some', async function () {
 		const dataObjects = await getData({ data_config: { nav: true } });
-		expect(dataObjects).to.deep.equal({ nav: EXPECTED_DATA.nav });
+		assert.deepEqual(dataObjects, { nav: EXPECTED_DATA.nav });
 	});
 
 	it('should allow none', async function () {
 		const dataObjects = await getData({});
-		expect(dataObjects).to.deep.equal(undefined);
+		assert.deepEqual(dataObjects, undefined);
 	});
 
 	after(function () {

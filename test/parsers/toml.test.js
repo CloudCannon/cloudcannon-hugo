@@ -1,4 +1,5 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { describe, it } from 'node:test';
 import { parseToml } from '../../src/parsers/toml.js';
 
 describe('toml.js', function () {
@@ -11,7 +12,7 @@ describe('toml.js', function () {
 			const expectedObject = {
 				key: 'value'
 			};
-			expect(parsedObject).to.deep.equal(expectedObject);
+			assert.deepEqual(parsedObject, expectedObject);
 		});
 
 		it('should not parse', function () {
@@ -19,7 +20,7 @@ describe('toml.js', function () {
 			key: "value"
 			`;
 			const parsedObject = parseToml(tomlString);
-			expect(parsedObject).to.deep.equal(undefined);
+			assert.deepStrictEqual(parsedObject, undefined);
 		});
 	});
 });

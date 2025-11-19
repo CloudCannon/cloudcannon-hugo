@@ -1,11 +1,12 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { describe, it } from 'node:test';
 import { parseFile, parseFrontMatter } from '../../src/parsers/parser.js';
 
 describe('parseFile', function () {
 	it('should return empty when path is empty', async function () {
 		const details = await parseFile('fakePath');
 		const expected = {};
-		expect(details).to.deep.equal(expected);
+		assert.deepEqual(details, expected);
 	});
 });
 
@@ -66,7 +67,7 @@ describe('parser.js', function () {
 		tests.forEach((test) => {
 			it(test.context || '', function () {
 				const result = parseFrontMatter(test.input);
-				expect(result).to.deep.equal(test.expected);
+				assert.deepEqual(result, test.expected);
 			});
 		});
 	});

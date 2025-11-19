@@ -1,4 +1,5 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { describe, it, before, after } from 'node:test';
 import mock from 'mock-fs';
 import { getInfo } from '../../src/generators/info.js';
 import pathHelper from '../../src/helpers/paths.js';
@@ -19,8 +20,7 @@ const EXPECTED_DATA = {
 	}
 };
 
-describe('info generator', function () {
-	this.timeout(10000); // sometimes takes longer than 2000ms (default)
+describe('info generator', { timeout: 10000 }, function () { // sometimes takes longer than 2000ms (default)
 
 	const untested = {
 		time: 'UNTESTED',
@@ -57,7 +57,7 @@ describe('info generator', function () {
 
 		const result = await getInfo({ baseURL: '/' });
 
-		expect({ ...result, ...untested }).to.deep.equal({ ...expected, ...untested });
+		assert.deepStrictEqual({ ...result, ...untested }, { ...expected, ...untested });
 	});
 
 	it('with cloudcannon specific config', async function () {
@@ -103,7 +103,7 @@ describe('info generator', function () {
 		const hugoConfig = { baseURL: '/', ...cloudcannon };
 		const result = await getInfo(hugoConfig, { version: '0.0.1' });
 
-		expect({ ...result, ...untested }).to.deep.equal({ ...expected, ...untested });
+		assert.deepStrictEqual({ ...result, ...untested }, { ...expected, ...untested });
 	});
 
 	describe('with data', function () {
@@ -114,7 +114,7 @@ describe('info generator', function () {
 		it('should return all data', async function () {
 			const result = await getInfo({ cloudcannon: { data: true } });
 
-			expect(result.data).to.deep.equal(EXPECTED_DATA);
+			assert.deepEqual(result.data, EXPECTED_DATA);
 		});
 
 		it('should return the specified data', async function () {
@@ -127,7 +127,7 @@ describe('info generator', function () {
 				cloudcannon: { data: { nav: true, staff_members: true } }
 			});
 
-			expect(result.data).to.deep.equal(expected);
+			assert.deepEqual(result.data, expected);
 		});
 	});
 

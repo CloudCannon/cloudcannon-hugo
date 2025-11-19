@@ -1,4 +1,5 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { describe, it } from 'node:test';
 import { getGeneratorMetadata } from '../../src/generators/generator.js';
 
 describe('getGeneratorMetadata', function () {
@@ -29,7 +30,7 @@ describe('getGeneratorMetadata', function () {
 			}
 		};
 
-		expect(result).to.deep.equal(expected);
+		assert.deepStrictEqual(result, expected);
 	});
 
 	it('should overwrite default markdown metadata with cloudcannon markdown metadata', function () {
@@ -64,7 +65,7 @@ describe('getGeneratorMetadata', function () {
 			}
 		};
 
-		expect(result).to.deep.equal(expected);
+		assert.deepStrictEqual(result, expected);
 	});
 
 	it('should return default blackfriday metadata', function () {
@@ -94,7 +95,7 @@ describe('getGeneratorMetadata', function () {
 			}
 		};
 
-		expect(result).to.deep.equal(expected);
+		assert.deepStrictEqual(result, expected);
 	});
 
 	it('should return markup in config', function () {
@@ -125,6 +126,6 @@ describe('getGeneratorMetadata', function () {
 		};
 
 		const result = getGeneratorMetadata(markup, {});
-		expect(result).to.deep.equal(expected);
+		assert.deepStrictEqual(result, expected);
 	});
 });

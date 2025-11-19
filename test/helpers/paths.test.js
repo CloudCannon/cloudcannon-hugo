@@ -1,4 +1,5 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { describe, it, before, after } from 'node:test';
 import mock from 'mock-fs';
 import pathHelper from '../../src/helpers/paths.js';
 import { pathsByType, testFileStructure } from '../test-paths.js';
@@ -12,14 +13,14 @@ describe('pathHelper', function () {
 	describe('getDataPaths', function () {
 		it('should retrieve data files', async function () {
 			const paths = (await pathHelper.getDataPaths()).sort();
-			expect(paths).to.deep.equal(pathsByType.dataPaths);
+			assert.deepStrictEqual(paths, pathsByType.dataPaths);
 		});
 	});
 
 	describe('getLayoutPaths', function () {
 		it('should get all layout files', async function () {
 			const paths = (await pathHelper.getLayoutPaths()).sort();
-			expect(paths).to.deep.equal(pathsByType.layoutPaths);
+			assert.deepStrictEqual(paths, pathsByType.layoutPaths);
 		});
 	});
 
@@ -38,21 +39,21 @@ describe('pathHelper', function () {
 				mytype: {
 					list: 'mytype/list',
 					mylayout: 'mytype/mylayout',
-					single: "mytype/single"
+					single: 'mytype/single'
 				},
 				posts: {
 					mylayout: 'posts/mylayout',
 					single: 'posts/single'
 				}
 			};
-			expect(tree).to.deep.equal(expected);
+			assert.deepStrictEqual(tree, expected);
 		});
 	});
 
 	describe('getCollectionPaths', function () {
 		it('should get all collections', async function () {
 			const paths = await pathHelper.getCollectionPaths();
-			expect(paths).to.deep.equal(pathsByType.collectionPaths);
+			assert.deepStrictEqual(paths, pathsByType.collectionPaths);
 		});
 	});
 

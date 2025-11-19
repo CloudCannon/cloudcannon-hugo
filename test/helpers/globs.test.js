@@ -1,4 +1,5 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { describe, it, before, after } from 'node:test';
 import mock from 'mock-fs';
 import { getGlobString, getGlob } from '../../src/helpers/globs.js';
 
@@ -13,7 +14,7 @@ describe('globs', function () {
 		tests.forEach((test) => {
 			it(test.context || '', function () {
 				const outputPattern = getGlobString(test.input);
-				expect(outputPattern).to.equal(test.expected);
+				assert.strictEqual(outputPattern, test.expected);
 			});
 		});
 	});
@@ -66,7 +67,7 @@ describe('globs', function () {
 		tests.forEach((test) => {
 			it(test.context || '', async function () {
 				const outputPattern = await getGlob(...test.input);
-				expect(outputPattern).to.deep.equal(test.expected);
+				assert.deepStrictEqual(outputPattern, test.expected);
 			});
 		});
 

@@ -1,4 +1,5 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { describe, it } from 'node:test';
 import { parseYaml } from '../../src/parsers/yaml.js';
 
 describe('yaml.js', function () {
@@ -9,13 +10,13 @@ describe('yaml.js', function () {
 			const expectedObject = {
 				key: 'value'
 			};
-			expect(parsedObject).to.deep.equal(expectedObject);
+			assert.deepEqual(parsedObject, expectedObject);
 		});
 
 		it('should not parse', function () {
 			const badYamlString = ',';
 			const parsedObject = parseYaml(badYamlString);
-			expect(parsedObject).to.deep.equal(undefined);
+			assert.deepStrictEqual(parsedObject, undefined);
 		});
 	});
 });
