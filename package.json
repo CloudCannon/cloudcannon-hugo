@@ -10,7 +10,7 @@
 		"test": "node --test 'test/{generators,helpers,parsers}/*.test.js'",
 		"test:integration": "node --test 'test/integration/*.test.js'",
 		"test:all": "node --test",
-		"report-coverage": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage.lcov && codecov"
+		"report-coverage": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info"
 	},
 	"engines": {
 		"node": ">=16"

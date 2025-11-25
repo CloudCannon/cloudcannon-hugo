@@ -1,4 +1,4 @@
-.nyc_output/
+lcov.info
 node_modules/
 test/integration/**/public/
 test/integration/**/resources/
