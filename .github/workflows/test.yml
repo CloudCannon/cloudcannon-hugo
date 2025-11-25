@@ -27,14 +27,19 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: '0.128.1'
+          hugo-version: "0.128.1"
           extended: true
 
-      - name: Install 
+      - uses: actions/setup-node@v4
+        with:
+          cache: "npm"
+          node-version-file: ".nvmrc"
+
+      - name: Install
         run: npm ci
 
-      - name: Unit Test 
+      - name: Unit Test
         run: npm run test
 
-      - name: Integration Test 
+      - name: Integration Test
         run: npm run test:integration

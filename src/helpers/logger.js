@@ -13,8 +13,8 @@ const loggers = {
 	error: (text) => console.error(text),
 };
 
-export default function log(text, level = "info") {
-	if (!enabled || (level === "debug" && !verbose)) {
+export default function log(text, level = 'info') {
+	if (!enabled || (level === 'debug' && !verbose)) {
 		return;
 	}
 

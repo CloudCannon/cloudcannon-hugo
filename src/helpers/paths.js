@@ -1,12 +1,12 @@
-import { join } from "node:path";
-import { getGlob } from "./globs.js";
+import { join } from 'node:path';
+import { getGlob } from './globs.js';
 
 let cachedPaths;
 let cachedLanguages;
 let cachedLayouts;
 
 export function normalisePath(path) {
-	return path?.replace(/^\/+/, "")?.replace(/\/+$/, "")?.replace(/\/+/, "/");
+	return path?.replace(/^\/+/, '')?.replace(/\/+$/, '')?.replace(/\/+/, '/');
 }
 
 export function getPaths(hugoConfig = {}) {
@@ -14,27 +14,24 @@ export function getPaths(hugoConfig = {}) {
 		return cachedPaths;
 	}
 
-	const staticDir = normalisePath(hugoConfig.staticDir) || "static";
-	const contentDir = normalisePath(hugoConfig.contentDir) || "content";
+	const staticDir = normalisePath(hugoConfig.staticDir) || 'static';
+	const contentDir = normalisePath(hugoConfig.contentDir) || 'content';
 
 	cachedPaths = {
-		source: normalisePath(hugoConfig.source) || "",
-		archetypes: normalisePath(hugoConfig.archetypeDir) || "archetypes",
-		assets: normalisePath(hugoConfig.assetDir) || "assets",
+		source: normalisePath(hugoConfig.source) || '',
+		archetypes: normalisePath(hugoConfig.archetypeDir) || 'archetypes',
+		assets: normalisePath(hugoConfig.assetDir) || 'assets',
 		content: contentDir,
 		pages: contentDir,
-		data: normalisePath(hugoConfig.dataDir) || "data",
-		layouts: normalisePath(hugoConfig.layoutDir) || "layouts",
-		publish:
-			normalisePath(hugoConfig.destination || hugoConfig.publishDir) ||
-			"public",
+		data: normalisePath(hugoConfig.dataDir) || 'data',
+		layouts: normalisePath(hugoConfig.layoutDir) || 'layouts',
+		publish: normalisePath(hugoConfig.destination || hugoConfig.publishDir) || 'public',
 		static: staticDir,
 		uploads: join(
 			staticDir,
-			normalisePath(hugoConfig.uploads_dir || hugoConfig.uploadsDir) ||
-				"uploads",
+			normalisePath(hugoConfig.uploads_dir || hugoConfig.uploadsDir) || 'uploads'
 		),
-		config: normalisePath(hugoConfig.configDir) || "",
+		config: normalisePath(hugoConfig.configDir) || '',
 	};
 
 	return cachedPaths;
@@ -45,9 +42,7 @@ export function getSupportedLanguages(hugoConfig = {}) {
 		return cachedLanguages;
 	}
 
-	cachedLanguages = hugoConfig?.languages
-		? Object.keys(hugoConfig.languages)
-		: [];
+	cachedLanguages = hugoConfig?.languages ? Object.keys(hugoConfig.languages) : [];
 	return cachedLanguages;
 }
 
@@ -71,7 +66,7 @@ export function generatePaths(hugoConfig) {
 
 export async function getDataPaths() {
 	const { source, data } = getPaths();
-	return getGlob(join(source, data, "**"));
+	return getGlob(join(source, data, '**'));
 }
 
 export async function getLayoutTree() {
@@ -83,9 +78,9 @@ export async function getLayoutTree() {
 	const layoutPaths = await getLayoutPaths();
 
 	cachedLayouts = layoutPaths.reduce((memo, layoutPath) => {
-		layoutPath = layoutPath.replace(/\..+$/i, "");
-		const relLayoutPath = layoutPath.replace(join(source, layouts, "/"), "");
-		const parts = relLayoutPath.split("/");
+		layoutPath = layoutPath.replace(/\..+$/i, '');
+		const relLayoutPath = layoutPath.replace(join(source, layouts, '/'), '');
+		const parts = relLayoutPath.split('/');
 
 		if (parts.length === 2) {
 			if (!memo[parts[0]]) {
@@ -105,23 +100,21 @@ export async function getLayoutTree() {
 
 export async function getLayoutPaths() {
 	const { source, layouts } = getPaths();
-	return getGlob(join(source, layouts, "**"));
+	return getGlob(join(source, layouts, '**'));
 }
 
 export async function getCollectionPaths(extraCollectionPaths = []) {
 	const { source, content } = getPaths();
 
 	const globPatterns = [
-		join(source, content, "**"),
-		...extraCollectionPaths.map((extraPath) => join(source, extraPath, "**")),
+		join(source, content, '**'),
+		...extraCollectionPaths.map((extraPath) => join(source, extraPath, '**')),
 	];
 
 	let collectionPaths = await getGlob(globPatterns);
 
 	if (source) {
-		collectionPaths = collectionPaths.map((item) =>
-			item.replace(`${source}/`, ""),
-		);
+		collectionPaths = collectionPaths.map((item) => item.replace(`${source}/`, ''));
 	}
 
 	// remove empty strings and duplicates

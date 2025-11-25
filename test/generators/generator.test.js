@@ -1,12 +1,12 @@
-import assert from "node:assert";
-import { describe, it } from "node:test";
-import { getGeneratorMetadata } from "../../src/generators/generator.js";
+import assert from 'node:assert';
+import { describe, it } from 'node:test';
+import { getGeneratorMetadata } from '../../src/generators/generator.js';
 
-describe("getGeneratorMetadata", () => {
-	it("should return default markdown metadata", () => {
+describe('getGeneratorMetadata', () => {
+	it('should return default markdown metadata', () => {
 		const result = getGeneratorMetadata({}, {});
 		const expected = {
-			markdown: "goldmark",
+			markdown: 'goldmark',
 			goldmark: {
 				extensions: {
 					definitionList: true,
@@ -20,7 +20,7 @@ describe("getGeneratorMetadata", () => {
 				parser: {
 					attribute: true,
 					autoHeadingID: true,
-					autoHeadingIDType: "github",
+					autoHeadingIDType: 'github',
 				},
 				renderer: {
 					hardWraps: false,
@@ -33,7 +33,7 @@ describe("getGeneratorMetadata", () => {
 		assert.deepStrictEqual(result, expected);
 	});
 
-	it("should overwrite default markdown metadata with cloudcannon markdown metadata", () => {
+	it('should overwrite default markdown metadata with cloudcannon markdown metadata', () => {
 		const markup = {
 			markup: { goldmark: { renderer: { unsafe: true, hardWraps: true } } },
 		};
@@ -45,7 +45,7 @@ describe("getGeneratorMetadata", () => {
 
 		const result = getGeneratorMetadata(markup, ccConfig);
 		const expected = {
-			markdown: "goldmark",
+			markdown: 'goldmark',
 			goldmark: {
 				extensions: {
 					definitionList: true,
@@ -59,7 +59,7 @@ describe("getGeneratorMetadata", () => {
 				parser: {
 					attribute: true,
 					autoHeadingID: true,
-					autoHeadingIDType: "github",
+					autoHeadingIDType: 'github',
 				},
 				renderer: {
 					hardWraps: false,
@@ -74,19 +74,16 @@ describe("getGeneratorMetadata", () => {
 		assert.deepStrictEqual(result, expected);
 	});
 
-	it("should return default blackfriday metadata", () => {
-		const result = getGeneratorMetadata(
-			{ markup: { defaultMarkdownHandler: "blackfriday" } },
-			{},
-		);
+	it('should return default blackfriday metadata', () => {
+		const result = getGeneratorMetadata({ markup: { defaultMarkdownHandler: 'blackfriday' } }, {});
 		const expected = {
-			markdown: "blackfriday",
+			markdown: 'blackfriday',
 			blackfriday: {
 				angledQuotes: false,
 				extensions: null,
 				extensionsMask: null,
-				footnoteAnchorPrefix: "",
-				footnoteReturnLinkContents: "",
+				footnoteAnchorPrefix: '',
+				footnoteReturnLinkContents: '',
 				fractions: true,
 				hrefTargetBlank: false,
 				latexDashes: true,
@@ -107,10 +104,10 @@ describe("getGeneratorMetadata", () => {
 		assert.deepStrictEqual(result, expected);
 	});
 
-	it("should return markup in config", () => {
+	it('should return markup in config', () => {
 		const markup = { markup: { goldmark: { renderer: { unsafe: true } } } };
 		const expected = {
-			markdown: "goldmark",
+			markdown: 'goldmark',
 			goldmark: {
 				extensions: {
 					definitionList: true,
@@ -124,7 +121,7 @@ describe("getGeneratorMetadata", () => {
 				parser: {
 					attribute: true,
 					autoHeadingID: true,
-					autoHeadingIDType: "github",
+					autoHeadingIDType: 'github',
 				},
 				renderer: {
 					hardWraps: false,

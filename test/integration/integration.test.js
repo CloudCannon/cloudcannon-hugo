@@ -1,8 +1,8 @@
-import assert from "node:assert";
-import { spawnSync } from "node:child_process";
-import { readFile, unlink } from "node:fs/promises";
-import { join, relative } from "node:path";
-import { describe, it } from "node:test";
+import assert from 'node:assert';
+import { spawnSync } from 'node:child_process';
+import { readFile, unlink } from 'node:fs/promises';
+import { join, relative } from 'node:path';
+import { describe, it } from 'node:test';
 
 // Helper function to sort objects and arrays for comparison
 function sortForComparison(obj) {
@@ -13,7 +13,7 @@ function sortForComparison(obj) {
 			return aStr.localeCompare(bStr);
 		});
 	}
-	if (obj !== null && typeof obj === "object") {
+	if (obj !== null && typeof obj === 'object') {
 		const sorted = {};
 		Object.keys(obj)
 			.sort()
@@ -34,48 +34,45 @@ function assertDeepEqualInAnyOrder(actual, expected, message) {
 
 const CHECKED_KEYS = [
 	// Skips 'time'
-	"version",
-	"generator",
-	"paths",
-	"data_config",
-	"collections_config",
-	"collection_groups",
-	"collections",
-	"data",
-	"source",
-	"timezone",
-	"base_url",
-	"_inputs",
-	"_editables",
-	"_select_data",
-	"_structures",
-	"editor",
-	"source_editor",
+	'version',
+	'generator',
+	'paths',
+	'data_config',
+	'collections_config',
+	'collection_groups',
+	'collections',
+	'data',
+	'source',
+	'timezone',
+	'base_url',
+	'_inputs',
+	'_editables',
+	'_select_data',
+	'_structures',
+	'editor',
+	'source_editor',
 ];
 
 async function run(fixture, npxArgs = [], expectedOutputFile) {
-	const expectedPath = join(
-		"test/integration",
-		expectedOutputFile || `${fixture}.json`,
-	);
+	const expectedPath = join('test/integration', expectedOutputFile || `${fixture}.json`);
 	const expectedRaw = await readFile(expectedPath);
 	const expected = JSON.parse(expectedRaw);
 
-	const wd = join("test/integration", fixture);
-	const infoPath = join(wd, "public/_cloudcannon/info.json");
+	const wd = join('test/integration', fixture);
+	const infoPath = join(wd, 'public/_cloudcannon/info.json');
 
 	try {
 		await unlink(infoPath);
 	} catch (e) {
-		if (e.code !== "ENOENT") {
+		if (e.code !== 'ENOENT') {
 			throw e;
 		}
 	}
 
-	spawnSync("npx", [relative(fixture, "../.."), ...npxArgs], {
+	spawnSync('npx', [relative(fixture, '../..'), ...npxArgs], {
 		cwd: wd,
 		stdio: [process.stdin, process.stdout, process.stderr],
-		encoding: "utf-8",
+		encoding: 'utf-8',
 	});
 
 	const infoRaw = await readFile(infoPath);
@@ -85,15 +82,15 @@ async function run(fixture, npxArgs = [], expectedOutputFile) {
 	assertDeepEqualInAnyOrder(Object.keys(info), expectedKeys);
 
 	CHECKED_KEYS.forEach((key) => {
-		if (expected[key] === "UNCHECKED") {
+		if (expected[key] === 'UNCHECKED') {
 			return;
 		}
 
-		if (key === "generator") {
+		if (key === 'generator') {
 			const renderer = info.generator?.metadata?.markdown;
 			assertDeepEqualInAnyOrder(
 				info.generator?.metadata?.[renderer],
-				expected.generator?.metadata?.[renderer],
+				expected.generator?.metadata?.[renderer]
 			);
 		} else {
 			assertDeepEqualInAnyOrder(info[key], expected[key]);
@@ -101,30 +98,26 @@ async function run(fixture, npxArgs = [], expectedOutputFile) {
 	});
 }
 
-describe("integration should generate info.json", { timeout: 10000 }, () => {
+describe('integration should generate info.json', { timeout: 10000 }, () => {
 	// sometimes takes longer than 2000ms (default)
 
-	it("with YAML config file", async () => {
-		await run("yaml-config");
+	it('with YAML config file', async () => {
+		await run('yaml-config');
 	});
 
-	it("with YAML config file and specified environment", async () => {
-		await run(
-			"yaml-config",
-			["--environment", "staging"],
-			"yaml-config-staging.json",
-		);
+	it('with YAML config file and specified environment', async () => {
+		await run('yaml-config', ['--environment', 'staging'], 'yaml-config-staging.json');
 	});
 
-	it("with collections_config_override", async () => {
-		await run("collections-config-override");
+	it('with collections_config_override', async () => {
+		await run('collections-config-override');
 	});
 
-	it("with multilingual pages", async () => {
-		await run("multilingual");
+	it('with multilingual pages', async () => {
+		await run('multilingual');
 	});
 
-	it("with legacy config", async () => {
-		await run("legacy", ["--config", "cloudcannon.toml,config.toml"]);
+	it('with legacy config', async () => {
+		await run('legacy', ['--config', 'cloudcannon.toml,config.toml']);
 	});
 });
