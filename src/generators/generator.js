@@ -3,18 +3,23 @@ import { markdownMeta } from '../helpers/metadata.js';
 
 export function getGeneratorMetadata(hugoConfig, config) {
 	const markup = hugoConfig.markup ?? {};
-	const markdownHandler = config.generator?.metadata?.markdown || markup.defaultMarkdownHandler || 'goldmark';
+	const markdownHandler =
+		config.generator?.metadata?.markdown || markup.defaultMarkdownHandler || 'goldmark';
 
 	const defaultMeta = markdownMeta[markdownHandler] || {};
 	const ccMarkdownSettings = config.generator?.metadata?.[markdownHandler] || {};
 	const markdownSettings = mergeDeep({}, defaultMeta, markup[markdownHandler], ccMarkdownSettings);
 
 	markdownSettings.renderer ||= {};
-	markdownSettings.renderer.hardWraps = !!(markdownSettings.hardWraps ?? markdownSettings.renderer.hardWraps ?? false);
+	markdownSettings.renderer.hardWraps = !!(
+		markdownSettings.hardWraps ??
+		markdownSettings.renderer.hardWraps ??
+		false
+	);
 
 	return {
 		markdown: markdownHandler,
-		[markdownHandler]: markdownSettings
+		[markdownHandler]: markdownSettings,
 	};
 }
 
@@ -24,6 +29,6 @@ export async function getGenerator(hugoConfig, config) {
 	return {
 		name: 'hugo',
 		version: hugoVersion.match(/[0-9]+\.[0-9]+\.[0-9]+/g)?.[0] ?? '0.0.0',
-		metadata: getGeneratorMetadata(hugoConfig, config)
+		metadata: getGeneratorMetadata(hugoConfig, config),
 	};
 }

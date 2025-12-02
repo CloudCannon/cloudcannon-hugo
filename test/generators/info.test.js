@@ -1,4 +1,5 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { after, before, describe, it } from 'node:test';
 import mock from 'mock-fs';
 import { getInfo } from '../../src/generators/info.js';
 import pathHelper from '../../src/helpers/paths.js';
@@ -7,27 +8,27 @@ import { dataFiles } from '../test-paths.js';
 const EXPECTED_DATA = {
 	footer: [
 		{ name: 'Github', order: 0 },
-		{ name: 'RSS', order: 1 }
+		{ name: 'RSS', order: 1 },
 	],
 	nav: [
 		{ name: 'About', url: '/about/' },
-		{ name: 'Contact', url: '/contact/' }
+		{ name: 'Contact', url: '/contact/' },
 	],
 	staff_members: {
 		jane: { name: 'Jane Doe', title: 'Developer' },
-		john: { name: 'John Smith', title: 'Designer' }
-	}
+		john: { name: 'John Smith', title: 'Designer' },
+	},
 };
 
-describe('info generator', function () {
-	this.timeout(10000); // sometimes takes longer than 2000ms (default)
+describe('info generator', { timeout: 10000 }, () => {
+	// sometimes takes longer than 2000ms (default)
 
 	const untested = {
 		time: 'UNTESTED',
-		generator: 'UNTESTED'
+		generator: 'UNTESTED',
 	};
 
-	it('with no cloudcannon specific config', async function () {
+	it('with no cloudcannon specific config', async () => {
 		const expected = {
 			source: '',
 			base_url: '',
@@ -48,19 +49,19 @@ describe('info generator', function () {
 			version: '0.0.3',
 			cloudcannon: {
 				name: 'cloudcannon-hugo',
-				version: '0.0.0'
+				version: '0.0.0',
 			},
 			collections_config: {},
 			collections: {},
-			data: undefined
+			data: undefined,
 		};
 
 		const result = await getInfo({ baseURL: '/' });
 
-		expect({ ...result, ...untested }).to.deep.equal({ ...expected, ...untested });
+		assert.deepStrictEqual({ ...result, ...untested }, { ...expected, ...untested });
 	});
 
-	it('with cloudcannon specific config', async function () {
+	it('with cloudcannon specific config', async () => {
 		const cloudcannon = {
 			_comments: { comment: 'comment' },
 			_options: { option: 'value' },
@@ -70,7 +71,7 @@ describe('info generator', function () {
 			source_editor: { theme: 'monokai', tab_size: 2, show_gutter: false },
 			_structures: {},
 			_array_structures: { object: {} },
-			_select_data: { object: {} }
+			_select_data: { object: {} },
 		};
 
 		const expected = {
@@ -93,45 +94,45 @@ describe('info generator', function () {
 			version: '0.0.3',
 			cloudcannon: {
 				name: 'cloudcannon-hugo',
-				version: '0.0.1'
+				version: '0.0.1',
 			},
 			collections_config: {},
 			collections: {},
-			data: undefined
+			data: undefined,
 		};
 
 		const hugoConfig = { baseURL: '/', ...cloudcannon };
 		const result = await getInfo(hugoConfig, { version: '0.0.1' });
 
-		expect({ ...result, ...untested }).to.deep.equal({ ...expected, ...untested });
+		assert.deepStrictEqual({ ...result, ...untested }, { ...expected, ...untested });
 	});
 
-	describe('with data', function () {
-		before(function () {
+	describe('with data', () => {
+		before(() => {
 			mock(dataFiles);
 		});
 
-		it('should return all data', async function () {
+		it('should return all data', async () => {
 			const result = await getInfo({ cloudcannon: { data: true } });
 
-			expect(result.data).to.deep.equal(EXPECTED_DATA);
+			assert.deepEqual(result.data, EXPECTED_DATA);
 		});
 
-		it('should return the specified data', async function () {
+		it('should return the specified data', async () => {
 			const expected = {
 				nav: EXPECTED_DATA.nav,
-				staff_members: EXPECTED_DATA.staff_members
+				staff_members: EXPECTED_DATA.staff_members,
 			};
 
 			const result = await getInfo({
-				cloudcannon: { data: { nav: true, staff_members: true } }
+				cloudcannon: { data: { nav: true, staff_members: true } },
 			});
 
-			expect(result.data).to.deep.equal(expected);
+			assert.deepEqual(result.data, expected);
 		});
 	});
 
-	after(function () {
+	after(() => {
 		mock.restore();
 	});
 });

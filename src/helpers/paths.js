@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { join } from 'node:path';
 import { getGlob } from './globs.js';
 
 let cachedPaths;
@@ -6,10 +6,7 @@ let cachedLanguages;
 let cachedLayouts;
 
 export function normalisePath(path) {
-	return path
-		?.replace(/^\/+/, '')
-		?.replace(/\/+$/, '')
-		?.replace(/\/+/, '/');
+	return path?.replace(/^\/+/, '')?.replace(/\/+$/, '')?.replace(/\/+/, '/');
 }
 
 export function getPaths(hugoConfig = {}) {
@@ -30,8 +27,11 @@ export function getPaths(hugoConfig = {}) {
 		layouts: normalisePath(hugoConfig.layoutDir) || 'layouts',
 		publish: normalisePath(hugoConfig.destination || hugoConfig.publishDir) || 'public',
 		static: staticDir,
-		uploads: join(staticDir, normalisePath(hugoConfig.uploads_dir || hugoConfig.uploadsDir) || 'uploads'),
-		config: normalisePath(hugoConfig.configDir) || ''
+		uploads: join(
+			staticDir,
+			normalisePath(hugoConfig.uploads_dir || hugoConfig.uploadsDir) || 'uploads'
+		),
+		config: normalisePath(hugoConfig.configDir) || '',
 	};
 
 	return cachedPaths;
@@ -108,7 +108,7 @@ export async function getCollectionPaths(extraCollectionPaths = []) {
 
 	const globPatterns = [
 		join(source, content, '**'),
-		...extraCollectionPaths.map((extraPath) => join(source, extraPath, '**'))
+		...extraCollectionPaths.map((extraPath) => join(source, extraPath, '**')),
 	];
 
 	let collectionPaths = await getGlob(globPatterns);
@@ -132,5 +132,5 @@ export default {
 	getDataPaths,
 	getLayoutTree,
 	getLayoutPaths,
-	getCollectionPaths
+	getCollectionPaths,
 };

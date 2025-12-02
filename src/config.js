@@ -1,13 +1,12 @@
+import { relative } from 'node:path';
 import chalk from 'chalk';
-import { relative } from 'path';
 import { cosmiconfig } from 'cosmiconfig';
 import { getUrlPathname } from './helpers/helpers.js';
-import pathHelper from './helpers/paths.js';
 import log from './helpers/logger.js';
+import pathHelper from './helpers/paths.js';
 
 function rewriteKey(object, oldKey, newKey) {
-	const canRename = Object.prototype.hasOwnProperty.call(object, oldKey)
-		&& !Object.prototype.hasOwnProperty.call(object, newKey);
+	const canRename = Object.hasOwn(object, oldKey) && !Object.hasOwn(object, newKey);
 
 	if (canRename) {
 		object[newKey] = object[oldKey];
@@ -43,33 +42,24 @@ function getLegacyConfig(hugoConfig) {
 	return {
 		data_config: hugoConfig.cloudcannon?.data,
 		collections_config: hugoConfig.cloudcannon?.collections,
-		_comments: hugoConfig._comments
-			?? params._comments,
-		_options: hugoConfig._options
-			?? params._options,
+		_comments: hugoConfig._comments ?? params._comments,
+		_options: hugoConfig._options ?? params._options,
 		_inputs: hugoConfig._inputs,
 		_editables: hugoConfig._editables,
-		collection_groups: hugoConfig.collection_groups
-			?? hugoConfig._collection_groups
-			?? params._collection_groups,
-		editor: hugoConfig.editor
-			?? hugoConfig._editor
-			?? params._editor,
-		source_editor: hugoConfig.source_editor
-			?? hugoConfig._source_editor
-			?? params._source_editor
-			?? params._sourceEditor,
-		_enabled_editors: hugoConfig._enabled_editors
-			?? params._enabled_editors,
-		_instance_values: hugoConfig._instance_values
-			?? params._instance_values,
+		collection_groups:
+			hugoConfig.collection_groups ?? hugoConfig._collection_groups ?? params._collection_groups,
+		editor: hugoConfig.editor ?? hugoConfig._editor ?? params._editor,
+		source_editor:
+			hugoConfig.source_editor ??
+			hugoConfig._source_editor ??
+			params._source_editor ??
+			params._sourceEditor,
+		_enabled_editors: hugoConfig._enabled_editors ?? params._enabled_editors,
+		_instance_values: hugoConfig._instance_values ?? params._instance_values,
 		_structures: hugoConfig._structures,
-		_array_structures: hugoConfig._array_structures
-			?? params._array_structures
-			?? params._arrayStructures,
-		_select_data: hugoConfig._select_data
-			?? params._select_data
-			?? params._selectData
+		_array_structures:
+			hugoConfig._array_structures ?? params._array_structures ?? params._arrayStructures,
+		_select_data: hugoConfig._select_data ?? params._select_data ?? params._selectData,
 	};
 }
 
@@ -81,14 +71,12 @@ async function readFile(configPath) {
 			`${moduleName}.config.yaml`,
 			`${moduleName}.config.yml`,
 			`${moduleName}.config.js`,
-			`${moduleName}.config.cjs`
-		]
+			`${moduleName}.config.cjs`,
+		],
 	});
 
 	try {
-		const config = configPath
-			? await explorer.load(configPath)
-			: await explorer.search();
+		const config = configPath ? await explorer.load(configPath) : await explorer.search();
 
 		if (config) {
 			const relativeConfigPath = relative(process.cwd(), config.filepath);
@@ -111,7 +99,7 @@ async function readFile(configPath) {
 
 export async function getConfig(hugoConfig) {
 	const paths = pathHelper.getPaths();
-	const file = await readFile(process.env.CLOUDCANNON_CONFIG_PATH) || {};
+	const file = (await readFile(process.env.CLOUDCANNON_CONFIG_PATH)) || {};
 	const legacy = getLegacyConfig(hugoConfig);
 	const baseURL = file.base_url || getUrlPathname(hugoConfig.baseURL) || '';
 
@@ -128,8 +116,8 @@ export async function getConfig(hugoConfig) {
 		},
 		paths: {
 			...paths,
-			...file.paths
-		}
+			...file.paths,
+		},
 	};
 
 	return migrateLegacyKeys(config);

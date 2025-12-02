@@ -1,223 +1,266 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { after, before, describe, it } from 'node:test';
 import mock from 'mock-fs';
 import {
 	getCollectionKey,
-	getPageUrlFromPath,
+	getCollectionsAndConfig,
 	getLayout,
-	getCollectionsAndConfig
+	getPageUrlFromPath,
 } from '../../src/generators/collections.js';
 import pathHelper from '../../src/helpers/paths.js';
 import { collectionFiles, testFileStructure } from '../test-paths.js';
 
-describe('collections generator', function () {
-	describe('getCollectionKey', function () {
-		it('without configuration', function () {
+describe('collections generator', () => {
+	describe('getCollectionKey', () => {
+		it('without configuration', () => {
 			const collectionsConfig = {};
 
-			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/about/index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal(null);
+			assert.strictEqual(getCollectionKey('content/staff/_index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/staff/jim.md', collectionsConfig), 'staff');
+			assert.strictEqual(
+				getCollectionKey('content/staff/jane/index.md', collectionsConfig),
+				'staff'
+			);
+			assert.strictEqual(
+				getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig),
+				'staff'
+			);
+			assert.strictEqual(getCollectionKey('content/_index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/about/index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('data/offices/dunedin.md', collectionsConfig), null);
 		});
 
-		it('with configuration', function () {
+		it('with configuration', () => {
 			const collectionsConfig = {
 				other: {
-					path: 'content/elsewhere'
+					path: 'content/elsewhere',
 				},
 				staff: {
-					parse_branch_index: true
+					parse_branch_index: true,
 				},
 				offices: {
-					path: 'data/offices'
-				}
+					path: 'data/offices',
+				},
 			};
 
-			expect(getCollectionKey('content/elsewhere/thing.md', collectionsConfig)).to.equal('other');
-			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/about/index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal('offices');
+			assert.strictEqual(
+				getCollectionKey('content/elsewhere/thing.md', collectionsConfig),
+				'other'
+			);
+			assert.strictEqual(getCollectionKey('content/staff/_index.md', collectionsConfig), 'staff');
+			assert.strictEqual(getCollectionKey('content/staff/jim.md', collectionsConfig), 'staff');
+			assert.strictEqual(
+				getCollectionKey('content/staff/jane/index.md', collectionsConfig),
+				'staff'
+			);
+			assert.strictEqual(
+				getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig),
+				'staff'
+			);
+			assert.strictEqual(getCollectionKey('content/_index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/about/index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('data/offices/dunedin.md', collectionsConfig), 'offices');
 		});
 
-		it('with redefined default configuration', function () {
+		it('with redefined default configuration', () => {
 			const collectionsConfig = {
 				pages: {
 					path: 'content',
-					parse_branch_index: true
+					parse_branch_index: true,
 				},
 				staff: {
-					path: 'content/staff'
-				}
+					path: 'content/staff',
+				},
 			};
 
 			// This is pages rather than elsewhere as the pages config has an explicit path
-			expect(getCollectionKey('content/elsewhere/thing.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig)).to.equal('staff');
-			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('content/about/index.md', collectionsConfig)).to.equal('pages');
-			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal(null);
+			assert.strictEqual(
+				getCollectionKey('content/elsewhere/thing.md', collectionsConfig),
+				'pages'
+			);
+			assert.strictEqual(getCollectionKey('content/staff/_index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/staff/jim.md', collectionsConfig), 'staff');
+			assert.strictEqual(
+				getCollectionKey('content/staff/jane/index.md', collectionsConfig),
+				'staff'
+			);
+			assert.strictEqual(
+				getCollectionKey('content/staff/nested/again/jane.md', collectionsConfig),
+				'staff'
+			);
+			assert.strictEqual(getCollectionKey('content/_index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('content/about/index.md', collectionsConfig), 'pages');
+			assert.strictEqual(getCollectionKey('data/offices/dunedin.md', collectionsConfig), null);
 		});
 
-		it('with custom pages configuration', function () {
+		it('with custom pages configuration', () => {
 			const collectionsConfig = {
 				custom: {
 					path: 'content',
-					parse_branch_index: true
-				}
+					parse_branch_index: true,
+				},
 			};
 
-			expect(getCollectionKey('content/staff/_index.md', collectionsConfig)).to.equal('custom');
-			expect(getCollectionKey('content/staff/jim.md', collectionsConfig)).to.equal('custom');
-			expect(getCollectionKey('content/staff/jane/index.md', collectionsConfig)).to.equal('custom');
-			expect(getCollectionKey('content/_index.md', collectionsConfig)).to.equal('custom');
-			expect(getCollectionKey('data/offices/dunedin.md', collectionsConfig)).to.equal(null);
+			assert.strictEqual(getCollectionKey('content/staff/_index.md', collectionsConfig), 'custom');
+			assert.strictEqual(getCollectionKey('content/staff/jim.md', collectionsConfig), 'custom');
+			assert.strictEqual(
+				getCollectionKey('content/staff/jane/index.md', collectionsConfig),
+				'custom'
+			);
+			assert.strictEqual(getCollectionKey('content/_index.md', collectionsConfig), 'custom');
+			assert.strictEqual(getCollectionKey('data/offices/dunedin.md', collectionsConfig), null);
 		});
 	});
 
-	describe('getPageUrlFromPath', function () {
-		it('_index file', function () {
+	describe('getPageUrlFromPath', () => {
+		it('_index file', () => {
 			const result = getPageUrlFromPath('content/authors/_index.md', 'content');
-			expect(result).to.equal('/authors/');
+			assert.strictEqual(result, '/authors/');
 		});
 
-		it('index file', function () {
+		it('index file', () => {
 			const result = getPageUrlFromPath('content/about/index.md', 'content');
-			expect(result).to.equal('/about/');
+			assert.strictEqual(result, '/about/');
 		});
 	});
 
-	describe('getLayout', function () {
-		before(function () {
+	describe('getLayout', () => {
+		before(() => {
 			pathHelper.clearAllCachedItems();
 			mock(testFileStructure);
 			pathHelper.getSupportedLanguages({ languages: { en: {} } });
 		});
 
-		it('Home page', async function () {
+		it('Home page', async () => {
 			const result = await getLayout('content/_index.md', {});
-			expect(result).to.equal('index');
+			assert.strictEqual(result, 'index');
 		});
 
-		it('Home page with type set', async function () {
+		it('Home page with type set', async () => {
 			const result = await getLayout('content/_index.md', { type: 'mytype' });
-			expect(result).to.equal('mytype/list');
+			assert.strictEqual(result, 'mytype/list');
 		});
 
-		it('Home page with layout set', async function () {
-			const result = await getLayout('content/_index.md', { layout: 'mylayout' });
-			expect(result).to.equal('index');
+		it('Home page with layout set', async () => {
+			const result = await getLayout('content/_index.md', {
+				layout: 'mylayout',
+			});
+			assert.strictEqual(result, 'index');
 		});
 
-		it('single post', async function () {
+		it('single post', async () => {
 			const result = await getLayout('content/posts/post.md', {});
-			expect(result).to.equal('posts/single');
+			assert.strictEqual(result, 'posts/single');
 		});
 
-		it('single leaf bundle post', async function () {
+		it('single leaf bundle post', async () => {
 			const result = await getLayout('content/posts/item/index.md', {});
-			expect(result).to.equal('posts/single');
+			assert.strictEqual(result, 'posts/single');
 		});
 
-		it('single leaf bundle post in a language code', async function () {
+		it('single leaf bundle post in a language code', async () => {
 			const result = await getLayout('content/en/posts/item/index.md', {});
-			expect(result).to.equal('posts/single');
+			assert.strictEqual(result, 'posts/single');
 		});
 
-		it('single post with layout set', async function () {
-			const result = await getLayout('content/posts/post.md', { layout: 'mylayout' });
-			expect(result).to.equal('posts/mylayout');
+		it('single post with layout set', async () => {
+			const result = await getLayout('content/posts/post.md', {
+				layout: 'mylayout',
+			});
+			assert.strictEqual(result, 'posts/mylayout');
 		});
 
-		it('single post with type set', async function () {
-			const result = await getLayout('content/posts/post.md', { type: 'mytype' });
-			expect(result).to.equal('mytype/single');
+		it('single post with type set', async () => {
+			const result = await getLayout('content/posts/post.md', {
+				type: 'mytype',
+			});
+			assert.strictEqual(result, 'mytype/single');
 		});
 
-		it('single post with a non-existent type set', async function () {
-			const result = await getLayout('content/posts/post.md', { type: 'invalidType' });
-			expect(result).to.equal('posts/single');
+		it('single post with a non-existent type set', async () => {
+			const result = await getLayout('content/posts/post.md', {
+				type: 'invalidType',
+			});
+			assert.strictEqual(result, 'posts/single');
 		});
 
-		it('list page for posts', async function () {
+		it('list page for posts', async () => {
 			const result = await getLayout('content/posts/_index.md', {});
-			expect(result).to.equal('_default/list');
+			assert.strictEqual(result, '_default/list');
 		});
 
-		it('list page using an _index.html file', async function () {
+		it('list page using an _index.html file', async () => {
 			const result = await getLayout('content/collectionName/_index.html', {});
-			expect(result).to.equal('_default/list');
+			assert.strictEqual(result, '_default/list');
 		});
 
-		it('list page for mytype', async function () {
+		it('list page for mytype', async () => {
 			const result = await getLayout('content/mytype/_index.md', {});
-			expect(result).to.equal('mytype/list');
+			assert.strictEqual(result, 'mytype/list');
 		});
 
-		it('list page for posts with type mytype', async function () {
-			const result = await getLayout('content/posts/_index.md', { type: 'mytype' });
-			expect(result).to.equal('mytype/list');
+		it('list page for posts with type mytype', async () => {
+			const result = await getLayout('content/posts/_index.md', {
+				type: 'mytype',
+			});
+			assert.strictEqual(result, 'mytype/list');
 		});
 
-		it('list page for posts with layout set', async function () {
-			const result = await getLayout('content/posts/_index.md', { layout: 'mylayout' });
-			expect(result).to.equal('posts/mylayout');
+		it('list page for posts with layout set', async () => {
+			const result = await getLayout('content/posts/_index.md', {
+				layout: 'mylayout',
+			});
+			assert.strictEqual(result, 'posts/mylayout');
 		});
 
-		it('list page for posts with type and layout set', async function () {
-			const result = await getLayout('content/posts/_index.md', { type: 'mytype', layout: 'mylayout' });
-			expect(result).to.equal('mytype/mylayout');
+		it('list page for posts with type and layout set', async () => {
+			const result = await getLayout('content/posts/_index.md', {
+				type: 'mytype',
+				layout: 'mylayout',
+			});
+			assert.strictEqual(result, 'mytype/mylayout');
 		});
 
-		after(function () {
+		after(() => {
 			mock.restore();
 			pathHelper.clearAllCachedItems();
 		});
 	});
 
-	describe('getCollectionsAndConfig', function () {
-		before(function () {
+	describe('getCollectionsAndConfig', () => {
+		before(() => {
 			const fileStructure = {
 				...collectionFiles,
-				'data/staff_members': { 'anna.yml': '' }
+				'data/staff_members': { 'anna.yml': '' },
 			};
 			pathHelper.clearAllCachedItems();
 			mock(fileStructure);
 		});
 
-		it('should retrieve collections', async function () {
+		it('should retrieve collections', async () => {
 			const hugoUrls = {
 				'content/_index.md': '/',
 				'content/coll1/item1.md': '/coll1/item1/',
 				'content/coll1/item2.md': '/coll1/item2/',
-				'content/posts/post1.md': '/posts/post1/'
+				'content/posts/post1.md': '/posts/post1/',
 			};
 
 			const config = {
 				collections_config: {
 					coll1: {
-						parse_branch_index: true
+						parse_branch_index: true,
 					},
 					data: {
-						image_key: 'thumbnail'
+						image_key: 'thumbnail',
 					},
 					posts: {
 						image_key: 'author_image',
-						image_size: 'cover'
+						image_size: 'cover',
 					},
 					staff_members: {
-						path: 'data/staff_members'
-					}
-				}
+						path: 'data/staff_members',
+					},
+				},
 			};
 
 			const { collections, collectionsConfig } = await getCollectionsAndConfig(config, hugoUrls);
@@ -228,7 +271,7 @@ describe('collections generator', function () {
 						collection: 'pages',
 						path: 'content/posts/_index.md',
 						content_path: 'posts/_index.md',
-						url: '/posts/'
+						url: '/posts/',
 					},
 				],
 				coll1: [
@@ -236,13 +279,13 @@ describe('collections generator', function () {
 						collection: 'coll1',
 						path: 'content/coll1/_index.md',
 						content_path: 'coll1/_index.md',
-						url: '/coll1/'
+						url: '/coll1/',
 					},
 					{
 						collection: 'coll1',
 						path: 'content/coll1/item1.md',
 						content_path: 'coll1/item1.md',
-						url: '/coll1/item1/'
+						url: '/coll1/item1/',
 					},
 					{
 						collection: 'coll1',
@@ -250,8 +293,8 @@ describe('collections generator', function () {
 						output: false,
 						path: 'content/coll1/item2.md',
 						content_path: 'coll1/item2.md',
-						url: '/coll1/item2/'
-					}
+						url: '/coll1/item2/',
+					},
 				],
 				posts: [
 					{
@@ -260,18 +303,18 @@ describe('collections generator', function () {
 						published: false,
 						path: 'content/posts/post1.md',
 						content_path: 'posts/post1.md',
-						url: '/posts/post1/'
-					}
+						url: '/posts/post1/',
+					},
 				],
 				staff_members: [
 					{
 						collection: 'staff_members',
 						output: false,
 						path: 'data/staff_members/anna.yml',
-						url: ''
-					}
+						url: '',
+					},
 				],
-				data: []
+				data: [],
 			};
 
 			const expectedCollectionsConfig = {
@@ -280,36 +323,36 @@ describe('collections generator', function () {
 					output: true,
 					filter: 'strict',
 					parse_branch_index: true,
-					auto_discovered: true
+					auto_discovered: true,
 				},
 				coll1: {
 					path: 'content/coll1',
 					output: true,
-					parse_branch_index: true
+					parse_branch_index: true,
 				},
 				posts: {
 					path: 'content/posts',
 					output: true,
 					image_key: 'author_image',
-					image_size: 'cover'
+					image_size: 'cover',
 				},
 				data: {
 					auto_discovered: false,
 					path: 'data',
 					output: false,
-					image_key: 'thumbnail'
+					image_key: 'thumbnail',
 				},
 				staff_members: {
 					path: 'data/staff_members',
-					output: false
-				}
+					output: false,
+				},
 			};
 
-			expect(collections).to.deep.equal(expectedCollections);
-			expect(collectionsConfig).to.deep.equal(expectedCollectionsConfig);
+			assert.deepStrictEqual(collections, expectedCollections);
+			assert.deepStrictEqual(collectionsConfig, expectedCollectionsConfig);
 		});
 
-		after(function () {
+		after(() => {
 			mock.restore();
 			pathHelper.clearAllCachedItems();
 		});

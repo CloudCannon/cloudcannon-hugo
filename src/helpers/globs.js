@@ -1,4 +1,4 @@
-import { promisify } from 'util';
+import { promisify } from 'node:util';
 import glob from 'glob';
 import log from './logger.js';
 
@@ -25,7 +25,7 @@ export async function getGlob(globPattern, options = {}) {
 	options = {
 		nodir: true,
 		ignore: [],
-		...options
+		...options,
 	};
 
 	if (typeof options.ignore === 'string') {

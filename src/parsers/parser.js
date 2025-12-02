@@ -1,9 +1,9 @@
-import fs from 'fs/promises';
-import { extname } from 'path';
+import fs from 'node:fs/promises';
+import { extname } from 'node:path';
+import log from '../helpers/logger.js';
+import { parseJsonUnstrict } from './json.js';
 import { parseToml } from './toml.js';
 import { parseYaml } from './yaml.js';
-import { parseJsonUnstrict } from './json.js';
-import log from '../helpers/logger.js';
 
 export async function parseFile(path) {
 	try {
@@ -14,7 +14,7 @@ export async function parseFile(path) {
 		const data = await fs.readFile(path, 'utf-8');
 		frontMatterObject = parseFrontMatter(data);
 		return frontMatterObject || {};
-	} catch (parseError) {
+	} catch (_parseError) {
 		return {};
 	}
 }
@@ -25,17 +25,17 @@ export async function parseDataFile(path) {
 	try {
 		const contents = await fs.readFile(path, 'utf-8');
 		switch (type) {
-		case '.yml':
-		case '.yaml':
-			return parseYaml(contents);
-		case '.toml':
-			return parseToml(contents);
-		case '.json':
-			return JSON.parse(contents);
-		default:
-			break;
+			case '.yml':
+			case '.yaml':
+				return parseYaml(contents);
+			case '.toml':
+				return parseToml(contents);
+			case '.json':
+				return JSON.parse(contents);
+			default:
+				break;
 		}
-	} catch (parseError) {
+	} catch (_parseError) {
 		log(`Failed to read file: ${path}`, 'warn');
 	}
 }
@@ -54,26 +54,26 @@ export function parseFrontMatter(data) {
 	let end;
 
 	switch (identifyingChar) {
-	case '-':
-		start = normalised.search(/^---\s*\n/);
-		end = normalised.indexOf('\n---', start + 1);
-		if (start === 0 && end > start) {
-			const trimmed = normalised.substring(start + 3, end);
-			return parseYaml(trimmed);
-		}
-		break;
-	case '+':
-		start = normalised.search(/^\+\+\+\s*\n/);
-		end = normalised.indexOf('\n+++', start + 1);
-		if (start === 0 && end > start) {
-			const trimmed = normalised.substring(start + 3, end);
-			return parseToml(trimmed);
-		}
-		break;
-	case '{':
-		return parseJsonUnstrict(data);
-	default:
-		break;
+		case '-':
+			start = normalised.search(/^---\s*\n/);
+			end = normalised.indexOf('\n---', start + 1);
+			if (start === 0 && end > start) {
+				const trimmed = normalised.substring(start + 3, end);
+				return parseYaml(trimmed);
+			}
+			break;
+		case '+':
+			start = normalised.search(/^\+\+\+\s*\n/);
+			end = normalised.indexOf('\n+++', start + 1);
+			if (start === 0 && end > start) {
+				const trimmed = normalised.substring(start + 3, end);
+				return parseToml(trimmed);
+			}
+			break;
+		case '{':
+			return parseJsonUnstrict(data);
+		default:
+			break;
 	}
 
 	return {};

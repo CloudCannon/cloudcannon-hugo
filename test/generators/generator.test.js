@@ -1,8 +1,9 @@
-import { expect } from 'chai';
+import assert from 'node:assert';
+import { describe, it } from 'node:test';
 import { getGeneratorMetadata } from '../../src/generators/generator.js';
 
-describe('getGeneratorMetadata', function () {
-	it('should return default markdown metadata', function () {
+describe('getGeneratorMetadata', () => {
+	it('should return default markdown metadata', () => {
 		const result = getGeneratorMetadata({}, {});
 		const expected = {
 			markdown: 'goldmark',
@@ -14,27 +15,33 @@ describe('getGeneratorMetadata', function () {
 					strikethrough: true,
 					table: true,
 					taskList: true,
-					typographer: true
+					typographer: true,
 				},
 				parser: {
 					attribute: true,
 					autoHeadingID: true,
-					autoHeadingIDType: 'github'
+					autoHeadingIDType: 'github',
 				},
 				renderer: {
 					hardWraps: false,
 					unsafe: false,
-					xhtml: false
-				}
-			}
+					xhtml: false,
+				},
+			},
 		};
 
-		expect(result).to.deep.equal(expected);
+		assert.deepStrictEqual(result, expected);
 	});
 
-	it('should overwrite default markdown metadata with cloudcannon markdown metadata', function () {
-		const markup = { markup: { goldmark: { renderer: { unsafe: true, hardWraps: true } } } };
-		const ccConfig = { generator: { metadata: { goldmark: { hardWraps: false, sentence_per_line: true } } } };
+	it('should overwrite default markdown metadata with cloudcannon markdown metadata', () => {
+		const markup = {
+			markup: { goldmark: { renderer: { unsafe: true, hardWraps: true } } },
+		};
+		const ccConfig = {
+			generator: {
+				metadata: { goldmark: { hardWraps: false, sentence_per_line: true } },
+			},
+		};
 
 		const result = getGeneratorMetadata(markup, ccConfig);
 		const expected = {
@@ -47,27 +54,27 @@ describe('getGeneratorMetadata', function () {
 					strikethrough: true,
 					table: true,
 					taskList: true,
-					typographer: true
+					typographer: true,
 				},
 				parser: {
 					attribute: true,
 					autoHeadingID: true,
-					autoHeadingIDType: 'github'
+					autoHeadingIDType: 'github',
 				},
 				renderer: {
 					hardWraps: false,
 					unsafe: true,
-					xhtml: false
+					xhtml: false,
 				},
 				hardWraps: false,
-				sentence_per_line: true
-			}
+				sentence_per_line: true,
+			},
 		};
 
-		expect(result).to.deep.equal(expected);
+		assert.deepStrictEqual(result, expected);
 	});
 
-	it('should return default blackfriday metadata', function () {
+	it('should return default blackfriday metadata', () => {
 		const result = getGeneratorMetadata({ markup: { defaultMarkdownHandler: 'blackfriday' } }, {});
 		const expected = {
 			markdown: 'blackfriday',
@@ -89,15 +96,15 @@ describe('getGeneratorMetadata', function () {
 				smartypantsQuotesNBSP: false,
 				taskLists: true,
 				renderer: {
-					hardWraps: false
-				}
-			}
+					hardWraps: false,
+				},
+			},
 		};
 
-		expect(result).to.deep.equal(expected);
+		assert.deepStrictEqual(result, expected);
 	});
 
-	it('should return markup in config', function () {
+	it('should return markup in config', () => {
 		const markup = { markup: { goldmark: { renderer: { unsafe: true } } } };
 		const expected = {
 			markdown: 'goldmark',
@@ -109,22 +116,22 @@ describe('getGeneratorMetadata', function () {
 					strikethrough: true,
 					table: true,
 					taskList: true,
-					typographer: true
+					typographer: true,
 				},
 				parser: {
 					attribute: true,
 					autoHeadingID: true,
-					autoHeadingIDType: 'github'
+					autoHeadingIDType: 'github',
 				},
 				renderer: {
 					hardWraps: false,
 					unsafe: true,
-					xhtml: false
-				}
-			}
+					xhtml: false,
+				},
+			},
 		};
 
 		const result = getGeneratorMetadata(markup, {});
-		expect(result).to.deep.equal(expected);
+		assert.deepStrictEqual(result, expected);
 	});
 });

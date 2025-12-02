@@ -10,7 +10,7 @@ const loggers = {
 	debug: (text) => console.debug(text),
 	info: (text) => console.log(text),
 	warn: (text) => console.warn(text),
-	error: (text) => console.error(text)
+	error: (text) => console.error(text),
 };
 
 export default function log(text, level = 'info') {

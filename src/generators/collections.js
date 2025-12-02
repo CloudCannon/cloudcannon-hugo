@@ -1,8 +1,8 @@
-import { basename, join } from 'path';
+import { basename, join } from 'node:path';
 import chalk from 'chalk';
 import { cheapPlural, runInChunks } from '../helpers/helpers.js';
-import pathHelper from '../helpers/paths.js';
 import log from '../helpers/logger.js';
+import pathHelper from '../helpers/paths.js';
 import { parseFile } from '../parsers/parser.js';
 
 function getTopSectionName(path, options = {}) {
@@ -30,11 +30,11 @@ export async function getLayout(path, details) {
 	const layoutFiles = [];
 	const { content } = pathHelper.getPaths();
 	const isHome = path.endsWith(`${content}/_index.md`);
-	const isSingle = !(/^_index\.(md|html?)$/i.test(basename(path)));
+	const isSingle = !/^_index\.(md|html?)$/i.test(basename(path));
 	const { layout, type } = details;
 	const section = getTopSectionName(path, {
 		rootDir: content,
-		removeLangaugeCodes: true
+		removeLangaugeCodes: true,
 	});
 
 	if (isHome) {
@@ -76,9 +76,11 @@ export function getCollectionKey(path, collectionsConfig) {
 		const collectionPath = parts.slice(0, i).join('/');
 
 		const configKey = Object.keys(collectionsConfig || {}).find((key) => {
-			return collectionsConfig[key]
-				&& collectionsConfig[key].path === collectionPath
-				&& (!pathIsBranchIndex || collectionsConfig[key].parse_branch_index);
+			return (
+				collectionsConfig[key] &&
+				collectionsConfig[key].path === collectionPath &&
+				(!pathIsBranchIndex || collectionsConfig[key].parse_branch_index)
+			);
 		});
 
 		if (configKey) {
@@ -94,8 +96,9 @@ export function getCollectionKey(path, collectionsConfig) {
 	// Fall back to using top-level folder inside content path
 	const normalisedContentPath = normalised.replace(contentPrefix, '');
 	const [folderKey, ...contentParts] = normalisedContentPath.split('/');
-	const isCollection = contentParts.length > 0
-		&& (!pathIsBranchIndex || collectionsConfig?.[folderKey]?.parse_branch_index);
+	const isCollection =
+		contentParts.length > 0 &&
+		(!pathIsBranchIndex || collectionsConfig?.[folderKey]?.parse_branch_index);
 
 	if (isCollection) {
 		return folderKey; // Valid subfolder in content path
@@ -128,13 +131,12 @@ export function getPageUrlFromPath(path, contentDir, multilingualOptions = {}) {
 
 	if (!!defaultLanguage && prependLanguageCode) {
 		const rootFolder = unprocessedUrl.split('/')?.[1] || '/';
-		if (rootFolder && !(languageCodes.includes(rootFolder))) {
+		if (rootFolder && !languageCodes.includes(rootFolder)) {
 			unprocessedUrl = `/${defaultLanguage}${unprocessedUrl}`;
 		}
 	}
 
-	return unprocessedUrl
-		.replace(/\/+/g, '/');
+	return unprocessedUrl.replace(/\/+/g, '/');
 }
 
 async function processItem({ path, collectionKey, hugoUrls, multilingual }) {
@@ -145,7 +147,8 @@ async function processItem({ path, collectionKey, hugoUrls, multilingual }) {
 		path,
 		collection: collectionKey,
 		...parsed,
-		url: parsed.url || hugoUrls[path] || getPageUrlFromPath(path, paths.content, multilingual) || '',
+		url:
+			parsed.url || hugoUrls[path] || getPageUrlFromPath(path, paths.content, multilingual) || '',
 	};
 
 	const contentPrefix = `${paths.content}/`;
@@ -180,7 +183,10 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 
 	const extraPaths = Object.keys(rawCollectionsConfig).reduce((memo, collectionKey) => {
 		const path = pathHelper.normalisePath(rawCollectionsConfig[collectionKey].path);
-		return (path && !path.startsWith(paths.content)) ? [path, ...memo] : memo;
+		if (path && !path.startsWith(paths.content)) {
+			memo.unshift(path);
+		}
+		return memo;
 	}, []);
 
 	const filePaths = await pathHelper.getCollectionPaths(extraPaths);
@@ -188,7 +194,8 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 
 	log('⏳ Processing collections...');
 
-	await runInChunks(filePaths, async (path) => { // Runs in chunks to avoid memory issues
+	await runInChunks(filePaths, async (path) => {
+		// Runs in chunks to avoid memory issues
 		const collectionKey = getCollectionKey(path, collectionsConfig);
 		if (!collectionKey) {
 			log(`No collection for ${chalk.yellow(path)}`, 'debug');
@@ -203,24 +210,30 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 		}
 
 		log(`Parsing ${chalk.green(path)} into ${chalk.bold(collectionKey)} collection`, 'debug');
-		const item = await processItem({ path, collectionKey, hugoUrls, multilingual: config.multilingual });
+		const item = await processItem({
+			path,
+			collectionKey,
+			hugoUrls,
+			multilingual: config.multilingual,
+		});
 		collections[collectionKey] = collections[collectionKey] || [];
 		collections[collectionKey].push(item);
 
 		// Sets config as output if any file inside it is output
-		const output = collectionsConfig[collectionKey]?.output
-			|| (path.startsWith(paths.data) ? false : !item.headless);
+		const output =
+			collectionsConfig[collectionKey]?.output ||
+			(path.startsWith(paths.data) ? false : !item.headless);
 
 		collectionsConfig[collectionKey] = {
 			path: `${paths.content}/${collectionKey}`,
 			...collectionsConfig[collectionKey],
-			output
+			output,
 		};
 	});
 
 	if (!override) {
-		const hasData = Object.prototype.hasOwnProperty.call(rawCollectionsConfig, 'data')
-			|| (await pathHelper.getDataPaths()).length > 0;
+		const hasData =
+			Object.hasOwn(rawCollectionsConfig, 'data') || (await pathHelper.getDataPaths()).length > 0;
 
 		collectionsConfig.data = {
 			output: false,
@@ -234,7 +247,7 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 			output: true,
 			filter: 'strict',
 			parse_branch_index: true,
-			auto_discovered: !Object.prototype.hasOwnProperty.call(rawCollectionsConfig, 'pages'),
+			auto_discovered: !Object.hasOwn(rawCollectionsConfig, 'pages'),
 			...collectionsConfig.pages,
 			path: pagesPath,
 		};
@@ -244,8 +257,8 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 		const collection = collections[collectionKey] || [];
 
 		// This is unset if a collection has not files and a configuration without path
-		collectionsConfig[collectionKey].path = collectionsConfig[collectionKey].path
-			|| `${paths.content}/${collectionKey}`;
+		collectionsConfig[collectionKey].path =
+			collectionsConfig[collectionKey].path || `${paths.content}/${collectionKey}`;
 
 		if (collection.length === 0 && collectionsConfig[collectionKey]?.auto_discovered) {
 			log(`📂 ${chalk.yellow('Ignored')} ${chalk.bold(collectionKey)} collection`);
@@ -266,6 +279,6 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 
 	return {
 		collectionsConfig,
-		collections: processedCollections
+		collections: processedCollections,
 	};
 }

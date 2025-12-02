@@ -1,5 +1,5 @@
-import cp from 'child_process';
-import fs from 'fs/promises';
+import cp from 'node:child_process';
+import fs from 'node:fs/promises';
 import log from '../helpers/logger.js';
 
 const isObject = (item) => item && typeof item === 'object' && !Array.isArray(item);
@@ -33,7 +33,7 @@ export async function runInChunks(array, asyncMapFn, chunkSize = 10) {
 	const chunkCount = Math.ceil(array.length / chunkSize);
 
 	for (let i = 0; i < chunkCount; i += 1) {
-		const slice = array.slice(i * chunkSize, ((i + 1) * chunkSize));
+		const slice = array.slice(i * chunkSize, (i + 1) * chunkSize);
 		await Promise.all(slice.map(asyncMapFn));
 	}
 }
@@ -47,7 +47,7 @@ export async function exists(path) {
 	try {
 		await fs.access(path);
 		return true;
-	} catch (err) {
+	} catch (_err) {
 		return false;
 	}
 }
@@ -55,7 +55,7 @@ export async function exists(path) {
 export function getUrlPathname(url = '/') {
 	try {
 		return new URL(url).pathname;
-	} catch (urlError) {
+	} catch (_urlError) {
 		return url;
 	}
 }
@@ -66,7 +66,7 @@ export async function runProcess(command, args) {
 			cwd: process.cwd(),
 			env: process.env,
 			stdio: 'pipe',
-			encoding: 'utf-8'
+			encoding: 'utf-8',
 		});
 
 		let result = '';

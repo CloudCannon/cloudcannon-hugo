@@ -1,15 +1,11 @@
-import { join, extname, basename } from 'path';
+import { basename, extname, join } from 'node:path';
 import chalk from 'chalk';
+import { parseDataFile } from '../parsers/parser.js';
 import { getGlob } from './globs.js';
 import { exists, mergeDeep } from './helpers.js';
-import { parseDataFile } from '../parsers/parser.js';
 import log from './logger.js';
 
-const EXTENSION_ORDER = [
-	'.toml',
-	'.yaml',
-	'.json'
-];
+const EXTENSION_ORDER = ['.toml', '.yaml', '.json'];
 
 export function configSort(fileArray) {
 	return fileArray.sort((a, b) => {
@@ -68,21 +64,23 @@ export async function getConfigPaths(flags = {}) {
 }
 
 export async function getConfigContents(configFileList, passedConfigFiles = '') {
-	const contentList = await Promise.all(configFileList.map(async (configPath) => {
-		configPath = configPath.replace('//', '/');
+	const contentList = await Promise.all(
+		configFileList.map(async (configPath) => {
+			configPath = configPath.replace('//', '/');
 
-		const parsedData = await parseDataFile(configPath);
-		if (!parsedData) {
-			return;
-		}
+			const parsedData = await parseDataFile(configPath);
+			if (!parsedData) {
+				return;
+			}
 
-		const filename = basename(configPath, extname(configPath));
-		if (filename !== 'config' && passedConfigFiles.indexOf(configPath) < 0) {
-			return { [filename]: parsedData };
-		}
+			const filename = basename(configPath, extname(configPath));
+			if (filename !== 'config' && passedConfigFiles.indexOf(configPath) < 0) {
+				return { [filename]: parsedData };
+			}
 
-		return parsedData;
-	}));
+			return parsedData;
+		})
+	);
 
 	return contentList.filter((item) => item); // remove empties
 }

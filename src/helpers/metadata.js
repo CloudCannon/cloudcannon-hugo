@@ -11,7 +11,7 @@ export const markdownMeta = {
 		sectionNumbers: false,
 		trace: false,
 		verbose: false,
-		workingFolderCurrent: false
+		workingFolderCurrent: false,
 	},
 	blackfriday: {
 		angledQuotes: false,
@@ -29,7 +29,7 @@ export const markdownMeta = {
 		smartDashes: true,
 		smartypants: true,
 		smartypantsQuotesNBSP: false,
-		taskLists: true
+		taskLists: true,
 	},
 	goldmark: {
 		extensions: {
@@ -39,18 +39,18 @@ export const markdownMeta = {
 			strikethrough: true,
 			table: true,
 			taskList: true,
-			typographer: true
+			typographer: true,
 		},
 		parser: {
 			attribute: true,
 			autoHeadingID: true,
-			autoHeadingIDType: 'github'
+			autoHeadingIDType: 'github',
 		},
 		renderer: {
 			hardWraps: false,
 			unsafe: false,
-			xhtml: false
-		}
+			xhtml: false,
+		},
 	},
 	highlight: {
 		anchorLineNos: false,
@@ -63,11 +63,11 @@ export const markdownMeta = {
 		lineNumbersInTable: true,
 		noClasses: true,
 		style: 'monokai',
-		tabWidth: 4
+		tabWidth: 4,
 	},
 	tableofcontents: {
 		endLevel: 3,
 		ordered: false,
-		startLevel: 2
-	}
+		startLevel: 2,
+	},
 };
