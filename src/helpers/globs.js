@@ -1,8 +1,5 @@
-import { promisify } from 'node:util';
-import glob from 'glob';
+import { glob } from 'glob';
 import log from './logger.js';
-
-const globPromise = promisify(glob);
 
 export function getGlobString(globPatterns) {
 	if (globPatterns.length < 2) {
@@ -35,7 +32,8 @@ export async function getGlob(globPattern, options = {}) {
 	options.ignore.push('**/exampleSite/**');
 
 	try {
-		return await globPromise(globPattern, options);
+		const results = await glob(globPattern, options);
+		return results.sort();
 	} catch (globErr) {
 		log(globErr, 'error');
 	}

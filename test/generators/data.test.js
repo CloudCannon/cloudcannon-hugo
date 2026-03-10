@@ -2,6 +2,7 @@ import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
 import mock from 'mock-fs';
 import { getData } from '../../src/generators/data.js';
+import { setLogOptions } from '../../src/helpers/logger.js';
 import { dataFiles } from '../test-paths.js';
 
 const EXPECTED_DATA = {
@@ -21,6 +22,7 @@ const EXPECTED_DATA = {
 
 describe('data generator', () => {
 	before(() => {
+		setLogOptions({ enabled: false });
 		mock(dataFiles);
 	});
 
@@ -41,5 +43,6 @@ describe('data generator', () => {
 
 	after(() => {
 		mock.restore();
+		setLogOptions({ enabled: true });
 	});
 });

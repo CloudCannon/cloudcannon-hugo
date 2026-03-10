@@ -7,10 +7,18 @@ import {
 	getLayout,
 	getPageUrlFromPath,
 } from '../../src/generators/collections.js';
+import { setLogOptions } from '../../src/helpers/logger.js';
 import pathHelper from '../../src/helpers/paths.js';
 import { collectionFiles, testFileStructure } from '../test-paths.js';
 
 describe('collections generator', () => {
+	before(() => {
+		setLogOptions({ enabled: false });
+	});
+	after(() => {
+		setLogOptions({ enabled: true });
+	});
+
 	describe('getCollectionKey', () => {
 		it('without configuration', () => {
 			const collectionsConfig = {};

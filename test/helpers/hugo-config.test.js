@@ -7,9 +7,17 @@ import {
 	getConfigPaths,
 	getHugoConfig,
 } from '../../src/helpers/hugo-config.js';
+import { setLogOptions } from '../../src/helpers/logger.js';
 import { configFiles, configOrder, testFileStructure } from '../test-paths.js';
 
 describe('hugo-config', () => {
+	before(() => {
+		setLogOptions({ enabled: false });
+	});
+	after(() => {
+		setLogOptions({ enabled: true });
+	});
+
 	describe('configSort', () => {
 		it('should sort based on extension name', () => {
 			const testArray = ['config.toml', 'a.json', 'b.toml', 'c.yaml'];
