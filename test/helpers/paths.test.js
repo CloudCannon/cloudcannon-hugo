@@ -1,8 +1,8 @@
 import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
 import pathHelper from '../../src/helpers/paths.js';
-import { pathsByType } from '../test-paths.js';
 import { restoreCwd, useFixture } from '../test-helpers.js';
+import { pathsByType } from '../test-paths.js';
 
 describe('pathHelper', () => {
 	before(() => {

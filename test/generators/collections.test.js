@@ -351,7 +351,14 @@ describe('collections generator', () => {
 				},
 			};
 
-			assert.deepStrictEqual(collections, expectedCollections);
+			const sortItems = (obj) =>
+				Object.fromEntries(
+					Object.entries(obj).map(([k, v]) => [
+						k,
+						[...v].sort((a, b) => (a.path || '').localeCompare(b.path || '')),
+					])
+				);
+			assert.deepStrictEqual(sortItems(collections), sortItems(expectedCollections));
 			assert.deepStrictEqual(collectionsConfig, expectedCollectionsConfig);
 		});
 

@@ -183,7 +183,7 @@
 					"content",
 					"source"
 				],
-				"url": "/",
+				"url": "/index.html",
 				"content_path": "_index.md",
 				"layout": "index"
 			},

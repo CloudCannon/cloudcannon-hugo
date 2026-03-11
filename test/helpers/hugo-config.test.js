@@ -7,8 +7,8 @@ import {
 	getHugoConfig,
 } from '../../src/helpers/hugo-config.js';
 import { setLogOptions } from '../../src/helpers/logger.js';
-import { configOrder } from '../test-paths.js';
 import { restoreCwd, useFixture } from '../test-helpers.js';
+import { configOrder } from '../test-paths.js';
 
 describe('hugo-config', () => {
 	before(() => {
