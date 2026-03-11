@@ -1,10 +1,9 @@
 import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
-import mock from 'mock-fs';
 import { getInfo } from '../../src/generators/info.js';
 import { setLogOptions } from '../../src/helpers/logger.js';
 import pathHelper from '../../src/helpers/paths.js';
-import { dataFiles } from '../test-paths.js';
+import { restoreCwd, useFixture } from '../test-helpers.js';
 
 const EXPECTED_DATA = {
 	footer: [
@@ -115,7 +114,7 @@ describe('info generator', { timeout: 10000 }, () => {
 
 	describe('with data', () => {
 		before(() => {
-			mock(dataFiles);
+			useFixture('data-files');
 		});
 
 		it('should return all data', async () => {
@@ -136,9 +135,9 @@ describe('info generator', { timeout: 10000 }, () => {
 
 			assert.deepEqual(result.data, expected);
 		});
-	});
 
-	after(() => {
-		mock.restore();
+		after(() => {
+			restoreCwd();
+		});
 	});
 });

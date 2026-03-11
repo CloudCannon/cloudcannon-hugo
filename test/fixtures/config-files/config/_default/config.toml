@@ -1,0 +1,10 @@
+baseURL = "http://example.org/"
+title = "Hugo Test Site"
+
+[params]
+prio1 = "defaultconfig"
+prio2 = "defaultconfig"
+prio3 = "defaultconfig"
+prio4 = "defaultconfig"
+prio5 = "defaultconfig"
+prio6 = "defaultconfig"

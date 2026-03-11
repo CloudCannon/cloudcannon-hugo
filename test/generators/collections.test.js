@@ -1,6 +1,5 @@
 import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
-import mock from 'mock-fs';
 import {
 	getCollectionKey,
 	getCollectionsAndConfig,
@@ -9,7 +8,7 @@ import {
 } from '../../src/generators/collections.js';
 import { setLogOptions } from '../../src/helpers/logger.js';
 import pathHelper from '../../src/helpers/paths.js';
-import { collectionFiles, testFileStructure } from '../test-paths.js';
+import { restoreCwd, useFixture } from '../test-helpers.js';
 
 describe('collections generator', () => {
 	before(() => {
@@ -135,7 +134,7 @@ describe('collections generator', () => {
 	describe('getLayout', () => {
 		before(() => {
 			pathHelper.clearAllCachedItems();
-			mock(testFileStructure);
+			useFixture('standard');
 			pathHelper.getSupportedLanguages({ languages: { en: {} } });
 		});
 
@@ -230,19 +229,15 @@ describe('collections generator', () => {
 		});
 
 		after(() => {
-			mock.restore();
+			restoreCwd();
 			pathHelper.clearAllCachedItems();
 		});
 	});
 
 	describe('getCollectionsAndConfig', () => {
 		before(() => {
-			const fileStructure = {
-				...collectionFiles,
-				'data/staff_members': { 'anna.yml': '' },
-			};
 			pathHelper.clearAllCachedItems();
-			mock(fileStructure);
+			useFixture('collection-files');
 		});
 
 		it('should retrieve collections', async () => {
@@ -361,7 +356,7 @@ describe('collections generator', () => {
 		});
 
 		after(() => {
-			mock.restore();
+			restoreCwd();
 			pathHelper.clearAllCachedItems();
 		});
 	});

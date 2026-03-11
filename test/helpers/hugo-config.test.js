@@ -1,6 +1,5 @@
 import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
-import mock from 'mock-fs';
 import {
 	configSort,
 	getConfigContents,
@@ -8,7 +7,8 @@ import {
 	getHugoConfig,
 } from '../../src/helpers/hugo-config.js';
 import { setLogOptions } from '../../src/helpers/logger.js';
-import { configFiles, configOrder, testFileStructure } from '../test-paths.js';
+import { configOrder } from '../test-paths.js';
+import { restoreCwd, useFixture } from '../test-helpers.js';
 
 describe('hugo-config', () => {
 	before(() => {
@@ -29,7 +29,7 @@ describe('hugo-config', () => {
 	describe('getConfigPaths', () => {
 		describe('"Standard" file structure', () => {
 			before(() => {
-				mock(testFileStructure);
+				useFixture('standard');
 			});
 			it('should get all configPaths', async () => {
 				const expected = [
@@ -65,48 +65,48 @@ describe('hugo-config', () => {
 				assert.deepStrictEqual(configPaths, expected);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 		describe('hugo.toml and config.toml files', () => {
 			before(() => {
-				mock({ 'config.toml': '', 'hugo.toml': '' });
+				useFixture('hugo-toml-and-config');
 			});
 			it('should get just hugo.toml', async () => {
 				const configPaths = await getConfigPaths();
 				assert.deepStrictEqual(configPaths, ['hugo.toml']);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 		describe('hugo.json and config.toml files', () => {
 			before(() => {
-				mock({ 'config.toml': '', 'hugo.json': '' });
+				useFixture('hugo-json-and-config');
 			});
 			it('should get just hugo.json', async () => {
 				const configPaths = await getConfigPaths();
 				assert.deepStrictEqual(configPaths, ['hugo.json']);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 		describe('hugo.yaml and config.json files', () => {
 			before(() => {
-				mock({ 'config.json': '', 'hugo.yaml': '' });
+				useFixture('hugo-yaml-and-config-json');
 			});
 			it('should get just hugo.yaml', async () => {
 				const configPaths = await getConfigPaths();
 				assert.deepStrictEqual(configPaths, ['hugo.yaml']);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 		describe('hugo.toml and config.toml files with specified config file', () => {
 			before(() => {
-				mock({ 'config.toml': '', 'hugo.toml': '' });
+				useFixture('hugo-toml-and-config');
 			});
 			it('should get just specified file', async () => {
 				const configPaths = await getConfigPaths({
@@ -115,60 +115,60 @@ describe('hugo-config', () => {
 				assert.deepStrictEqual(configPaths, ['wildconfigfile.json']);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 		describe('yaml and json config file', () => {
 			before(() => {
-				mock({ 'hugo.yaml': '', 'hugo.json': '' });
+				useFixture('hugo-yaml-and-json');
 			});
 			it('should get just hugo.yaml', async () => {
 				const configPaths = await getConfigPaths();
 				assert.deepStrictEqual(configPaths, ['hugo.yaml']);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 		describe('json config file', () => {
 			before(() => {
-				mock({ 'hugo.json': '' });
+				useFixture('hugo-json-only');
 			});
 			it('should get all configPaths', async () => {
 				const configPaths = await getConfigPaths();
 				assert.deepStrictEqual(configPaths, ['hugo.json']);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 		describe('no config files', () => {
 			before(() => {
-				mock({ 'notconfig.md': '' });
+				useFixture('no-config');
 			});
 			it('should get all configPaths', async () => {
 				const configPaths = await getConfigPaths();
 				assert.deepStrictEqual(configPaths, []);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 		describe('Config files within a source directory', () => {
 			before(() => {
-				mock({ 'src/dir': { 'hugo.toml': '' } });
+				useFixture('source-dir');
 			});
 			it('should get all configPaths', async () => {
 				const configPaths = await getConfigPaths({ source: 'src/dir' });
 				assert.deepStrictEqual(configPaths, ['src/dir/hugo.toml']);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 		describe('Config files within a source directory and config directory', () => {
 			before(() => {
-				mock({ 'src/dir/config/_default': { 'hugo.toml': '' } });
+				useFixture('source-config-dir');
 			});
 			it('should get all configPaths', async () => {
 				const configPaths = await getConfigPaths({
@@ -178,14 +178,14 @@ describe('hugo-config', () => {
 				assert.deepStrictEqual(configPaths, ['src/dir/config/_default/hugo.toml']);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 	});
 
 	describe('getConfigContents', () => {
 		before(() => {
-			mock(configFiles);
+			useFixture('config-files');
 		});
 
 		it('should return empty array with no config files', async () => {
@@ -274,14 +274,14 @@ describe('hugo-config', () => {
 		});
 
 		after(() => {
-			mock.restore();
+			restoreCwd();
 		});
 	});
 
 	describe('getHugoConfig', () => {
 		describe('many files to merge', () => {
 			before(() => {
-				mock(configFiles);
+				useFixture('config-files');
 			});
 			it('should return the correctly merged object', async () => {
 				const expected = {
@@ -306,13 +306,13 @@ describe('hugo-config', () => {
 				assert.deepStrictEqual(obj, expected);
 			});
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 
 		describe('baseURL supplied in both buildArgs and config', () => {
 			before(() => {
-				mock({ 'config.toml': 'baseURL = "http://config.org/"' });
+				useFixture('config-baseurl');
 			});
 
 			it('should return buildArg baseURL', async () => {
@@ -326,13 +326,13 @@ describe('hugo-config', () => {
 			});
 
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 
 		describe('contentDir supplied in both buildArgs and config', () => {
 			before(() => {
-				mock({ 'config.toml': 'contentDir = "configContentDir"' });
+				useFixture('config-contentdir');
 			});
 
 			it('should return buildArg contentDir', async () => {
@@ -347,13 +347,13 @@ describe('hugo-config', () => {
 			});
 
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 
 		describe('layoutDir supplied in both buildArgs and config', () => {
 			before(() => {
-				mock({ 'config.toml': 'layoutDir = "configLayoutDir"' });
+				useFixture('config-layoutdir');
 			});
 
 			it('should return buildArg baseURL', async () => {
@@ -368,7 +368,7 @@ describe('hugo-config', () => {
 			});
 
 			after(() => {
-				mock.restore();
+				restoreCwd();
 			});
 		});
 

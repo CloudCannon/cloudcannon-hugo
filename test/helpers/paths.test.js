@@ -1,12 +1,12 @@
 import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
-import mock from 'mock-fs';
 import pathHelper from '../../src/helpers/paths.js';
-import { pathsByType, testFileStructure } from '../test-paths.js';
+import { pathsByType } from '../test-paths.js';
+import { restoreCwd, useFixture } from '../test-helpers.js';
 
 describe('pathHelper', () => {
 	before(() => {
-		mock(testFileStructure);
+		useFixture('standard');
 		pathHelper.generatePaths({});
 	});
 
@@ -58,6 +58,6 @@ describe('pathHelper', () => {
 	});
 
 	after(() => {
-		mock.restore();
+		restoreCwd();
 	});
 });

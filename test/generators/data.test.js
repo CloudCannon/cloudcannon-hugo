@@ -1,9 +1,8 @@
 import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
-import mock from 'mock-fs';
 import { getData } from '../../src/generators/data.js';
 import { setLogOptions } from '../../src/helpers/logger.js';
-import { dataFiles } from '../test-paths.js';
+import { restoreCwd, useFixture } from '../test-helpers.js';
 
 const EXPECTED_DATA = {
 	footer: [
@@ -23,7 +22,7 @@ const EXPECTED_DATA = {
 describe('data generator', () => {
 	before(() => {
 		setLogOptions({ enabled: false });
-		mock(dataFiles);
+		useFixture('data-files');
 	});
 
 	it('should allow all', async () => {
@@ -42,7 +41,7 @@ describe('data generator', () => {
 	});
 
 	after(() => {
-		mock.restore();
+		restoreCwd();
 		setLogOptions({ enabled: true });
 	});
 });
