@@ -39,13 +39,12 @@
 	],
 	"homepage": "https://github.com/CloudCannon/cloudcannon-hugo#readme",
 	"devDependencies": {
-		"@biomejs/biome": "2.3.6",
-		"mock-fs": "^5.5.0"
+		"@biomejs/biome": "2.3.6"
 	},
 	"dependencies": {
 		"chalk": "^5.1.2",
 		"cosmiconfig": "^8.0.0",
-		"glob": "^8.0.3",
+		"glob": "^13.0.6",
 		"js-yaml": "^4.1.1",
 		"meow": "^11.0.0",
 		"papaparse": "^5.3.1",

@@ -1,10 +1,9 @@
 baseURL = "http://example.org/"
 languageCode = "en-us"
 title = "Hydra Template"
-disqusShortname = ""
-googleAnalytics = ""
-Paginate = 10
-PaginatePath = "/"
+[pagination]
+pagerSize = 10
+path = "/"
 enableRobotsTXT = true
 
 [taxonomies]

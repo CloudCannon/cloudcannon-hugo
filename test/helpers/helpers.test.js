@@ -1,12 +1,11 @@
 import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
-import mock from 'mock-fs';
 import { exists, getUrlPathname, runProcess } from '../../src/helpers/helpers.js';
-import { testFileStructure } from '../test-paths.js';
+import { restoreCwd, useFixture } from '../test-helpers.js';
 
 describe('helpers.js', () => {
 	before(() => {
-		mock(testFileStructure);
+		useFixture('standard');
 	});
 
 	describe('exists', () => {
@@ -49,6 +48,6 @@ describe('helpers.js', () => {
 	});
 
 	after(() => {
-		mock.restore();
+		restoreCwd();
 	});
 });

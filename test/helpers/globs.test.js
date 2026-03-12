@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
-import mock from 'mock-fs';
 import { getGlob, getGlobString } from '../../src/helpers/globs.js';
+import { restoreCwd, useFixture } from '../test-helpers.js';
 
 describe('globs', () => {
 	describe('getGlobString()', () => {
@@ -29,20 +29,7 @@ describe('globs', () => {
 
 	describe('getGlob()', () => {
 		before(() => {
-			mock({
-				archetypes: {
-					'default.md': 'content',
-				},
-				content: {
-					collectionName: {
-						'index.md': 'content',
-					},
-					emptyCollection: {},
-				},
-				'theme/exampleSite': {
-					'index.html': 'content',
-				},
-			});
+			useFixture('globs');
 		});
 		const tests = [
 			{
@@ -80,7 +67,7 @@ describe('globs', () => {
 		});
 
 		after(() => {
-			mock.restore();
+			restoreCwd();
 		});
 	});
 });

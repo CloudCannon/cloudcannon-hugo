@@ -69,7 +69,7 @@ async function run(fixture, npxArgs = [], expectedOutputFile) {
 		}
 	}
 
-	spawnSync('npx', [relative(fixture, '../..'), ...npxArgs], {
+	spawnSync('npx', [relative(wd, '.'), ...npxArgs], {
 		cwd: wd,
 		stdio: [process.stdin, process.stdout, process.stderr],
 		encoding: 'utf-8',
