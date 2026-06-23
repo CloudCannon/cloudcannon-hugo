@@ -14,7 +14,7 @@ describe('yaml.js', () => {
 		});
 
 		it('should not parse', () => {
-			const badYamlString = ',';
+			const badYamlString = '[';
 			const parsedObject = parseYaml(badYamlString);
 			assert.deepStrictEqual(parsedObject, undefined);
 		});

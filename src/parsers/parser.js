@@ -5,6 +5,10 @@ import { parseJsonUnstrict } from './json.js';
 import { parseToml } from './toml.js';
 import { parseYaml } from './yaml.js';
 
+function isPlainObject(value) {
+	return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 export async function parseFile(path) {
 	try {
 		let frontMatterObject = await parseDataFile(path);
@@ -59,7 +63,8 @@ export function parseFrontMatter(data) {
 			end = normalised.indexOf('\n---', start + 1);
 			if (start === 0 && end > start) {
 				const trimmed = normalised.substring(start + 3, end);
-				return parseYaml(trimmed);
+				const parsed = parseYaml(trimmed);
+				return isPlainObject(parsed) ? parsed : undefined;
 			}
 			break;
 		case '+':
