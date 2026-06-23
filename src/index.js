@@ -41,27 +41,27 @@ const cli = meow(
 		flags: {
 			output: {
 				type: 'string',
-				alias: 'o',
+				shortFlag: 'o',
 			},
 			quiet: {
 				type: 'boolean',
-				alias: 'q',
+				shortFlag: 'q',
 			},
 			verbose: {
 				type: 'boolean',
-				alias: 'v',
+				shortFlag: 'v',
 			},
 			environment: {
 				type: 'string',
-				alias: 'e',
+				shortFlag: 'e',
 			},
 			source: {
 				type: 'string',
-				alias: 's',
+				shortFlag: 's',
 			},
 			baseURL: {
 				type: 'string',
-				alias: 'b',
+				shortFlag: 'b',
 			},
 			config: {
 				type: 'string',
@@ -71,15 +71,15 @@ const cli = meow(
 			},
 			contentDir: {
 				type: 'string',
-				alias: 'c',
+				shortFlag: 'c',
 			},
 			layoutDir: {
 				type: 'string',
-				alias: 'l',
+				shortFlag: 'l',
 			},
 			destination: {
 				type: 'string',
-				alias: 'd',
+				shortFlag: 'd',
 			},
 		},
 	}
