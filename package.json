@@ -43,7 +43,7 @@
 	},
 	"dependencies": {
 		"chalk": "^6.0.0",
-		"cosmiconfig": "^9.0.1",
+		"cosmiconfig": "^10.0.0",
 		"glob": "^13.0.6",
 		"js-yaml": "^5.1.0",
 		"meow": "^14.1.0",
