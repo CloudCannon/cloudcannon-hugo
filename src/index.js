@@ -2,7 +2,7 @@
 
 import fs from 'node:fs/promises';
 import { join } from 'node:path';
-import chalk from 'chalk';
+import ansis from 'ansis';
 import meow from 'meow';
 import { getInfo } from './generators/info.js';
 import { getHugoConfig } from './helpers/hugo-config.js';
@@ -91,7 +91,7 @@ setLogOptions({
 });
 
 async function main({ flags, pkg }) {
-	log(`⭐️ Starting ${chalk.blue('cloudcannon-hugo')} ${pkg.version}`);
+	log(`⭐️ Starting ${ansis.blue('cloudcannon-hugo')} ${pkg.version}`);
 
 	const hugoConfig = await getHugoConfig(flags);
 	pathHelper.generatePaths(hugoConfig);
@@ -105,7 +105,7 @@ async function main({ flags, pkg }) {
 	try {
 		await fs.mkdir(`${outputDir}`, { recursive: true });
 		await fs.writeFile(`${outputDir}/info.json`, infoData);
-		log(`🏁 Generated ${chalk.bold('_cloudcannon/info.json')} ${chalk.green('successfully')}`);
+		log(`🏁 Generated ${ansis.bold('_cloudcannon/info.json')} ${ansis.green('successfully')}`);
 	} catch (_writeError) {
 		log(`error writing to ${outputDir}/`, 'error');
 	}

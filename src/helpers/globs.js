@@ -1,4 +1,4 @@
-import { glob } from 'glob';
+import { glob } from 'tinyglobby';
 import log from './logger.js';
 
 export function getGlobString(globPatterns) {
@@ -20,13 +20,15 @@ export async function getGlob(globPattern, options = {}) {
 	}
 
 	options = {
-		nodir: true,
+		onlyFiles: true,
 		ignore: [],
 		...options,
 	};
 
 	if (typeof options.ignore === 'string') {
 		options.ignore = [options.ignore];
+	} else {
+		options.ignore = [...options.ignore];
 	}
 
 	options.ignore.push('**/exampleSite/**');

@@ -1,5 +1,5 @@
 import { basename, dirname, extname } from 'node:path';
-import chalk from 'chalk';
+import ansis from 'ansis';
 import log from '../helpers/logger.js';
 import pathHelper from '../helpers/paths.js';
 import { parseDataFile } from '../parsers/parser.js';
@@ -50,7 +50,7 @@ export async function getData(config) {
 	const dataKeys = Object.keys(data || {});
 
 	dataKeys.forEach((key) => {
-		log(`💾 Processed ${chalk.bold(key)} data set`);
+		log(`💾 Processed ${ansis.bold(key)} data set`);
 	});
 
 	return data;

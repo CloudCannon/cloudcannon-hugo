@@ -1,5 +1,5 @@
 import { basename, extname, join } from 'node:path';
-import chalk from 'chalk';
+import ansis from 'ansis';
 import { parseDataFile } from '../parsers/parser.js';
 import { getGlob } from './globs.js';
 import { exists, mergeDeep } from './helpers.js';
@@ -90,11 +90,11 @@ export async function generateConfigObject(flags = {}, options) {
 
 	if (!options?.silent) {
 		configFileList.forEach((configFilePath) => {
-			log(`🔧 Reading Hugo config file at ${chalk.bold(configFilePath)}`);
+			log(`🔧 Reading Hugo config file at ${ansis.bold(configFilePath)}`);
 		});
 
 		if (configFileList.length === 0) {
-			log(chalk.yellow('🔧 No Hugo config file found'));
+			log(ansis.yellow('🔧 No Hugo config file found'));
 		}
 	}
 

@@ -1,5 +1,5 @@
 import { basename, join } from 'node:path';
-import chalk from 'chalk';
+import ansis from 'ansis';
 import { cheapPlural, runInChunks } from '../helpers/helpers.js';
 import log from '../helpers/logger.js';
 import pathHelper from '../helpers/paths.js';
@@ -198,18 +198,18 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 		// Runs in chunks to avoid memory issues
 		const collectionKey = getCollectionKey(path, collectionsConfig);
 		if (!collectionKey) {
-			log(`No collection for ${chalk.yellow(path)}`, 'debug');
+			log(`No collection for ${ansis.yellow(path)}`, 'debug');
 			return;
 		}
 
 		// Skipped if not defined in global config with collections_config_override enabled
 		if (override && !rawCollectionsConfig[collectionKey]) {
-			log(`Skipping ${chalk.bold(collectionKey)} collection for ${chalk.yellow(path)}`, 'debug');
+			log(`Skipping ${ansis.bold(collectionKey)} collection for ${ansis.yellow(path)}`, 'debug');
 			skippedCollections[collectionKey] = (skippedCollections[collectionKey] || 0) + 1;
 			return;
 		}
 
-		log(`Parsing ${chalk.green(path)} into ${chalk.bold(collectionKey)} collection`, 'debug');
+		log(`Parsing ${ansis.green(path)} into ${ansis.bold(collectionKey)} collection`, 'debug');
 		const item = await processItem({
 			path,
 			collectionKey,
@@ -261,20 +261,20 @@ export async function getCollectionsAndConfig(config, hugoUrls) {
 			collectionsConfig[collectionKey].path || `${paths.content}/${collectionKey}`;
 
 		if (collection.length === 0 && collectionsConfig[collectionKey]?.auto_discovered) {
-			log(`📂 ${chalk.yellow('Ignored')} ${chalk.bold(collectionKey)} collection`);
+			log(`📂 ${ansis.yellow('Ignored')} ${ansis.bold(collectionKey)} collection`);
 			delete collectionsConfig[collectionKey];
 			return memo;
 		}
 
 		memo[collectionKey] = collection || [];
 		const filesCount = cheapPlural(collection.length, 'file');
-		log(`📁 Processed ${chalk.bold(collectionKey)} collection with ${filesCount}`);
+		log(`📁 Processed ${ansis.bold(collectionKey)} collection with ${filesCount}`);
 		return memo;
 	}, {});
 
 	Object.keys(skippedCollections).forEach((collectionKey) => {
 		const filesCount = cheapPlural(skippedCollections[collectionKey], 'file');
-		log(`📂 ${chalk.yellow('Skipped')} ${chalk.bold(collectionKey)} collection with ${filesCount}`);
+		log(`📂 ${ansis.yellow('Skipped')} ${ansis.bold(collectionKey)} collection with ${filesCount}`);
 	});
 
 	return {
