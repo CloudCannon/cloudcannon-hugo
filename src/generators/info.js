@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import ansis from 'ansis';
 import Papa from 'papaparse';
 import { getConfig } from '../config.js';
 import { getUrlPathname, runProcess } from '../helpers/helpers.js';
@@ -19,7 +19,7 @@ async function getHugoUrls(hugoConfig) {
 	const raw = await runProcess('hugo', cmdArgs);
 	const startIndex = raw.search(/^path,/m); // hugo logs warnings before this point
 	if (startIndex < 0) {
-		log(`⚠️ ${chalk.red('No output listing files')}`, 'error');
+		log(`⚠️ ${ansis.red('No output listing files')}`, 'error');
 	}
 
 	const fileCsv = raw.substring(startIndex).trim();
