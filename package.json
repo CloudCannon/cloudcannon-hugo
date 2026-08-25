@@ -39,7 +39,7 @@
 	],
 	"homepage": "https://github.com/CloudCannon/cloudcannon-hugo#readme",
 	"devDependencies": {
-		"@biomejs/biome": "2.5.9"
+		"@biomejs/biome": "2.5.10"
 	},
 	"dependencies": {
 		"ansis": "^4.3.1",
